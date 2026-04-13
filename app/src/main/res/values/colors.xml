@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="uganda_black">#0A0A0A</color>
+    <color name="uganda_gold">#F5C518</color>
+    <color name="uganda_red">#C0392B</color>
+    <color name="surface_dark">#1A1A1A</color>
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#AAAAAA</color>
+</resources>

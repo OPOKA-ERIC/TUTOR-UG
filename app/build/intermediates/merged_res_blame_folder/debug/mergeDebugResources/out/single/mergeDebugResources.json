@@ -1,0 +1,82 @@
+[
+    {
+        "merged": "com.tutorug.app-debug-4:/mipmap-xxxhdpi_ic_launcher.webp.flat",
+        "source": "com.tutorug.app-main-6:/mipmap-xxxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.tutorug.app-debug-4:/mipmap-mdpi_ic_launcher.webp.flat",
+        "source": "com.tutorug.app-main-6:/mipmap-mdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.tutorug.app-debug-4:/mipmap-hdpi_ic_launcher_round.webp.flat",
+        "source": "com.tutorug.app-main-6:/mipmap-hdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.tutorug.app-debug-4:/mipmap-xhdpi_ic_launcher_round.webp.flat",
+        "source": "com.tutorug.app-main-6:/mipmap-xhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.tutorug.app-debug-4:/raw_districts.json.flat",
+        "source": "com.tutorug.app-main-6:/raw/districts.json"
+    },
+    {
+        "merged": "com.tutorug.app-debug-4:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.tutorug.app-main-6:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.tutorug.app-debug-4:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.tutorug.app-main-6:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.tutorug.app-debug-4:/mipmap-hdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.tutorug.app-main-6:/mipmap-hdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "com.tutorug.app-debug-4:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.tutorug.app-main-6:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.tutorug.app-debug-4:/mipmap-xhdpi_ic_launcher.webp.flat",
+        "source": "com.tutorug.app-main-6:/mipmap-xhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.tutorug.app-debug-4:/mipmap-xxhdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.tutorug.app-main-6:/mipmap-xxhdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "com.tutorug.app-debug-4:/mipmap-mdpi_ic_launcher_round.webp.flat",
+        "source": "com.tutorug.app-main-6:/mipmap-mdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.tutorug.app-debug-4:/mipmap-xxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.tutorug.app-main-6:/mipmap-xxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.tutorug.app-debug-4:/drawable_ic_tutorug_logo.jpg.flat",
+        "source": "com.tutorug.app-main-6:/drawable/ic_tutorug_logo.jpg"
+    },
+    {
+        "merged": "com.tutorug.app-debug-4:/mipmap-xxxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.tutorug.app-main-6:/mipmap-xxxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.tutorug.app-debug-4:/mipmap-hdpi_ic_launcher.webp.flat",
+        "source": "com.tutorug.app-main-6:/mipmap-hdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.tutorug.app-debug-4:/mipmap-xxhdpi_ic_launcher.webp.flat",
+        "source": "com.tutorug.app-main-6:/mipmap-xxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.tutorug.app-debug-4:/mipmap-xhdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.tutorug.app-main-6:/mipmap-xhdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "com.tutorug.app-debug-4:/mipmap-mdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.tutorug.app-main-6:/mipmap-mdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "com.tutorug.app-debug-4:/mipmap-xxxhdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.tutorug.app-main-6:/mipmap-xxxhdpi/ic_launcher_foreground.webp"
+    }
+]

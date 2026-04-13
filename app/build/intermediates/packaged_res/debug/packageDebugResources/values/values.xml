@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ic_launcher_background">#BDBDBD</color>
+    <color name="surface_dark">#1A1A1A</color>
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#AAAAAA</color>
+    <color name="uganda_black">#0A0A0A</color>
+    <color name="uganda_gold">#F5C518</color>
+    <color name="uganda_red">#C0392B</color>
+    <string name="app_name">TutorUG</string>
+    <string name="tagline">Uganda\'s Smart Learning Companion</string>
+    <string name="welcome_message">Learn in YOUR World 🇺🇬</string>
+    <style name="Theme.TutorUG" parent="android:Theme.Material.Light.NoActionBar"/>
+</resources>
