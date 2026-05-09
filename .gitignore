@@ -3,6 +3,7 @@
 *.iml
 .DS_Store
 /build
+/app/build/
 /captures
 .externalNativeBuild
 .cxx
@@ -11,3 +12,7 @@ local.properties
 /functions/node_modules/
 /functions/.env
 *.log
+*.exe
+*.jpg
+*.jpg.jpg
+supabase.exe
