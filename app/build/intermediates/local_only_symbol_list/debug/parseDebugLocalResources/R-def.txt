@@ -1,0 +1,19 @@
+R_DEF: Internal format may change without notice
+local
+color ic_launcher_background
+color surface_dark
+color text_primary
+color text_secondary
+color uganda_black
+color uganda_gold
+color uganda_red
+drawable ic_launcher_foreground
+drawable ic_tutorug_logo
+mipmap ic_launcher
+mipmap ic_launcher_foreground
+mipmap ic_launcher_round
+raw districts
+string app_name
+string tagline
+string welcome_message
+style Theme.TutorUG

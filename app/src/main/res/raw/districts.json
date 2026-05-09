@@ -1,0 +1,6458 @@
+{
+  "districts": [
+    {
+      "name": "Abim",
+      "region": "Northern",
+      "places": [
+        "Abim Town",
+        "Lotuke",
+        "Morulem",
+        "Nyakwae",
+        "Alerek"
+      ],
+      "localNames": [
+        "Okello",
+        "Auma",
+        "Opio",
+        "Acen",
+        "Otim",
+        "Akello"
+      ],
+      "landmarks": [
+        "Abim Hospital",
+        "Abim Market",
+        "Karamoja plains"
+      ],
+      "rivers": [
+        "River Akoret",
+        "River Dopeth"
+      ],
+      "foods": [
+        "Millet bread",
+        "simsim paste",
+        "dried meat",
+        "groundnuts",
+        "cassava"
+      ],
+      "economy": [
+        "Cattle keeping",
+        "subsistence farming",
+        "honey production",
+        "charcoal trade"
+      ],
+      "animals": [
+        "Eland",
+        "zebra",
+        "ostrich",
+        "giraffe",
+        "hartebeest"
+      ]
+    },
+    {
+      "name": "Adjumani",
+      "region": "West Nile",
+      "places": [
+        "Adjumani Town",
+        "Dzaipi",
+        "Ciforo",
+        "Pakele",
+        "Adropi"
+      ],
+      "localNames": [
+        "Drani",
+        "Candiru",
+        "Anguzu",
+        "Adrabo",
+        "Onzima"
+      ],
+      "landmarks": [
+        "Adjumani Hospital",
+        "Adjumani Market",
+        "River Nile crossing",
+        "refugee settlements"
+      ],
+      "rivers": [
+        "River Nile",
+        "River Enyau"
+      ],
+      "foods": [
+        "Cassava bread",
+        "dried fish",
+        "groundnuts",
+        "simsim",
+        "beans"
+      ],
+      "economy": [
+        "Crop farming",
+        "fishing",
+        "cross-border trade",
+        "humanitarian sector"
+      ],
+      "animals": [
+        "Nile perch",
+        "hippo",
+        "crocodile",
+        "monitor lizard",
+        "fish eagle"
+      ]
+    },
+    {
+      "name": "Agago",
+      "region": "Northern",
+      "places": [
+        "Agago Town",
+        "Kalongo",
+        "Patongo",
+        "Lapono",
+        "Omot"
+      ],
+      "localNames": [
+        "Okello",
+        "Akello",
+        "Opio",
+        "Auma",
+        "Otim",
+        "Acen"
+      ],
+      "landmarks": [
+        "Kalongo Hospital",
+        "Patongo Market",
+        "Agago hills"
+      ],
+      "rivers": [
+        "River Agago",
+        "River Pager"
+      ],
+      "foods": [
+        "Malakwang",
+        "millet bread",
+        "simsim paste",
+        "dried fish",
+        "groundnuts"
+      ],
+      "economy": [
+        "Subsistence farming",
+        "cattle keeping",
+        "honey production",
+        "market trade"
+      ],
+      "animals": [
+        "Grey Crowned Crane",
+        "monitor lizard",
+        "tilapia",
+        "hippo",
+        "marabou stork"
+      ]
+    },
+    {
+      "name": "Alebtong",
+      "region": "Northern",
+      "places": [
+        "Alebtong Town",
+        "Abako",
+        "Adwari",
+        "Ogur",
+        "Omoro"
+      ],
+      "localNames": [
+        "Okello",
+        "Akello",
+        "Opio",
+        "Auma",
+        "Otim",
+        "Acen",
+        "Oloya"
+      ],
+      "landmarks": [
+        "Alebtong Hospital",
+        "Alebtong Market",
+        "Lango plains"
+      ],
+      "rivers": [
+        "River Okole",
+        "River Moroto"
+      ],
+      "foods": [
+        "Boo (millet bread)",
+        "simsim paste",
+        "groundnut sauce",
+        "dried fish",
+        "cassava"
+      ],
+      "economy": [
+        "Sunflower farming",
+        "cattle keeping",
+        "crop farming",
+        "market trading"
+      ],
+      "animals": [
+        "Grey Crowned Crane",
+        "marabou stork",
+        "monitor lizard",
+        "tilapia"
+      ]
+    },
+    {
+      "name": "Amolatar",
+      "region": "Northern",
+      "places": [
+        "Amolatar Town",
+        "Namasale",
+        "Agulurude",
+        "Aputi",
+        "Wangi"
+      ],
+      "localNames": [
+        "Okello",
+        "Akello",
+        "Opio",
+        "Auma",
+        "Otim",
+        "Acen"
+      ],
+      "landmarks": [
+        "Amolatar Hospital",
+        "Amolatar Market",
+        "Lake Kyoga shores"
+      ],
+      "rivers": [
+        "Lake Kyoga",
+        "River Okole"
+      ],
+      "foods": [
+        "Boo (millet bread)",
+        "dried fish",
+        "simsim",
+        "cassava",
+        "groundnuts"
+      ],
+      "economy": [
+        "Fishing",
+        "crop farming",
+        "cattle keeping",
+        "market trade"
+      ],
+      "animals": [
+        "Tilapia",
+        "Nile perch",
+        "hippo",
+        "crocodile",
+        "shoebill stork"
+      ]
+    },
+    {
+      "name": "Amudat",
+      "region": "Eastern",
+      "places": [
+        "Amudat Town",
+        "Loroo",
+        "Karita",
+        "Moruita",
+        "Cheptapoyo"
+      ],
+      "localNames": [
+        "Chebet",
+        "Kiplangat",
+        "Cheptoek",
+        "Lokol",
+        "Chemutai"
+      ],
+      "landmarks": [
+        "Amudat Hospital",
+        "Amudat Market",
+        "Karamoja escarpment"
+      ],
+      "rivers": [
+        "River Suam",
+        "River Amudat"
+      ],
+      "foods": [
+        "Dried meat",
+        "millet bread",
+        "cow blood",
+        "wild vegetables",
+        "cassava"
+      ],
+      "economy": [
+        "Cattle herding",
+        "goat keeping",
+        "crop farming",
+        "charcoal trade"
+      ],
+      "animals": [
+        "Zebra",
+        "eland",
+        "giraffe",
+        "hartebeest",
+        "cheetah"
+      ]
+    },
+    {
+      "name": "Amuria",
+      "region": "Eastern",
+      "places": [
+        "Amuria Town",
+        "Wera",
+        "Morungatuny",
+        "Asamuk",
+        "Kapelebyong"
+      ],
+      "localNames": [
+        "Emong",
+        "Akol",
+        "Egunyu",
+        "Apio",
+        "Amongin",
+        "Okello"
+      ],
+      "landmarks": [
+        "Amuria Hospital",
+        "Amuria Market",
+        "Lake Opeta"
+      ],
+      "rivers": [
+        "Lake Opeta",
+        "River Agago"
+      ],
+      "foods": [
+        "Atap (millet bread)",
+        "malakwang",
+        "groundnut paste",
+        "dried fish",
+        "cassava"
+      ],
+      "economy": [
+        "Cattle keeping",
+        "crop farming",
+        "fishing",
+        "market trade"
+      ],
+      "animals": [
+        "Grey Crowned Crane",
+        "tilapia",
+        "shoebill stork",
+        "hippo",
+        "monitor lizard"
+      ]
+    },
+    {
+      "name": "Amuru",
+      "region": "Northern",
+      "places": [
+        "Amuru Town",
+        "Atiak",
+        "Pabbo",
+        "Lamogi",
+        "Koch Goma"
+      ],
+      "localNames": [
+        "Okello",
+        "Akello",
+        "Opio",
+        "Auma",
+        "Otim",
+        "Acen",
+        "Lamwaka"
+      ],
+      "landmarks": [
+        "Atiak Memorial",
+        "Amuru Hospital",
+        "Murchison Falls border"
+      ],
+      "rivers": [
+        "River Aswa",
+        "Albert Nile"
+      ],
+      "foods": [
+        "Malakwang",
+        "millet bread",
+        "simsim paste",
+        "dried fish",
+        "cassava"
+      ],
+      "economy": [
+        "Crop farming",
+        "cattle keeping",
+        "charcoal trade",
+        "market trading"
+      ],
+      "animals": [
+        "Elephant",
+        "hippo",
+        "buffalo",
+        "Nile monitor",
+        "Grey Crowned Crane"
+      ]
+    },
+    {
+      "name": "Apac",
+      "region": "Northern",
+      "places": [
+        "Apac Town",
+        "Ibuje",
+        "Inomo",
+        "Chegere",
+        "Chawente"
+      ],
+      "localNames": [
+        "Okello",
+        "Akello",
+        "Opio",
+        "Auma",
+        "Otim",
+        "Acen"
+      ],
+      "landmarks": [
+        "Apac Hospital",
+        "Apac Market",
+        "Lango plains"
+      ],
+      "rivers": [
+        "Lake Kyoga",
+        "River Moroto"
+      ],
+      "foods": [
+        "Boo (millet bread)",
+        "groundnut sauce",
+        "simsim",
+        "dried fish",
+        "cassava"
+      ],
+      "economy": [
+        "Cotton farming",
+        "crop farming",
+        "cattle keeping",
+        "fishing"
+      ],
+      "animals": [
+        "Grey Crowned Crane",
+        "tilapia",
+        "hippo",
+        "monitor lizard",
+        "marabou stork"
+      ]
+    },
+    {
+      "name": "Arua",
+      "region": "West Nile",
+      "places": [
+        "Arua City",
+        "Pajulu",
+        "Oli River",
+        "Ediofe",
+        "Ayivu",
+        "Rhino Camp"
+      ],
+      "localNames": [
+        "Drani",
+        "Candiru",
+        "Anguzu",
+        "Adrabo",
+        "Onzima",
+        "Driwaru"
+      ],
+      "landmarks": [
+        "Arua Regional Referral Hospital",
+        "Arua Hill",
+        "Arua Park",
+        "Mvara"
+      ],
+      "rivers": [
+        "River Enyau",
+        "River Ora"
+      ],
+      "foods": [
+        "Cassava bread",
+        "dried fish",
+        "groundnuts",
+        "simsim",
+        "beans"
+      ],
+      "economy": [
+        "Tobacco farming",
+        "cassava growing",
+        "cross-border trade",
+        "boda boda"
+      ],
+      "animals": [
+        "White rhino",
+        "warthog",
+        "baboon",
+        "monitor lizard",
+        "fish eagle"
+      ]
+    },
+    {
+      "name": "Budaka",
+      "region": "Eastern",
+      "places": [
+        "Budaka Town",
+        "Iki Iki",
+        "Kaderuna",
+        "Lyama",
+        "Naboa"
+      ],
+      "localNames": [
+        "Wafula",
+        "Nambozo",
+        "Wekesa",
+        "Nabirye",
+        "Masaba",
+        "Wandera"
+      ],
+      "landmarks": [
+        "Budaka Hospital",
+        "Budaka Market",
+        "Mount Elgon foothills"
+      ],
+      "rivers": [
+        "River Sango",
+        "River Kibimba"
+      ],
+      "foods": [
+        "Matooke",
+        "millet bread",
+        "groundnuts",
+        "beans",
+        "cassava"
+      ],
+      "economy": [
+        "Coffee farming",
+        "crop farming",
+        "retail trade",
+        "boda boda"
+      ],
+      "animals": [
+        "Colobus monkey",
+        "forest birds",
+        "monitor lizard",
+        "tilapia"
+      ]
+    },
+    {
+      "name": "Bududa",
+      "region": "Eastern",
+      "places": [
+        "Bududa Town",
+        "Bukalasi",
+        "Bushiyi",
+        "Nalwanza",
+        "Lwakhakha"
+      ],
+      "localNames": [
+        "Wafula",
+        "Nambozo",
+        "Wekesa",
+        "Nabirye",
+        "Masaba",
+        "Wandera"
+      ],
+      "landmarks": [
+        "Mount Elgon slopes",
+        "Bududa Hospital",
+        "Lwakhakha border"
+      ],
+      "rivers": [
+        "River Lwakhakha",
+        "River Manafwa"
+      ],
+      "foods": [
+        "Malewa (bamboo shoots)",
+        "millet bread",
+        "groundnuts",
+        "beans",
+        "matooke"
+      ],
+      "economy": [
+        "Coffee farming",
+        "arabica coffee trade",
+        "landslide-prone crop farming"
+      ],
+      "animals": [
+        "Colobus monkey",
+        "forest elephant",
+        "buffalo",
+        "sunbirds",
+        "leopard"
+      ]
+    },
+    {
+      "name": "Bugiri",
+      "region": "Eastern",
+      "places": [
+        "Bugiri Town",
+        "Budhaya",
+        "Nankoma",
+        "Iwemba",
+        "Muterere"
+      ],
+      "localNames": [
+        "Waiswa",
+        "Nabirye",
+        "Mukhwana",
+        "Nambozo",
+        "Wafula",
+        "Masaba"
+      ],
+      "landmarks": [
+        "Bugiri Hospital",
+        "Bugiri Market",
+        "Lake Victoria shores"
+      ],
+      "rivers": [
+        "Lake Victoria",
+        "River Mpologoma"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "tilapia",
+        "sweet potatoes",
+        "groundnuts"
+      ],
+      "economy": [
+        "Fishing",
+        "sugarcane farming",
+        "retail trade",
+        "boda boda"
+      ],
+      "animals": [
+        "Tilapia",
+        "Nile perch",
+        "monitor lizard",
+        "egrets",
+        "kingfisher"
+      ]
+    },
+    {
+      "name": "Bugweri",
+      "region": "Eastern",
+      "places": [
+        "Bugweri Town",
+        "Ikumbya",
+        "Banda",
+        "Nawanyago",
+        "Idudi"
+      ],
+      "localNames": [
+        "Waiswa",
+        "Nabirye",
+        "Mukhwana",
+        "Nambozo",
+        "Wafula"
+      ],
+      "landmarks": [
+        "Bugweri Hospital",
+        "Bugweri Market",
+        "Busoga region"
+      ],
+      "rivers": [
+        "Lake Victoria",
+        "River Mpologoma"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "sweet potatoes",
+        "groundnuts",
+        "beans"
+      ],
+      "economy": [
+        "Fishing",
+        "crop farming",
+        "retail trade",
+        "boda boda"
+      ],
+      "animals": [
+        "Tilapia",
+        "monitor lizard",
+        "egrets",
+        "weaver birds",
+        "Nile perch"
+      ]
+    },
+    {
+      "name": "Buhweju",
+      "region": "Western",
+      "places": [
+        "Buhweju Town",
+        "Kabwohe",
+        "Ryeru",
+        "Karungu",
+        "Ndeija"
+      ],
+      "localNames": [
+        "Tumuhairwe",
+        "Tusiime",
+        "Mugisha",
+        "Byaruhanga",
+        "Arinaitwe"
+      ],
+      "landmarks": [
+        "Buhweju Hospital",
+        "Lake Mburo nearby",
+        "Ankole hills"
+      ],
+      "rivers": [
+        "River Rwizi"
+      ],
+      "foods": [
+        "Eshabwe (ghee)",
+        "karo (millet bread)",
+        "beef",
+        "milk",
+        "matooke"
+      ],
+      "economy": [
+        "Cattle ranching",
+        "dairy farming",
+        "banana growing",
+        "trade"
+      ],
+      "animals": [
+        "Ankole cattle",
+        "goats",
+        "sheep",
+        "monitor lizard",
+        "cranes"
+      ]
+    },
+    {
+      "name": "Buikwe",
+      "region": "Central",
+      "places": [
+        "Njeru Town",
+        "Lugazi",
+        "Buikwe",
+        "Nkokonjeru",
+        "Wakisi"
+      ],
+      "localNames": [
+        "Mukasa",
+        "Nakato",
+        "Wasswa",
+        "Babirye",
+        "Kato",
+        "Nambi"
+      ],
+      "landmarks": [
+        "Lugazi Sugar Works",
+        "Owen Falls Dam",
+        "Jinja Bridge nearby",
+        "Buikwe Market"
+      ],
+      "rivers": [
+        "River Nile",
+        "Lake Victoria"
+      ],
+      "foods": [
+        "Matooke",
+        "tilapia",
+        "cassava",
+        "groundnut sauce",
+        "sugarcane"
+      ],
+      "economy": [
+        "Sugar industry",
+        "fishing",
+        "retail trade",
+        "manufacturing"
+      ],
+      "animals": [
+        "Nile perch",
+        "tilapia",
+        "hippo",
+        "monitor lizard",
+        "crocodile"
+      ]
+    },
+    {
+      "name": "Bukedea",
+      "region": "Eastern",
+      "places": [
+        "Bukedea Town",
+        "Kachumbala",
+        "Kolir",
+        "Gogonyo",
+        "Kamonkoli"
+      ],
+      "localNames": [
+        "Emong",
+        "Akol",
+        "Egunyu",
+        "Apio",
+        "Amongin",
+        "Okello"
+      ],
+      "landmarks": [
+        "Bukedea Hospital",
+        "Bukedea Market",
+        "Teso plains"
+      ],
+      "rivers": [
+        "Lake Kyoga",
+        "River Akoret"
+      ],
+      "foods": [
+        "Atap (millet bread)",
+        "cassava",
+        "groundnuts",
+        "dried fish",
+        "beans"
+      ],
+      "economy": [
+        "Cattle keeping",
+        "crop farming",
+        "sorghum growing",
+        "market trade"
+      ],
+      "animals": [
+        "Grey Crowned Crane",
+        "tilapia",
+        "monitor lizard",
+        "egrets",
+        "marabou stork"
+      ]
+    },
+    {
+      "name": "Bukomansimbi",
+      "region": "Central",
+      "places": [
+        "Bukomansimbi Town",
+        "Bigasa",
+        "Kibinge",
+        "Kitanda",
+        "Gombe"
+      ],
+      "localNames": [
+        "Mukasa",
+        "Nakato",
+        "Wasswa",
+        "Nambi",
+        "Kato",
+        "Babirye"
+      ],
+      "landmarks": [
+        "Bukomansimbi Hospital",
+        "Bukomansimbi Market",
+        "Masaka hills"
+      ],
+      "rivers": [
+        "River Lwera"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "sweet potatoes",
+        "groundnuts",
+        "beans"
+      ],
+      "economy": [
+        "Coffee growing",
+        "banana farming",
+        "retail trade",
+        "boda boda"
+      ],
+      "animals": [
+        "Monitor lizard",
+        "egrets",
+        "weaver birds",
+        "vervet monkey"
+      ]
+    },
+    {
+      "name": "Bukwo",
+      "region": "Eastern",
+      "places": [
+        "Bukwo Town",
+        "Suam",
+        "Chesower",
+        "Kaptolomei",
+        "Riwo"
+      ],
+      "localNames": [
+        "Chebet",
+        "Kiplangat",
+        "Cheptoek",
+        "Lokol",
+        "Chemutai"
+      ],
+      "landmarks": [
+        "Mount Elgon peak",
+        "Bukwo Hospital",
+        "Suam border",
+        "Sipi area"
+      ],
+      "rivers": [
+        "River Suam",
+        "River Bukwo"
+      ],
+      "foods": [
+        "Millet bread",
+        "dried meat",
+        "beans",
+        "maize",
+        "sweet potatoes"
+      ],
+      "economy": [
+        "Coffee farming",
+        "pyrethrum growing",
+        "livestock keeping",
+        "cross-border trade"
+      ],
+      "animals": [
+        "Forest elephant",
+        "buffalo",
+        "leopard",
+        "colobus monkey",
+        "sunbirds"
+      ]
+    },
+    {
+      "name": "Bulambuli",
+      "region": "Eastern",
+      "places": [
+        "Bulambuli Town",
+        "Bulegeni",
+        "Simu",
+        "Namatsi",
+        "Lusha"
+      ],
+      "localNames": [
+        "Wafula",
+        "Nambozo",
+        "Wekesa",
+        "Nabirye",
+        "Masaba"
+      ],
+      "landmarks": [
+        "Sipi Falls nearby",
+        "Mount Elgon foothills",
+        "Bulambuli Hospital"
+      ],
+      "rivers": [
+        "River Sironko",
+        "River Bukwa"
+      ],
+      "foods": [
+        "Malewa (bamboo shoots)",
+        "millet bread",
+        "beans",
+        "groundnuts",
+        "maize"
+      ],
+      "economy": [
+        "Arabica coffee",
+        "crop farming",
+        "tourism",
+        "retail"
+      ],
+      "animals": [
+        "Colobus monkey",
+        "forest birds",
+        "buffalo",
+        "leopard",
+        "sunbirds"
+      ]
+    },
+    {
+      "name": "Bunyangabu",
+      "region": "Western",
+      "places": [
+        "Bunyangabu Town",
+        "Kibiito",
+        "Karangura",
+        "Butuntumula",
+        "Rwimi"
+      ],
+      "localNames": [
+        "Baluku",
+        "Mbambu",
+        "Bwambale",
+        "Masika",
+        "Kabugho"
+      ],
+      "landmarks": [
+        "Rwenzori foothills",
+        "Bunyangabu Hospital",
+        "Fort Portal nearby"
+      ],
+      "rivers": [
+        "River Rwimi",
+        "River Mpanga"
+      ],
+      "foods": [
+        "Matooke",
+        "groundnuts",
+        "beans",
+        "sweet potatoes",
+        "cassava"
+      ],
+      "economy": [
+        "Tea farming",
+        "banana growing",
+        "crop farming",
+        "retail"
+      ],
+      "animals": [
+        "Chimpanzee",
+        "colobus monkey",
+        "forest elephant",
+        "leopard",
+        "sunbirds"
+      ]
+    },
+    {
+      "name": "Bunyoro",
+      "region": "Western",
+      "places": [
+        "Hoima area",
+        "Masindi area",
+        "Kiryandongo area",
+        "Kikuube area"
+      ],
+      "localNames": [
+        "Byaruhanga",
+        "Tumuhairwe",
+        "Mugisha",
+        "Tusiime",
+        "Arinaitwe"
+      ],
+      "landmarks": [
+        "Bunyoro Kingdom",
+        "Oil fields",
+        "Murchison Falls nearby",
+        "Kabalega Falls"
+      ],
+      "rivers": [
+        "Lake Albert",
+        "Victoria Nile",
+        "River Kafu"
+      ],
+      "foods": [
+        "Matooke",
+        "millet bread",
+        "fish",
+        "groundnuts",
+        "cassava"
+      ],
+      "economy": [
+        "Oil industry",
+        "fishing",
+        "tobacco farming",
+        "banana growing"
+      ],
+      "animals": [
+        "Nile perch",
+        "hippo",
+        "crocodile",
+        "elephant",
+        "shoebill stork"
+      ]
+    },
+    {
+      "name": "Bushenyi",
+      "region": "Western",
+      "places": [
+        "Bushenyi Town",
+        "Ishaka",
+        "Kyeizooba",
+        "Nyakabirizi",
+        "Kakanju"
+      ],
+      "localNames": [
+        "Tumuhairwe",
+        "Tusiime",
+        "Mugisha",
+        "Byaruhanga",
+        "Arinaitwe"
+      ],
+      "landmarks": [
+        "Ishaka Adventist Hospital",
+        "Bushenyi Market",
+        "Tea estates"
+      ],
+      "rivers": [
+        "River Ruizi"
+      ],
+      "foods": [
+        "Matooke",
+        "beans",
+        "Irish potatoes",
+        "cassava",
+        "groundnuts"
+      ],
+      "economy": [
+        "Tea farming",
+        "banana growing",
+        "dairy farming",
+        "retail"
+      ],
+      "animals": [
+        "Ankole cattle",
+        "goats",
+        "chickens",
+        "monitor lizard",
+        "forest birds"
+      ]
+    },
+    {
+      "name": "Busia",
+      "region": "Eastern",
+      "places": [
+        "Busia Town",
+        "Masafu",
+        "Lumino",
+        "Dabani",
+        "Butebo"
+      ],
+      "localNames": [
+        "Wafula",
+        "Nambozo",
+        "Wekesa",
+        "Nabirye",
+        "Masaba",
+        "Wandera"
+      ],
+      "landmarks": [
+        "Busia Border Post",
+        "Busia Market",
+        "Busia Hospital"
+      ],
+      "rivers": [
+        "River Sio",
+        "River Malaba"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "groundnuts",
+        "beans",
+        "sweet potatoes"
+      ],
+      "economy": [
+        "Cross-border trade",
+        "fishing",
+        "retail",
+        "crop farming"
+      ],
+      "animals": [
+        "Tilapia",
+        "monitor lizard",
+        "egrets",
+        "weaver birds",
+        "kingfisher"
+      ]
+    },
+    {
+      "name": "Butaleja",
+      "region": "Eastern",
+      "places": [
+        "Butaleja Town",
+        "Busolwe",
+        "Nabiganda",
+        "Kachonga",
+        "Mazuba"
+      ],
+      "localNames": [
+        "Wafula",
+        "Nambozo",
+        "Wekesa",
+        "Nabirye",
+        "Masaba",
+        "Wandera"
+      ],
+      "landmarks": [
+        "Butaleja Hospital",
+        "Butaleja Market",
+        "Doho Rice Scheme"
+      ],
+      "rivers": [
+        "River Mpologoma",
+        "River Kibimba"
+      ],
+      "foods": [
+        "Matooke",
+        "rice",
+        "cassava",
+        "groundnuts",
+        "beans"
+      ],
+      "economy": [
+        "Rice farming",
+        "crop farming",
+        "retail trade",
+        "boda boda"
+      ],
+      "animals": [
+        "Monitor lizard",
+        "tilapia",
+        "egrets",
+        "weaver birds",
+        "hippo"
+      ]
+    },
+    {
+      "name": "Butebo",
+      "region": "Eastern",
+      "places": [
+        "Butebo Town",
+        "Kachonga",
+        "Naboa",
+        "Timu",
+        "Kabwangasi"
+      ],
+      "localNames": [
+        "Wafula",
+        "Nambozo",
+        "Wekesa",
+        "Nabirye",
+        "Masaba"
+      ],
+      "landmarks": [
+        "Butebo Hospital",
+        "Butebo Market",
+        "Teso-Bugisu border area"
+      ],
+      "rivers": [
+        "River Sio",
+        "River Kibimba"
+      ],
+      "foods": [
+        "Matooke",
+        "millet bread",
+        "groundnuts",
+        "beans",
+        "cassava"
+      ],
+      "economy": [
+        "Crop farming",
+        "retail trade",
+        "boda boda",
+        "charcoal trade"
+      ],
+      "animals": [
+        "Monitor lizard",
+        "weaver birds",
+        "egrets",
+        "tilapia"
+      ]
+    },
+    {
+      "name": "Buyende",
+      "region": "Eastern",
+      "places": [
+        "Buyende Town",
+        "Kagulu",
+        "Nkondo",
+        "Kibuye",
+        "Buwaiswa"
+      ],
+      "localNames": [
+        "Waiswa",
+        "Nabirye",
+        "Mukhwana",
+        "Nambozo",
+        "Wafula"
+      ],
+      "landmarks": [
+        "Buyende Hospital",
+        "Buyende Market",
+        "Lake Kyoga shores"
+      ],
+      "rivers": [
+        "Lake Kyoga",
+        "River Mpologoma"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "tilapia",
+        "sweet potatoes",
+        "groundnuts"
+      ],
+      "economy": [
+        "Fishing",
+        "crop farming",
+        "retail trade",
+        "boda boda"
+      ],
+      "animals": [
+        "Tilapia",
+        "Nile perch",
+        "hippo",
+        "shoebill stork",
+        "egrets"
+      ]
+    },
+    {
+      "name": "Dokolo",
+      "region": "Northern",
+      "places": [
+        "Dokolo Town",
+        "Batta",
+        "Kangai",
+        "Teoch",
+        "Adok"
+      ],
+      "localNames": [
+        "Okello",
+        "Akello",
+        "Opio",
+        "Auma",
+        "Otim",
+        "Acen"
+      ],
+      "landmarks": [
+        "Dokolo Hospital",
+        "Dokolo Market",
+        "Lango plains"
+      ],
+      "rivers": [
+        "Lake Kwania",
+        "River Moroto"
+      ],
+      "foods": [
+        "Boo (millet bread)",
+        "simsim paste",
+        "groundnut sauce",
+        "dried fish",
+        "cassava"
+      ],
+      "economy": [
+        "Cotton farming",
+        "cattle keeping",
+        "fishing",
+        "market trading"
+      ],
+      "animals": [
+        "Grey Crowned Crane",
+        "tilapia",
+        "hippo",
+        "marabou stork",
+        "monitor lizard"
+      ]
+    },
+    {
+      "name": "Fortportal",
+      "region": "Western",
+      "places": [
+        "Fort Portal City",
+        "Kabarole",
+        "Bundibugyo",
+        "Kasese Road",
+        "Boma"
+      ],
+      "localNames": [
+        "Baluku",
+        "Mbambu",
+        "Bwambale",
+        "Masika",
+        "Kabugho",
+        "Thembo"
+      ],
+      "landmarks": [
+        "Tooro Kingdom Palace",
+        "Crater Lakes",
+        "Rwenzori Mountains",
+        "Amabere Caves"
+      ],
+      "rivers": [
+        "Lake George",
+        "Lake Edward",
+        "Mpanga River"
+      ],
+      "foods": [
+        "Matooke",
+        "groundnuts",
+        "beans",
+        "sweet potatoes",
+        "cassava"
+      ],
+      "economy": [
+        "Tea farming",
+        "tourism",
+        "banana growing",
+        "vanilla farming"
+      ],
+      "animals": [
+        "Chimpanzee",
+        "forest elephant",
+        "leopard",
+        "red colobus",
+        "crater lake fish"
+      ]
+    },
+    {
+      "name": "Gomba",
+      "region": "Central",
+      "places": [
+        "Gomba Town",
+        "Mpigi Road",
+        "Kabulasoke",
+        "Maddu",
+        "Kanoni"
+      ],
+      "localNames": [
+        "Mukasa",
+        "Nakato",
+        "Wasswa",
+        "Nambi",
+        "Kato",
+        "Babirye"
+      ],
+      "landmarks": [
+        "Gomba Hospital",
+        "Gomba Market",
+        "Sango Bay area"
+      ],
+      "rivers": [
+        "River Katonga",
+        "Lake Victoria"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "sweet potatoes",
+        "groundnuts",
+        "beans"
+      ],
+      "economy": [
+        "Banana farming",
+        "coffee growing",
+        "retail trade",
+        "boda boda"
+      ],
+      "animals": [
+        "Monitor lizard",
+        "egrets",
+        "weaver birds",
+        "vervet monkey",
+        "tilapia"
+      ]
+    },
+    {
+      "name": "Gulu",
+      "region": "Northern",
+      "places": [
+        "Gulu City",
+        "Lacor",
+        "Layibi",
+        "Laroo",
+        "Awach",
+        "Unyama",
+        "Pece",
+        "Kaunda Road"
+      ],
+      "localNames": [
+        "Okello",
+        "Akello",
+        "Odong",
+        "Achen",
+        "Ojok",
+        "Lamwaka",
+        "Opiyo",
+        "Adong"
+      ],
+      "landmarks": [
+        "Gulu University",
+        "Lacor Hospital",
+        "Gulu Main Market",
+        "Pece Stadium",
+        "St. Joseph's College"
+      ],
+      "rivers": [
+        "River Unyama",
+        "River Aswa"
+      ],
+      "foods": [
+        "Malakwang",
+        "lacede",
+        "yam",
+        "sorghum bread",
+        "simsim paste",
+        "dried fish"
+      ],
+      "economy": [
+        "Crop farming",
+        "cattle keeping",
+        "boda boda transport",
+        "market trading",
+        "NGO sector"
+      ],
+      "animals": [
+        "Nile monitor",
+        "hippo",
+        "marabou stork",
+        "tilapia",
+        "Grey Crowned Crane"
+      ]
+    },
+    {
+      "name": "Hoima",
+      "region": "Western",
+      "places": [
+        "Hoima City",
+        "Kigorobya",
+        "Bugambe",
+        "Kyangwali",
+        "Buseruka"
+      ],
+      "localNames": [
+        "Byaruhanga",
+        "Tumuhairwe",
+        "Mugisha",
+        "Tusiime",
+        "Arinaitwe"
+      ],
+      "landmarks": [
+        "Bunyoro Kingdom Palace",
+        "Hoima Cathedral",
+        "Oil fields",
+        "Kabalega Falls"
+      ],
+      "rivers": [
+        "Lake Albert",
+        "River Kafu",
+        "Victoria Nile"
+      ],
+      "foods": [
+        "Matooke",
+        "millet bread",
+        "fish",
+        "groundnuts",
+        "cassava"
+      ],
+      "economy": [
+        "Oil industry",
+        "fishing",
+        "tobacco farming",
+        "banana growing",
+        "trade"
+      ],
+      "animals": [
+        "Nile perch",
+        "tilapia",
+        "hippo",
+        "crocodile",
+        "shoebill stork"
+      ]
+    },
+    {
+      "name": "Ibanda",
+      "region": "Western",
+      "places": [
+        "Ibanda Town",
+        "Ishongororo",
+        "Nyabirongo",
+        "Keihangara",
+        "Kagongo"
+      ],
+      "localNames": [
+        "Tumuhairwe",
+        "Tusiime",
+        "Mugisha",
+        "Byaruhanga",
+        "Arinaitwe"
+      ],
+      "landmarks": [
+        "Ibanda Hospital",
+        "Ibanda Market",
+        "Ankole hills"
+      ],
+      "rivers": [
+        "River Rwizi"
+      ],
+      "foods": [
+        "Eshabwe (ghee)",
+        "karo (millet bread)",
+        "beef",
+        "milk",
+        "matooke"
+      ],
+      "economy": [
+        "Cattle ranching",
+        "dairy farming",
+        "banana growing",
+        "trade"
+      ],
+      "animals": [
+        "Ankole cattle",
+        "goats",
+        "sheep",
+        "monitor lizard",
+        "cranes"
+      ]
+    },
+    {
+      "name": "Iganga",
+      "region": "Eastern",
+      "places": [
+        "Iganga Town",
+        "Namungalwe",
+        "Bugiri Road",
+        "Busembatia",
+        "Kaliro"
+      ],
+      "localNames": [
+        "Waiswa",
+        "Nabirye",
+        "Mukhwana",
+        "Nambozo",
+        "Wafula"
+      ],
+      "landmarks": [
+        "Iganga Hospital",
+        "Iganga Market",
+        "Busoga University"
+      ],
+      "rivers": [
+        "River Mpologoma",
+        "Lake Kyoga"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "sweet potatoes",
+        "groundnuts",
+        "beans"
+      ],
+      "economy": [
+        "Sugarcane farming",
+        "fishing",
+        "retail trade",
+        "boda boda"
+      ],
+      "animals": [
+        "Tilapia",
+        "Nile perch",
+        "monitor lizard",
+        "egrets",
+        "weaver birds"
+      ]
+    },
+    {
+      "name": "Isingiro",
+      "region": "Western",
+      "places": [
+        "Isingiro Town",
+        "Mbarara Road",
+        "Rugaaga",
+        "Ngarama",
+        "Kabuyanda"
+      ],
+      "localNames": [
+        "Tumuhairwe",
+        "Tusiime",
+        "Mugisha",
+        "Byaruhanga",
+        "Mwesigwa"
+      ],
+      "landmarks": [
+        "Isingiro Hospital",
+        "Isingiro Market",
+        "Ankole cattle ranches"
+      ],
+      "rivers": [
+        "River Kagera"
+      ],
+      "foods": [
+        "Eshabwe (ghee)",
+        "karo",
+        "beef",
+        "milk",
+        "beans"
+      ],
+      "economy": [
+        "Cattle ranching",
+        "dairy farming",
+        "crop farming",
+        "trade"
+      ],
+      "animals": [
+        "Ankole cattle",
+        "impala",
+        "zebra",
+        "monitor lizard",
+        "cranes"
+      ]
+    },
+    {
+      "name": "Jinja",
+      "region": "Eastern",
+      "places": [
+        "Jinja City",
+        "Bugembe",
+        "Walukuba",
+        "Masese",
+        "Budondo",
+        "Kakira"
+      ],
+      "localNames": [
+        "Waiswa",
+        "Nabirye",
+        "Mukhwana",
+        "Nambozo",
+        "Wafula",
+        "Masaba"
+      ],
+      "landmarks": [
+        "Source of the Nile",
+        "Bujagali Falls",
+        "Jinja Bridge",
+        "Kakira Sugar Works"
+      ],
+      "rivers": [
+        "River Nile",
+        "Lake Victoria"
+      ],
+      "foods": [
+        "Nile perch",
+        "tilapia",
+        "cassava",
+        "matooke",
+        "sugarcane"
+      ],
+      "economy": [
+        "Sugar industry",
+        "fishing",
+        "tourism",
+        "manufacturing",
+        "boda boda"
+      ],
+      "animals": [
+        "Nile perch",
+        "tilapia",
+        "monitor lizard",
+        "hippo",
+        "crocodile"
+      ]
+    },
+    {
+      "name": "Kaabong",
+      "region": "Northern",
+      "places": [
+        "Kaabong Town",
+        "Kathile",
+        "Sidok",
+        "Loyoro",
+        "Lobalangit"
+      ],
+      "localNames": [
+        "Lokwang",
+        "Logwee",
+        "Nachom",
+        "Lopak",
+        "Abura"
+      ],
+      "landmarks": [
+        "Kidepo Valley National Park",
+        "Kaabong Hospital",
+        "Morungole Mountain"
+      ],
+      "rivers": [
+        "River Kidepo",
+        "River Narus"
+      ],
+      "foods": [
+        "Dried meat",
+        "millet bread",
+        "sorghum",
+        "wild tubers",
+        "groundnuts"
+      ],
+      "economy": [
+        "Cattle herding",
+        "subsistence farming",
+        "tourism",
+        "honey production"
+      ],
+      "animals": [
+        "Lion",
+        "cheetah",
+        "elephant",
+        "giraffe",
+        "ostrich",
+        "eland"
+      ]
+    },
+    {
+      "name": "Kabale",
+      "region": "Western",
+      "places": [
+        "Kabale Town",
+        "Rubanda",
+        "Hamurwa",
+        "Kitumba",
+        "Maziba",
+        "Bubare"
+      ],
+      "localNames": [
+        "Tumusiime",
+        "Arinaitwe",
+        "Twinomuhangi",
+        "Muhwezi",
+        "Turyatemba",
+        "Byaruhanga"
+      ],
+      "landmarks": [
+        "Lake Bunyonyi",
+        "Bwindi Impenetrable Forest",
+        "Kabale University",
+        "Kabale Hospital"
+      ],
+      "rivers": [
+        "Lake Bunyonyi",
+        "Lake Mutanda"
+      ],
+      "foods": [
+        "Irish potatoes",
+        "beans",
+        "peas",
+        "sorghum",
+        "millet bread",
+        "sweet potatoes"
+      ],
+      "economy": [
+        "Terraced farming",
+        "tourism",
+        "Irish potato trade",
+        "handicrafts",
+        "tea growing"
+      ],
+      "animals": [
+        "Mountain gorilla",
+        "golden monkey",
+        "chameleon",
+        "forest birds",
+        "otters"
+      ]
+    },
+    {
+      "name": "Kabarole",
+      "region": "Western",
+      "places": [
+        "Fort Portal City",
+        "Kabarole",
+        "Kichwamba",
+        "Buheesi",
+        "Mugusu"
+      ],
+      "localNames": [
+        "Baluku",
+        "Mbambu",
+        "Bwambale",
+        "Masika",
+        "Kabugho"
+      ],
+      "landmarks": [
+        "Tooro Kingdom Palace",
+        "Crater Lakes",
+        "Rwenzori Mountains",
+        "Amabere Caves"
+      ],
+      "rivers": [
+        "Lake George",
+        "Mpanga River"
+      ],
+      "foods": [
+        "Matooke",
+        "groundnuts",
+        "beans",
+        "sweet potatoes",
+        "cassava"
+      ],
+      "economy": [
+        "Tea farming",
+        "tourism",
+        "banana growing",
+        "vanilla farming"
+      ],
+      "animals": [
+        "Chimpanzee",
+        "forest elephant",
+        "leopard",
+        "red colobus",
+        "sunbirds"
+      ]
+    },
+    {
+      "name": "Kaberamaido",
+      "region": "Eastern",
+      "places": [
+        "Kaberamaido Town",
+        "Ochero",
+        "Bululu",
+        "Alwa",
+        "Kalaki"
+      ],
+      "localNames": [
+        "Emong",
+        "Akol",
+        "Egunyu",
+        "Apio",
+        "Amongin"
+      ],
+      "landmarks": [
+        "Kaberamaido Hospital",
+        "Kaberamaido Market",
+        "Lake Kyoga shores"
+      ],
+      "rivers": [
+        "Lake Kyoga",
+        "River Mpologoma"
+      ],
+      "foods": [
+        "Atap (millet bread)",
+        "cassava",
+        "dried fish",
+        "groundnuts",
+        "beans"
+      ],
+      "economy": [
+        "Fishing",
+        "cattle keeping",
+        "crop farming",
+        "market trade"
+      ],
+      "animals": [
+        "Tilapia",
+        "hippo",
+        "shoebill stork",
+        "Grey Crowned Crane",
+        "monitor lizard"
+      ]
+    },
+    {
+      "name": "Kagadi",
+      "region": "Western",
+      "places": [
+        "Kagadi Town",
+        "Muhorro",
+        "Buyanja",
+        "Kibaale Road",
+        "Nkooko"
+      ],
+      "localNames": [
+        "Byaruhanga",
+        "Tumuhairwe",
+        "Mugisha",
+        "Tusiime",
+        "Arinaitwe"
+      ],
+      "landmarks": [
+        "Kagadi Hospital",
+        "Kagadi Market",
+        "Bunyoro plains"
+      ],
+      "rivers": [
+        "River Kafu",
+        "River Kagadi"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "groundnuts",
+        "beans",
+        "sweet potatoes"
+      ],
+      "economy": [
+        "Tobacco farming",
+        "crop farming",
+        "retail trade",
+        "boda boda"
+      ],
+      "animals": [
+        "Monitor lizard",
+        "hippo",
+        "crocodile",
+        "egrets",
+        "shoebill stork"
+      ]
+    },
+    {
+      "name": "Kakumiro",
+      "region": "Western",
+      "places": [
+        "Kakumiro Town",
+        "Mpeefu",
+        "Kigorobya Road",
+        "Kasambya",
+        "Muhorro"
+      ],
+      "localNames": [
+        "Byaruhanga",
+        "Tumuhairwe",
+        "Mugisha",
+        "Tusiime",
+        "Ssali"
+      ],
+      "landmarks": [
+        "Kakumiro Hospital",
+        "Kakumiro Market",
+        "Bunyoro region"
+      ],
+      "rivers": [
+        "River Kafu"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "groundnuts",
+        "beans",
+        "sweet potatoes"
+      ],
+      "economy": [
+        "Crop farming",
+        "retail trade",
+        "boda boda",
+        "charcoal trade"
+      ],
+      "animals": [
+        "Monitor lizard",
+        "egrets",
+        "weaver birds",
+        "hippo"
+      ]
+    },
+    {
+      "name": "Kalaki",
+      "region": "Eastern",
+      "places": [
+        "Kalaki Town",
+        "Asuret",
+        "Alwa",
+        "Kaberamaido Road",
+        "Nabitende"
+      ],
+      "localNames": [
+        "Emong",
+        "Akol",
+        "Egunyu",
+        "Apio",
+        "Amongin"
+      ],
+      "landmarks": [
+        "Kalaki Hospital",
+        "Kalaki Market",
+        "Lake Kyoga nearby"
+      ],
+      "rivers": [
+        "Lake Kyoga",
+        "River Mpologoma"
+      ],
+      "foods": [
+        "Atap (millet bread)",
+        "cassava",
+        "groundnuts",
+        "dried fish",
+        "beans"
+      ],
+      "economy": [
+        "Fishing",
+        "cattle keeping",
+        "crop farming",
+        "market trade"
+      ],
+      "animals": [
+        "Tilapia",
+        "hippo",
+        "shoebill stork",
+        "monitor lizard",
+        "egrets"
+      ]
+    },
+    {
+      "name": "Kalangala",
+      "region": "Central",
+      "places": [
+        "Kalangala Town",
+        "Buggala Island",
+        "Luku",
+        "Mugoye",
+        "Bujumba"
+      ],
+      "localNames": [
+        "Mukasa",
+        "Nakato",
+        "Wasswa",
+        "Nambi",
+        "Kato",
+        "Babirye"
+      ],
+      "landmarks": [
+        "Ssese Islands",
+        "Kalangala Beach",
+        "Lake Victoria shores",
+        "Palm oil plantations"
+      ],
+      "rivers": [
+        "Lake Victoria"
+      ],
+      "foods": [
+        "Tilapia",
+        "Nile perch",
+        "cassava",
+        "matooke",
+        "coconut"
+      ],
+      "economy": [
+        "Fishing",
+        "palm oil farming",
+        "tourism",
+        "boat transport"
+      ],
+      "animals": [
+        "Tilapia",
+        "Nile perch",
+        "monitor lizard",
+        "vervet monkey",
+        "kingfisher"
+      ]
+    },
+    {
+      "name": "Kaliro",
+      "region": "Eastern",
+      "places": [
+        "Kaliro Town",
+        "Namwiwa",
+        "Nawansega",
+        "Buyinja",
+        "Gadumire"
+      ],
+      "localNames": [
+        "Waiswa",
+        "Nabirye",
+        "Mukhwana",
+        "Nambozo",
+        "Wafula"
+      ],
+      "landmarks": [
+        "Kaliro Hospital",
+        "Kaliro Market",
+        "Busoga plains"
+      ],
+      "rivers": [
+        "Lake Kyoga",
+        "River Mpologoma"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "sweet potatoes",
+        "groundnuts",
+        "beans"
+      ],
+      "economy": [
+        "Sugarcane farming",
+        "crop farming",
+        "retail trade",
+        "boda boda"
+      ],
+      "animals": [
+        "Tilapia",
+        "monitor lizard",
+        "egrets",
+        "weaver birds",
+        "hippo"
+      ]
+    },
+    {
+      "name": "Kalungu",
+      "region": "Central",
+      "places": [
+        "Kalungu Town",
+        "Bukulula",
+        "Lwabenge",
+        "Kibinge",
+        "Kyanamukaaka"
+      ],
+      "localNames": [
+        "Mukasa",
+        "Nakato",
+        "Wasswa",
+        "Nambi",
+        "Kato",
+        "Ssali"
+      ],
+      "landmarks": [
+        "Kalungu Hospital",
+        "Kalungu Market",
+        "Lake Victoria nearby"
+      ],
+      "rivers": [
+        "Lake Victoria",
+        "River Lwera"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "groundnuts",
+        "tilapia",
+        "sweet potatoes"
+      ],
+      "economy": [
+        "Coffee growing",
+        "banana farming",
+        "fishing",
+        "retail"
+      ],
+      "animals": [
+        "Tilapia",
+        "monitor lizard",
+        "egrets",
+        "vervet monkey",
+        "kingfisher"
+      ]
+    },
+    {
+      "name": "Kampala",
+      "region": "Central",
+      "places": [
+        "Kampala City",
+        "Nakasero",
+        "Kololo",
+        "Wandegeya",
+        "Makerere",
+        "Ntinda",
+        "Bugolobi",
+        "Kabalagala"
+      ],
+      "localNames": [
+        "Mukasa",
+        "Nakato",
+        "Babirye",
+        "Wasswa",
+        "Nambi",
+        "Kato",
+        "Ssali",
+        "Namusoke"
+      ],
+      "landmarks": [
+        "Makerere University",
+        "Kampala Capital City Authority",
+        "Nakasero Market",
+        "Uganda Museum",
+        "Kasubi Tombs"
+      ],
+      "rivers": [
+        "Lake Victoria"
+      ],
+      "foods": [
+        "Matooke",
+        "luwombo",
+        "rolex",
+        "muchomo",
+        "katogo",
+        "groundnut sauce"
+      ],
+      "economy": [
+        "Banking",
+        "IT services",
+        "retail",
+        "boda boda",
+        "street vending",
+        "government jobs"
+      ],
+      "animals": [
+        "Marabou stork",
+        "monitor lizard",
+        "tilapia",
+        "Nile perch",
+        "egrets"
+      ]
+    },
+    {
+      "name": "Kamuli",
+      "region": "Eastern",
+      "places": [
+        "Kamuli Town",
+        "Butansi",
+        "Namwendwa",
+        "Namasagali",
+        "Bugeywa"
+      ],
+      "localNames": [
+        "Waiswa",
+        "Nabirye",
+        "Mukhwana",
+        "Nambozo",
+        "Wafula"
+      ],
+      "landmarks": [
+        "Kamuli Hospital",
+        "Kamuli Market",
+        "Namasagali College"
+      ],
+      "rivers": [
+        "Lake Kyoga",
+        "River Nile"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "tilapia",
+        "sweet potatoes",
+        "groundnuts"
+      ],
+      "economy": [
+        "Sugarcane farming",
+        "fishing",
+        "crop farming",
+        "retail"
+      ],
+      "animals": [
+        "Tilapia",
+        "Nile perch",
+        "hippo",
+        "monitor lizard",
+        "egrets"
+      ]
+    },
+    {
+      "name": "Kamwenge",
+      "region": "Western",
+      "places": [
+        "Kamwenge Town",
+        "Kibale",
+        "Rwebisengo",
+        "Nkoma",
+        "Mahyoro"
+      ],
+      "localNames": [
+        "Baluku",
+        "Mbambu",
+        "Bwambale",
+        "Masika",
+        "Tumuhairwe"
+      ],
+      "landmarks": [
+        "Kibale National Park",
+        "Kamwenge Hospital",
+        "Kamwenge Market"
+      ],
+      "rivers": [
+        "River Mpanga",
+        "Lake George nearby"
+      ],
+      "foods": [
+        "Matooke",
+        "groundnuts",
+        "beans",
+        "sweet potatoes",
+        "cassava"
+      ],
+      "economy": [
+        "Tea farming",
+        "tourism",
+        "crop farming",
+        "retail"
+      ],
+      "animals": [
+        "Chimpanzee",
+        "red colobus",
+        "forest elephant",
+        "leopard",
+        "L'Hoest's monkey"
+      ]
+    },
+    {
+      "name": "Kanungu",
+      "region": "Western",
+      "places": [
+        "Kanungu Town",
+        "Kihihi",
+        "Rugyeyo",
+        "Butogota",
+        "Mpungu"
+      ],
+      "localNames": [
+        "Tumusiime",
+        "Arinaitwe",
+        "Twinomuhangi",
+        "Muhwezi",
+        "Byaruhanga"
+      ],
+      "landmarks": [
+        "Bwindi Impenetrable Forest border",
+        "Kanungu Hospital",
+        "Ishasha plains"
+      ],
+      "rivers": [
+        "River Ishasha",
+        "River Kiyanja"
+      ],
+      "foods": [
+        "Matooke",
+        "Irish potatoes",
+        "beans",
+        "sorghum",
+        "groundnuts"
+      ],
+      "economy": [
+        "Tourism",
+        "coffee growing",
+        "banana farming",
+        "crop farming"
+      ],
+      "animals": [
+        "Mountain gorilla",
+        "tree-climbing lion",
+        "hippo",
+        "elephant",
+        "golden monkey"
+      ]
+    },
+    {
+      "name": "Kapchorwa",
+      "region": "Eastern",
+      "places": [
+        "Kapchorwa Town",
+        "Tegeres",
+        "Kapteret",
+        "Kongasis",
+        "Benet"
+      ],
+      "localNames": [
+        "Chebet",
+        "Kiplangat",
+        "Cheptoek",
+        "Chemutai",
+        "Lokol"
+      ],
+      "landmarks": [
+        "Sipi Falls",
+        "Mount Elgon",
+        "Kapchorwa Hospital",
+        "Coffee estates"
+      ],
+      "rivers": [
+        "River Suam",
+        "River Sipi"
+      ],
+      "foods": [
+        "Millet bread",
+        "beans",
+        "maize",
+        "Irish potatoes",
+        "dried meat"
+      ],
+      "economy": [
+        "Arabica coffee",
+        "pyrethrum farming",
+        "tourism",
+        "cross-border trade"
+      ],
+      "animals": [
+        "Forest elephant",
+        "buffalo",
+        "colobus monkey",
+        "leopard",
+        "sunbirds"
+      ]
+    },
+    {
+      "name": "Kapelebyong",
+      "region": "Eastern",
+      "places": [
+        "Kapelebyong Town",
+        "Asuret",
+        "Wera",
+        "Kapelebyong Sub-county"
+      ],
+      "localNames": [
+        "Emong",
+        "Akol",
+        "Egunyu",
+        "Apio",
+        "Amongin"
+      ],
+      "landmarks": [
+        "Kapelebyong Hospital",
+        "Kapelebyong Market",
+        "Teso plains"
+      ],
+      "rivers": [
+        "Lake Kyoga",
+        "River Okere"
+      ],
+      "foods": [
+        "Atap (millet bread)",
+        "cassava",
+        "groundnuts",
+        "dried fish",
+        "beans"
+      ],
+      "economy": [
+        "Cattle keeping",
+        "fishing",
+        "crop farming",
+        "market trade"
+      ],
+      "animals": [
+        "Tilapia",
+        "hippo",
+        "Grey Crowned Crane",
+        "shoebill stork",
+        "monitor lizard"
+      ]
+    },
+    {
+      "name": "Karenga",
+      "region": "Northern",
+      "places": [
+        "Karenga Town",
+        "Kaabong Road",
+        "Lobalangit",
+        "Timu",
+        "Wara"
+      ],
+      "localNames": [
+        "Lokwang",
+        "Logwee",
+        "Nachom",
+        "Lopak",
+        "Abura"
+      ],
+      "landmarks": [
+        "Karenga Hospital",
+        "Karenga Market",
+        "Timu Forest",
+        "Kidepo border"
+      ],
+      "rivers": [
+        "River Kidepo",
+        "River Narus"
+      ],
+      "foods": [
+        "Dried meat",
+        "millet bread",
+        "sorghum",
+        "wild vegetables",
+        "groundnuts"
+      ],
+      "economy": [
+        "Cattle herding",
+        "subsistence farming",
+        "honey production",
+        "tourism"
+      ],
+      "animals": [
+        "Lion",
+        "elephant",
+        "giraffe",
+        "eland",
+        "cheetah"
+      ]
+    },
+    {
+      "name": "Kasanda",
+      "region": "Central",
+      "places": [
+        "Kasanda Town",
+        "Mubende Road",
+        "Kiganda",
+        "Kalwana",
+        "Butoloogo"
+      ],
+      "localNames": [
+        "Mukasa",
+        "Nakato",
+        "Wasswa",
+        "Nambi",
+        "Kato"
+      ],
+      "landmarks": [
+        "Kasanda Hospital",
+        "Kasanda Market",
+        "Mubende area"
+      ],
+      "rivers": [
+        "River Katonga"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "sweet potatoes",
+        "groundnuts",
+        "beans"
+      ],
+      "economy": [
+        "Coffee growing",
+        "banana farming",
+        "crop farming",
+        "retail"
+      ],
+      "animals": [
+        "Monitor lizard",
+        "egrets",
+        "weaver birds",
+        "vervet monkey"
+      ]
+    },
+    {
+      "name": "Kasese",
+      "region": "Western",
+      "places": [
+        "Kasese Town",
+        "Hima",
+        "Kilembe",
+        "Katwe",
+        "Mpondwe"
+      ],
+      "localNames": [
+        "Baluku",
+        "Mbambu",
+        "Bwambale",
+        "Masika",
+        "Kabugho"
+      ],
+      "landmarks": [
+        "Rwenzori Mountains",
+        "Queen Elizabeth National Park",
+        "Kilembe Mines",
+        "Katwe Salt Lake"
+      ],
+      "rivers": [
+        "Lake George",
+        "Lake Edward",
+        "River Nyamwamba"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "beans",
+        "groundnuts",
+        "salt"
+      ],
+      "economy": [
+        "Mining",
+        "salt extraction",
+        "tourism",
+        "crop farming"
+      ],
+      "animals": [
+        "Tree-climbing lion",
+        "elephant",
+        "hippo",
+        "buffalo",
+        "chimpanzee"
+      ]
+    },
+    {
+      "name": "Katakwi",
+      "region": "Eastern",
+      "places": [
+        "Katakwi Town",
+        "Toroma",
+        "Usuk",
+        "Magoro",
+        "Ngariam"
+      ],
+      "localNames": [
+        "Emong",
+        "Akol",
+        "Egunyu",
+        "Apio",
+        "Amongin"
+      ],
+      "landmarks": [
+        "Katakwi Hospital",
+        "Katakwi Market",
+        "Teso plains"
+      ],
+      "rivers": [
+        "Lake Bisina",
+        "River Acwa"
+      ],
+      "foods": [
+        "Atap (millet bread)",
+        "simsim paste",
+        "groundnuts",
+        "dried fish",
+        "cassava"
+      ],
+      "economy": [
+        "Cattle keeping",
+        "crop farming",
+        "sorghum growing",
+        "market trade"
+      ],
+      "animals": [
+        "Grey Crowned Crane",
+        "eland",
+        "hippo",
+        "monitor lizard",
+        "tilapia"
+      ]
+    },
+    {
+      "name": "Kayunga",
+      "region": "Central",
+      "places": [
+        "Kayunga Town",
+        "Galiraaya",
+        "Kayunga Road",
+        "Busaana",
+        "Kangulumira"
+      ],
+      "localNames": [
+        "Mukasa",
+        "Nakato",
+        "Wasswa",
+        "Nambi",
+        "Kato",
+        "Babirye"
+      ],
+      "landmarks": [
+        "Kayunga Hospital",
+        "Kayunga Market",
+        "Bujagali nearby"
+      ],
+      "rivers": [
+        "River Nile",
+        "Lake Kyoga"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "groundnuts",
+        "beans",
+        "sweet potatoes"
+      ],
+      "economy": [
+        "Banana farming",
+        "crop farming",
+        "fishing",
+        "retail"
+      ],
+      "animals": [
+        "Tilapia",
+        "Nile perch",
+        "hippo",
+        "monitor lizard",
+        "egrets"
+      ]
+    },
+    {
+      "name": "Kazo",
+      "region": "Western",
+      "places": [
+        "Kazo Town",
+        "Burunga",
+        "Rwemikoma",
+        "Kazo Sub-county",
+        "Ntuusi"
+      ],
+      "localNames": [
+        "Tumuhairwe",
+        "Tusiime",
+        "Mugisha",
+        "Byaruhanga",
+        "Mwesigwa"
+      ],
+      "landmarks": [
+        "Kazo Hospital",
+        "Kazo Market",
+        "Ankole plains"
+      ],
+      "rivers": [
+        "River Rwizi"
+      ],
+      "foods": [
+        "Eshabwe (ghee)",
+        "karo (millet bread)",
+        "beef",
+        "milk",
+        "matooke"
+      ],
+      "economy": [
+        "Cattle ranching",
+        "dairy farming",
+        "banana growing",
+        "trade"
+      ],
+      "animals": [
+        "Ankole cattle",
+        "impala",
+        "zebra",
+        "monitor lizard",
+        "cranes"
+      ]
+    },
+    {
+      "name": "Kibaale",
+      "region": "Western",
+      "places": [
+        "Kibaale Town",
+        "Kakindo",
+        "Bwikara",
+        "Buyanja",
+        "Nkooko"
+      ],
+      "localNames": [
+        "Byaruhanga",
+        "Tumuhairwe",
+        "Mugisha",
+        "Tusiime",
+        "Arinaitwe"
+      ],
+      "landmarks": [
+        "Kibaale Hospital",
+        "Kibaale Market",
+        "Bunyoro region"
+      ],
+      "rivers": [
+        "River Kafu",
+        "River Kagadi"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "groundnuts",
+        "beans",
+        "sweet potatoes"
+      ],
+      "economy": [
+        "Crop farming",
+        "tobacco growing",
+        "retail trade",
+        "boda boda"
+      ],
+      "animals": [
+        "Monitor lizard",
+        "hippo",
+        "crocodile",
+        "shoebill stork",
+        "egrets"
+      ]
+    },
+    {
+      "name": "Kibingo",
+      "region": "Western",
+      "places": [
+        "Kibingo Town",
+        "Bushenyi Road",
+        "Ryeru",
+        "Kibingo Sub-county"
+      ],
+      "localNames": [
+        "Tumuhairwe",
+        "Tusiime",
+        "Mugisha",
+        "Byaruhanga",
+        "Arinaitwe"
+      ],
+      "landmarks": [
+        "Kibingo Hospital",
+        "Kibingo Market",
+        "Ankole hills"
+      ],
+      "rivers": [
+        "River Ruizi"
+      ],
+      "foods": [
+        "Eshabwe",
+        "karo",
+        "matooke",
+        "beans",
+        "Irish potatoes"
+      ],
+      "economy": [
+        "Cattle ranching",
+        "tea farming",
+        "banana growing",
+        "trade"
+      ],
+      "animals": [
+        "Ankole cattle",
+        "goats",
+        "sheep",
+        "monitor lizard",
+        "cranes"
+      ]
+    },
+    {
+      "name": "Kiboga",
+      "region": "Central",
+      "places": [
+        "Kiboga Town",
+        "Bukomero",
+        "Kapeka",
+        "Dwaniro",
+        "Muwanga"
+      ],
+      "localNames": [
+        "Mukasa",
+        "Nakato",
+        "Wasswa",
+        "Nambi",
+        "Kato"
+      ],
+      "landmarks": [
+        "Kiboga Hospital",
+        "Kiboga Market",
+        "Luwero area"
+      ],
+      "rivers": [
+        "River Mayanja"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "groundnuts",
+        "beans",
+        "sweet potatoes"
+      ],
+      "economy": [
+        "Crop farming",
+        "banana growing",
+        "retail trade",
+        "boda boda"
+      ],
+      "animals": [
+        "Monitor lizard",
+        "egrets",
+        "weaver birds",
+        "vervet monkey"
+      ]
+    },
+    {
+      "name": "Kibuku",
+      "region": "Eastern",
+      "places": [
+        "Kibuku Town",
+        "Tirinyi",
+        "Kadama",
+        "Kagumu",
+        "Bulangira"
+      ],
+      "localNames": [
+        "Wafula",
+        "Nambozo",
+        "Wekesa",
+        "Nabirye",
+        "Masaba"
+      ],
+      "landmarks": [
+        "Kibuku Hospital",
+        "Kibuku Market",
+        "Elgon foothills"
+      ],
+      "rivers": [
+        "River Sango",
+        "River Kibimba"
+      ],
+      "foods": [
+        "Matooke",
+        "millet bread",
+        "groundnuts",
+        "beans",
+        "cassava"
+      ],
+      "economy": [
+        "Coffee farming",
+        "crop farming",
+        "retail trade",
+        "boda boda"
+      ],
+      "animals": [
+        "Colobus monkey",
+        "forest birds",
+        "monitor lizard",
+        "tilapia"
+      ]
+    },
+    {
+      "name": "Kikuube",
+      "region": "Western",
+      "places": [
+        "Kikuube Town",
+        "Butoha",
+        "Kigorobya",
+        "Kyangwali",
+        "Buseruka"
+      ],
+      "localNames": [
+        "Byaruhanga",
+        "Tumuhairwe",
+        "Mugisha",
+        "Tusiime",
+        "Arinaitwe"
+      ],
+      "landmarks": [
+        "Kikuube Hospital",
+        "Kyangwali Refugee Settlement",
+        "Lake Albert shores",
+        "Oil fields"
+      ],
+      "rivers": [
+        "Lake Albert",
+        "River Kafu"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "fish",
+        "groundnuts",
+        "beans"
+      ],
+      "economy": [
+        "Oil industry",
+        "fishing",
+        "crop farming",
+        "humanitarian sector"
+      ],
+      "animals": [
+        "Nile perch",
+        "tilapia",
+        "hippo",
+        "crocodile",
+        "shoebill stork"
+      ]
+    },
+    {
+      "name": "Kiruhura",
+      "region": "Western",
+      "places": [
+        "Kiruhura Town",
+        "Sanga",
+        "Ntuusi",
+        "Rwemikoma",
+        "Buremba"
+      ],
+      "localNames": [
+        "Tumuhairwe",
+        "Tusiime",
+        "Mugisha",
+        "Byaruhanga",
+        "Mwesigwa"
+      ],
+      "landmarks": [
+        "Lake Mburo National Park",
+        "Kiruhura Hospital",
+        "Kiruhura Market"
+      ],
+      "rivers": [
+        "Lake Mburo",
+        "River Rwizi"
+      ],
+      "foods": [
+        "Eshabwe (ghee)",
+        "karo",
+        "beef",
+        "milk",
+        "matooke"
+      ],
+      "economy": [
+        "Cattle ranching",
+        "dairy farming",
+        "tourism",
+        "trade"
+      ],
+      "animals": [
+        "Impala",
+        "zebra",
+        "eland",
+        "hippo",
+        "warthog"
+      ]
+    },
+    {
+      "name": "Kiryandongo",
+      "region": "Western",
+      "places": [
+        "Kiryandongo Town",
+        "Masindi Port",
+        "Bweyale",
+        "Mutunda",
+        "Kikube"
+      ],
+      "localNames": [
+        "Byaruhanga",
+        "Tumuhairwe",
+        "Mugisha",
+        "Arinaitwe",
+        "Okello"
+      ],
+      "landmarks": [
+        "Kiryandongo Hospital",
+        "Kiryandongo Market",
+        "Murchison Falls nearby"
+      ],
+      "rivers": [
+        "Victoria Nile",
+        "River Kafu"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "groundnuts",
+        "beans",
+        "millet bread"
+      ],
+      "economy": [
+        "Sugarcane farming",
+        "crop farming",
+        "fishing",
+        "retail"
+      ],
+      "animals": [
+        "Elephant",
+        "hippo",
+        "crocodile",
+        "giraffe",
+        "buffalo"
+      ]
+    },
+    {
+      "name": "Kisoro",
+      "region": "Western",
+      "places": [
+        "Kisoro Town",
+        "Bunagana",
+        "Muramba",
+        "Nyakabande",
+        "Mutolere"
+      ],
+      "localNames": [
+        "Tumusiime",
+        "Arinaitwe",
+        "Twinomuhangi",
+        "Muhwezi",
+        "Byaruhanga"
+      ],
+      "landmarks": [
+        "Mgahinga Gorilla National Park",
+        "Kisoro Hospital",
+        "Bunagana border"
+      ],
+      "rivers": [
+        "Lake Mutanda",
+        "Lake Mulehe"
+      ],
+      "foods": [
+        "Irish potatoes",
+        "beans",
+        "peas",
+        "sorghum",
+        "millet bread"
+      ],
+      "economy": [
+        "Tourism",
+        "cross-border trade",
+        "terraced farming",
+        "handicrafts"
+      ],
+      "animals": [
+        "Mountain gorilla",
+        "golden monkey",
+        "buffalo",
+        "elephants",
+        "forest birds"
+      ]
+    },
+    {
+      "name": "Kitagwenda",
+      "region": "Western",
+      "places": [
+        "Kitagwenda Town",
+        "Kamwenge Road",
+        "Bitereko",
+        "Kicwamba",
+        "Nkoma"
+      ],
+      "localNames": [
+        "Baluku",
+        "Mbambu",
+        "Bwambale",
+        "Masika",
+        "Tumuhairwe"
+      ],
+      "landmarks": [
+        "Kitagwenda Hospital",
+        "Kitagwenda Market",
+        "Kibale Forest nearby"
+      ],
+      "rivers": [
+        "River Mpanga",
+        "River Muzizi"
+      ],
+      "foods": [
+        "Matooke",
+        "groundnuts",
+        "beans",
+        "sweet potatoes",
+        "cassava"
+      ],
+      "economy": [
+        "Tea farming",
+        "banana growing",
+        "crop farming",
+        "retail"
+      ],
+      "animals": [
+        "Chimpanzee",
+        "colobus monkey",
+        "forest elephant",
+        "leopard",
+        "sunbirds"
+      ]
+    },
+    {
+      "name": "Kitgum",
+      "region": "Northern",
+      "places": [
+        "Kitgum Town",
+        "Mucwini",
+        "Lagoro",
+        "Namokora",
+        "Pandwong"
+      ],
+      "localNames": [
+        "Okello",
+        "Akello",
+        "Opio",
+        "Auma",
+        "Otim",
+        "Acen",
+        "Oloya"
+      ],
+      "landmarks": [
+        "Kitgum Hospital",
+        "Kitgum Market",
+        "Kidepo Valley National Park"
+      ],
+      "rivers": [
+        "River Aswa"
+      ],
+      "foods": [
+        "Malakwang",
+        "boo (millet)",
+        "simsim paste",
+        "dried fish",
+        "cassava"
+      ],
+      "economy": [
+        "Subsistence farming",
+        "cattle keeping",
+        "honey production",
+        "market trade"
+      ],
+      "animals": [
+        "Lion",
+        "elephant",
+        "buffalo",
+        "giraffe",
+        "ostrich",
+        "cheetah"
+      ]
+    },
+    {
+      "name": "Koboko",
+      "region": "West Nile",
+      "places": [
+        "Koboko Town",
+        "Lobule",
+        "Ludara",
+        "Kuluba",
+        "Oraba"
+      ],
+      "localNames": [
+        "Drani",
+        "Candiru",
+        "Anguzu",
+        "Adrabo",
+        "Onzima"
+      ],
+      "landmarks": [
+        "Koboko Hospital",
+        "Koboko Market",
+        "Oraba border"
+      ],
+      "rivers": [
+        "River Kochi",
+        "River Ora"
+      ],
+      "foods": [
+        "Cassava bread",
+        "groundnuts",
+        "simsim",
+        "dried fish",
+        "beans"
+      ],
+      "economy": [
+        "Tobacco farming",
+        "cassava growing",
+        "cross-border trade",
+        "boda boda"
+      ],
+      "animals": [
+        "Warthog",
+        "baboon",
+        "monitor lizard",
+        "fish eagle",
+        "hippo"
+      ]
+    },
+    {
+      "name": "Kole",
+      "region": "Northern",
+      "places": [
+        "Kole Town",
+        "Aboke",
+        "Alito",
+        "Akalo",
+        "Bala"
+      ],
+      "localNames": [
+        "Okello",
+        "Akello",
+        "Opio",
+        "Auma",
+        "Otim",
+        "Acen"
+      ],
+      "landmarks": [
+        "Kole Hospital",
+        "Kole Market",
+        "Lango plains"
+      ],
+      "rivers": [
+        "Lake Kwania",
+        "River Moroto"
+      ],
+      "foods": [
+        "Boo (millet bread)",
+        "simsim paste",
+        "groundnut sauce",
+        "dried fish",
+        "cassava"
+      ],
+      "economy": [
+        "Cotton farming",
+        "cattle keeping",
+        "crop farming",
+        "fishing"
+      ],
+      "animals": [
+        "Grey Crowned Crane",
+        "tilapia",
+        "marabou stork",
+        "hippo",
+        "monitor lizard"
+      ]
+    },
+    {
+      "name": "Kotido",
+      "region": "Northern",
+      "places": [
+        "Kotido Town",
+        "Panyangara",
+        "Nakapiripirit Road",
+        "Jie area",
+        "Kacheri"
+      ],
+      "localNames": [
+        "Lokwang",
+        "Logwee",
+        "Nachom",
+        "Lopak",
+        "Abura",
+        "Lochoro"
+      ],
+      "landmarks": [
+        "Kotido Hospital",
+        "Kotido Market",
+        "Karamoja plains"
+      ],
+      "rivers": [
+        "River Dopeth",
+        "River Pager"
+      ],
+      "foods": [
+        "Dried meat",
+        "millet bread",
+        "sorghum",
+        "cow blood",
+        "wild vegetables"
+      ],
+      "economy": [
+        "Cattle herding",
+        "goat keeping",
+        "subsistence farming",
+        "honey production"
+      ],
+      "animals": [
+        "Eland",
+        "zebra",
+        "ostrich",
+        "giraffe",
+        "cheetah",
+        "lion"
+      ]
+    },
+    {
+      "name": "Kumi",
+      "region": "Eastern",
+      "places": [
+        "Kumi Town",
+        "Ngora",
+        "Atutur",
+        "Mukongoro",
+        "Ongino"
+      ],
+      "localNames": [
+        "Emong",
+        "Akol",
+        "Egunyu",
+        "Apio",
+        "Amongin"
+      ],
+      "landmarks": [
+        "Kumi Hospital",
+        "Kumi Market",
+        "Teso College Aloet"
+      ],
+      "rivers": [
+        "Lake Bisina",
+        "River Okere"
+      ],
+      "foods": [
+        "Atap (millet bread)",
+        "groundnuts",
+        "simsim",
+        "dried fish",
+        "cassava"
+      ],
+      "economy": [
+        "Cattle keeping",
+        "cotton growing",
+        "crop farming",
+        "market trade"
+      ],
+      "animals": [
+        "Grey Crowned Crane",
+        "tilapia",
+        "monitor lizard",
+        "egrets",
+        "eland"
+      ]
+    },
+    {
+      "name": "Kwania",
+      "region": "Northern",
+      "places": [
+        "Kwania Town",
+        "Namasale",
+        "Aputi",
+        "Kangai",
+        "Chawente"
+      ],
+      "localNames": [
+        "Okello",
+        "Akello",
+        "Opio",
+        "Auma",
+        "Otim"
+      ],
+      "landmarks": [
+        "Kwania Hospital",
+        "Lake Kwania shores",
+        "Kwania Market"
+      ],
+      "rivers": [
+        "Lake Kwania",
+        "River Moroto"
+      ],
+      "foods": [
+        "Boo (millet bread)",
+        "dried fish",
+        "simsim",
+        "groundnuts",
+        "cassava"
+      ],
+      "economy": [
+        "Fishing",
+        "cattle keeping",
+        "crop farming",
+        "market trade"
+      ],
+      "animals": [
+        "Tilapia",
+        "hippo",
+        "shoebill stork",
+        "Grey Crowned Crane",
+        "egrets"
+      ]
+    },
+    {
+      "name": "Kyankwanzi",
+      "region": "Central",
+      "places": [
+        "Kyankwanzi Town",
+        "Ntwetwe",
+        "Butemba",
+        "Myanzi",
+        "Wattuba"
+      ],
+      "localNames": [
+        "Mukasa",
+        "Nakato",
+        "Wasswa",
+        "Nambi",
+        "Kato"
+      ],
+      "landmarks": [
+        "Kyankwanzi Hospital",
+        "Kyankwanzi Market",
+        "National Leadership Institute"
+      ],
+      "rivers": [
+        "River Mayanja"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "groundnuts",
+        "beans",
+        "sweet potatoes"
+      ],
+      "economy": [
+        "Crop farming",
+        "banana growing",
+        "retail trade",
+        "boda boda"
+      ],
+      "animals": [
+        "Monitor lizard",
+        "egrets",
+        "weaver birds",
+        "vervet monkey"
+      ]
+    },
+    {
+      "name": "Kyegegwa",
+      "region": "Western",
+      "places": [
+        "Kyegegwa Town",
+        "Mpara",
+        "Kakabara",
+        "Ruyonza",
+        "Kyaka"
+      ],
+      "localNames": [
+        "Tumuhairwe",
+        "Tusiime",
+        "Mugisha",
+        "Byaruhanga",
+        "Arinaitwe"
+      ],
+      "landmarks": [
+        "Kyegegwa Hospital",
+        "Kyegegwa Market",
+        "Kyaka Refugee Settlement"
+      ],
+      "rivers": [
+        "River Muzizi",
+        "River Katonga"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "groundnuts",
+        "beans",
+        "sweet potatoes"
+      ],
+      "economy": [
+        "Crop farming",
+        "banana growing",
+        "humanitarian sector",
+        "retail"
+      ],
+      "animals": [
+        "Monitor lizard",
+        "egrets",
+        "weaver birds",
+        "hippo"
+      ]
+    },
+    {
+      "name": "Kyenjojo",
+      "region": "Western",
+      "places": [
+        "Kyenjojo Town",
+        "Butebo Road",
+        "Kasule",
+        "Kakindo",
+        "Kijuma"
+      ],
+      "localNames": [
+        "Baluku",
+        "Mbambu",
+        "Bwambale",
+        "Masika",
+        "Tumuhairwe"
+      ],
+      "landmarks": [
+        "Kyenjojo Hospital",
+        "Kyenjojo Market",
+        "Tea estates"
+      ],
+      "rivers": [
+        "River Muzizi"
+      ],
+      "foods": [
+        "Matooke",
+        "groundnuts",
+        "beans",
+        "cassava",
+        "sweet potatoes"
+      ],
+      "economy": [
+        "Tea farming",
+        "crop farming",
+        "banana growing",
+        "retail"
+      ],
+      "animals": [
+        "Chimpanzee",
+        "colobus monkey",
+        "monitor lizard",
+        "egrets",
+        "forest birds"
+      ]
+    },
+    {
+      "name": "Kyotera",
+      "region": "Central",
+      "places": [
+        "Kyotera Town",
+        "Rakai Road",
+        "Kasensero",
+        "Kalisizo",
+        "Kabira"
+      ],
+      "localNames": [
+        "Mukasa",
+        "Nakato",
+        "Wasswa",
+        "Nambi",
+        "Kato",
+        "Ssali"
+      ],
+      "landmarks": [
+        "Kyotera Hospital",
+        "Kyotera Market",
+        "Lake Victoria shores"
+      ],
+      "rivers": [
+        "Lake Victoria"
+      ],
+      "foods": [
+        "Matooke",
+        "tilapia",
+        "cassava",
+        "groundnuts",
+        "sweet potatoes"
+      ],
+      "economy": [
+        "Fishing",
+        "coffee growing",
+        "banana farming",
+        "retail"
+      ],
+      "animals": [
+        "Tilapia",
+        "Nile perch",
+        "monitor lizard",
+        "egrets",
+        "kingfisher"
+      ]
+    },
+    {
+      "name": "Lamwo",
+      "region": "Northern",
+      "places": [
+        "Lamwo Town",
+        "Padibe",
+        "Madi Opei",
+        "Palabek",
+        "Orom"
+      ],
+      "localNames": [
+        "Okello",
+        "Akello",
+        "Opio",
+        "Auma",
+        "Otim",
+        "Acen"
+      ],
+      "landmarks": [
+        "Lamwo Hospital",
+        "Palabek Refugee Settlement",
+        "Kidepo border area"
+      ],
+      "rivers": [
+        "River Aswa",
+        "River Pager"
+      ],
+      "foods": [
+        "Malakwang",
+        "millet bread",
+        "simsim paste",
+        "dried fish",
+        "cassava"
+      ],
+      "economy": [
+        "Subsistence farming",
+        "humanitarian sector",
+        "honey production",
+        "market trade"
+      ],
+      "animals": [
+        "Lion",
+        "elephant",
+        "buffalo",
+        "Grey Crowned Crane",
+        "monitor lizard"
+      ]
+    },
+    {
+      "name": "Lira",
+      "region": "Northern",
+      "places": [
+        "Lira City",
+        "Adyel",
+        "Ojwina",
+        "Ngetta",
+        "Barr",
+        "Aromo"
+      ],
+      "localNames": [
+        "Okello",
+        "Akello",
+        "Otim",
+        "Auma",
+        "Opio",
+        "Acen",
+        "Oloya"
+      ],
+      "landmarks": [
+        "Lira University",
+        "Lira Regional Referral Hospital",
+        "Lira Main Market"
+      ],
+      "rivers": [
+        "River Okole",
+        "River Moroto"
+      ],
+      "foods": [
+        "Boo (millet bread)",
+        "simsim paste",
+        "groundnut sauce",
+        "dried fish",
+        "cassava"
+      ],
+      "economy": [
+        "Sunflower farming",
+        "cattle keeping",
+        "simsim growing",
+        "market trading"
+      ],
+      "animals": [
+        "Grey Crowned Crane",
+        "marabou stork",
+        "monitor lizard",
+        "tilapia"
+      ]
+    },
+    {
+      "name": "Luuka",
+      "region": "Eastern",
+      "places": [
+        "Luuka Town",
+        "Waibuga",
+        "Nawanjofu",
+        "Bukooma",
+        "Ikanda"
+      ],
+      "localNames": [
+        "Waiswa",
+        "Nabirye",
+        "Mukhwana",
+        "Nambozo",
+        "Wafula"
+      ],
+      "landmarks": [
+        "Luuka Hospital",
+        "Luuka Market",
+        "Lake Victoria nearby"
+      ],
+      "rivers": [
+        "Lake Victoria",
+        "River Mpologoma"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "sweet potatoes",
+        "groundnuts",
+        "tilapia"
+      ],
+      "economy": [
+        "Sugarcane farming",
+        "fishing",
+        "retail trade",
+        "boda boda"
+      ],
+      "animals": [
+        "Tilapia",
+        "Nile perch",
+        "monitor lizard",
+        "egrets",
+        "weaver birds"
+      ]
+    },
+    {
+      "name": "Luwero",
+      "region": "Central",
+      "places": [
+        "Luwero Town",
+        "Bombo",
+        "Wobulenzi",
+        "Katikamu",
+        "Bamunanika"
+      ],
+      "localNames": [
+        "Mukasa",
+        "Nakato",
+        "Wasswa",
+        "Babirye",
+        "Kato",
+        "Nambi"
+      ],
+      "landmarks": [
+        "Luwero Triangle Memorial",
+        "Bombo Military Barracks",
+        "Ziwa Rhino Sanctuary"
+      ],
+      "rivers": [
+        "River Mayanja"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "sweet potatoes",
+        "groundnuts",
+        "beans"
+      ],
+      "economy": [
+        "Poultry farming",
+        "crop farming",
+        "retail trade",
+        "military sector"
+      ],
+      "animals": [
+        "White rhino",
+        "shoebill stork",
+        "monitor lizard",
+        "cranes"
+      ]
+    },
+    {
+      "name": "Lwengo",
+      "region": "Central",
+      "places": [
+        "Lwengo Town",
+        "Lyantonde Road",
+        "Kinuuka",
+        "Malongo",
+        "Busagazi"
+      ],
+      "localNames": [
+        "Mukasa",
+        "Nakato",
+        "Wasswa",
+        "Nambi",
+        "Kato",
+        "Ssali"
+      ],
+      "landmarks": [
+        "Lwengo Hospital",
+        "Lwengo Market",
+        "Masaka area"
+      ],
+      "rivers": [
+        "River Katonga"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "groundnuts",
+        "beans",
+        "sweet potatoes"
+      ],
+      "economy": [
+        "Banana farming",
+        "coffee growing",
+        "cattle keeping",
+        "retail"
+      ],
+      "animals": [
+        "Monitor lizard",
+        "egrets",
+        "weaver birds",
+        "vervet monkey"
+      ]
+    },
+    {
+      "name": "Lyantonde",
+      "region": "Central",
+      "places": [
+        "Lyantonde Town",
+        "Kinuuka",
+        "Kaliiro",
+        "Kabira",
+        "Kasagama"
+      ],
+      "localNames": [
+        "Mukasa",
+        "Nakato",
+        "Wasswa",
+        "Nambi",
+        "Ssali",
+        "Kato"
+      ],
+      "landmarks": [
+        "Lyantonde Hospital",
+        "Lyantonde Market",
+        "Ankole-Masaka corridor"
+      ],
+      "rivers": [
+        "River Rwizi"
+      ],
+      "foods": [
+        "Matooke",
+        "beef",
+        "milk",
+        "beans",
+        "groundnuts"
+      ],
+      "economy": [
+        "Cattle ranching",
+        "dairy farming",
+        "crop farming",
+        "trade"
+      ],
+      "animals": [
+        "Ankole cattle",
+        "monitor lizard",
+        "egrets",
+        "cranes"
+      ]
+    },
+    {
+      "name": "Madi-Okollo",
+      "region": "West Nile",
+      "places": [
+        "Madi-Okollo Town",
+        "Okollo",
+        "Paidha Road",
+        "Zombo Road",
+        "Zeu"
+      ],
+      "localNames": [
+        "Drani",
+        "Candiru",
+        "Anguzu",
+        "Adrabo",
+        "Onzima"
+      ],
+      "landmarks": [
+        "Madi-Okollo Hospital",
+        "Madi-Okollo Market",
+        "West Nile region"
+      ],
+      "rivers": [
+        "Albert Nile",
+        "River Ora"
+      ],
+      "foods": [
+        "Cassava bread",
+        "groundnuts",
+        "simsim",
+        "dried fish",
+        "millet bread"
+      ],
+      "economy": [
+        "Crop farming",
+        "tobacco growing",
+        "cross-border trade",
+        "boda boda"
+      ],
+      "animals": [
+        "Hippo",
+        "crocodile",
+        "monitor lizard",
+        "fish eagle",
+        "warthog"
+      ]
+    },
+    {
+      "name": "Manafwa",
+      "region": "Eastern",
+      "places": [
+        "Manafwa Town",
+        "Butebo",
+        "Bumbo",
+        "Lwakhakha",
+        "Bubutu"
+      ],
+      "localNames": [
+        "Wafula",
+        "Nambozo",
+        "Wekesa",
+        "Nabirye",
+        "Masaba",
+        "Wandera"
+      ],
+      "landmarks": [
+        "Mount Elgon foothills",
+        "Manafwa Hospital",
+        "Manafwa Market"
+      ],
+      "rivers": [
+        "River Manafwa",
+        "River Lwakhakha"
+      ],
+      "foods": [
+        "Malewa (bamboo shoots)",
+        "millet bread",
+        "groundnuts",
+        "beans",
+        "maize"
+      ],
+      "economy": [
+        "Coffee farming",
+        "crop farming",
+        "retail trade",
+        "boda boda"
+      ],
+      "animals": [
+        "Colobus monkey",
+        "forest birds",
+        "monitor lizard",
+        "tilapia"
+      ]
+    },
+    {
+      "name": "Maracha",
+      "region": "West Nile",
+      "places": [
+        "Maracha Town",
+        "Yivu",
+        "Oleba",
+        "Nyadri",
+        "Oluvu"
+      ],
+      "localNames": [
+        "Drani",
+        "Candiru",
+        "Anguzu",
+        "Adrabo",
+        "Onzima"
+      ],
+      "landmarks": [
+        "Maracha Hospital",
+        "Maracha Market",
+        "West Nile region"
+      ],
+      "rivers": [
+        "River Enyau",
+        "River Ora"
+      ],
+      "foods": [
+        "Cassava bread",
+        "groundnuts",
+        "simsim",
+        "dried fish",
+        "beans"
+      ],
+      "economy": [
+        "Tobacco farming",
+        "cassava growing",
+        "trade",
+        "boda boda"
+      ],
+      "animals": [
+        "Warthog",
+        "baboon",
+        "monitor lizard",
+        "fish eagle"
+      ]
+    },
+    {
+      "name": "Masaka",
+      "region": "Central",
+      "places": [
+        "Masaka City",
+        "Nyendo",
+        "Katwe",
+        "Kijabwemi",
+        "Bukakata"
+      ],
+      "localNames": [
+        "Ssemakula",
+        "Nakato",
+        "Wasswa",
+        "Nambi",
+        "Kato",
+        "Babirye"
+      ],
+      "landmarks": [
+        "Masaka Cathedral",
+        "Villa Maria",
+        "Lake Victoria shores",
+        "Masaka Market"
+      ],
+      "rivers": [
+        "Lake Victoria"
+      ],
+      "foods": [
+        "Matooke",
+        "groundnut sauce",
+        "tilapia",
+        "cassava",
+        "sweet potatoes"
+      ],
+      "economy": [
+        "Banana farming",
+        "fishing",
+        "coffee growing",
+        "retail trade"
+      ],
+      "animals": [
+        "Tilapia",
+        "Nile perch",
+        "monitor lizard",
+        "egrets",
+        "kingfisher"
+      ]
+    },
+    {
+      "name": "Masindi",
+      "region": "Western",
+      "places": [
+        "Masindi Town",
+        "Budongo",
+        "Kijunjubwa",
+        "Pakanyi",
+        "Bwijanga"
+      ],
+      "localNames": [
+        "Byaruhanga",
+        "Tumuhairwe",
+        "Mugisha",
+        "Tusiime",
+        "Arinaitwe"
+      ],
+      "landmarks": [
+        "Murchison Falls National Park",
+        "Budongo Forest",
+        "Masindi Hotel"
+      ],
+      "rivers": [
+        "Victoria Nile",
+        "River Kafu"
+      ],
+      "foods": [
+        "Matooke",
+        "millet bread",
+        "cassava",
+        "groundnuts",
+        "beans"
+      ],
+      "economy": [
+        "Sugarcane farming",
+        "tobacco growing",
+        "tourism",
+        "fishing"
+      ],
+      "animals": [
+        "Elephant",
+        "lion",
+        "giraffe",
+        "hippo",
+        "crocodile",
+        "chimpanzee"
+      ]
+    },
+    {
+      "name": "Mayuge",
+      "region": "Eastern",
+      "places": [
+        "Mayuge Town",
+        "Baitambogwe",
+        "Kigandalo",
+        "Jaguzi",
+        "Busakira"
+      ],
+      "localNames": [
+        "Waiswa",
+        "Nabirye",
+        "Mukhwana",
+        "Nambozo",
+        "Wafula"
+      ],
+      "landmarks": [
+        "Mayuge Hospital",
+        "Mayuge Market",
+        "Lake Victoria shores"
+      ],
+      "rivers": [
+        "Lake Victoria"
+      ],
+      "foods": [
+        "Tilapia",
+        "Nile perch",
+        "matooke",
+        "cassava",
+        "sweet potatoes"
+      ],
+      "economy": [
+        "Fishing",
+        "sugarcane farming",
+        "retail trade",
+        "boda boda"
+      ],
+      "animals": [
+        "Tilapia",
+        "Nile perch",
+        "monitor lizard",
+        "egrets",
+        "kingfisher"
+      ]
+    },
+    {
+      "name": "Mbale",
+      "region": "Eastern",
+      "places": [
+        "Mbale City",
+        "Bududa",
+        "Manafwa",
+        "Butaleja",
+        "Tororo Road",
+        "Industrial Area"
+      ],
+      "localNames": [
+        "Wafula",
+        "Nambozo",
+        "Mukhwana",
+        "Wekesa",
+        "Masaba",
+        "Nabirye",
+        "Wandera"
+      ],
+      "landmarks": [
+        "Mount Elgon",
+        "Sipi Falls",
+        "Mbale SS",
+        "Mbale Regional Referral Hospital"
+      ],
+      "rivers": [
+        "River Manafwa",
+        "River Lwakhakha"
+      ],
+      "foods": [
+        "Malewa (bamboo shoots)",
+        "matooke",
+        "millet bread",
+        "groundnuts",
+        "beans"
+      ],
+      "economy": [
+        "Coffee farming",
+        "maize growing",
+        "arabica coffee trade",
+        "boda boda",
+        "retail"
+      ],
+      "animals": [
+        "Colobus monkey",
+        "forest elephant",
+        "buffalo",
+        "leopard",
+        "sunbirds"
+      ]
+    },
+    {
+      "name": "Mbarara",
+      "region": "Western",
+      "places": [
+        "Mbarara City",
+        "Kakoba",
+        "Kamukuzi",
+        "Katete",
+        "Ruti",
+        "Nyamitanga"
+      ],
+      "localNames": [
+        "Tumuhairwe",
+        "Ainomugisha",
+        "Tukamushaba",
+        "Mwesigwa",
+        "Byamukama"
+      ],
+      "landmarks": [
+        "Mbarara University",
+        "Igongo Cultural Centre",
+        "Lake Mburo National Park"
+      ],
+      "rivers": [
+        "Lake Mburo",
+        "River Rwizi"
+      ],
+      "foods": [
+        "Eshabwe (ghee)",
+        "karo (millet bread)",
+        "beef",
+        "milk",
+        "matooke"
+      ],
+      "economy": [
+        "Cattle ranching",
+        "dairy farming",
+        "banana growing",
+        "trade",
+        "education sector"
+      ],
+      "animals": [
+        "Ankole long-horned cattle",
+        "zebra",
+        "impala",
+        "eland",
+        "hippo"
+      ]
+    },
+    {
+      "name": "Mitooma",
+      "region": "Western",
+      "places": [
+        "Mitooma Town",
+        "Rutoto",
+        "Ruhinda",
+        "Bitereko",
+        "Kibingo"
+      ],
+      "localNames": [
+        "Tumuhairwe",
+        "Tusiime",
+        "Mugisha",
+        "Byaruhanga",
+        "Arinaitwe"
+      ],
+      "landmarks": [
+        "Mitooma Hospital",
+        "Mitooma Market",
+        "Ankole hills"
+      ],
+      "rivers": [
+        "River Ruizi"
+      ],
+      "foods": [
+        "Eshabwe",
+        "karo",
+        "matooke",
+        "beans",
+        "Irish potatoes"
+      ],
+      "economy": [
+        "Cattle ranching",
+        "tea farming",
+        "banana growing",
+        "trade"
+      ],
+      "animals": [
+        "Ankole cattle",
+        "goats",
+        "sheep",
+        "monitor lizard",
+        "cranes"
+      ]
+    },
+    {
+      "name": "Mityana",
+      "region": "Central",
+      "places": [
+        "Mityana Town",
+        "Busimbi",
+        "Kalangalo",
+        "Maanyi",
+        "Sekanyonyi"
+      ],
+      "localNames": [
+        "Mukasa",
+        "Nakato",
+        "Wasswa",
+        "Babirye",
+        "Kato",
+        "Nambi"
+      ],
+      "landmarks": [
+        "Mityana Hospital",
+        "Mityana Market",
+        "Villa Maria"
+      ],
+      "rivers": [
+        "River Katonga"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "sweet potatoes",
+        "groundnuts",
+        "beans"
+      ],
+      "economy": [
+        "Banana farming",
+        "coffee growing",
+        "retail trade",
+        "boda boda"
+      ],
+      "animals": [
+        "Monitor lizard",
+        "egrets",
+        "weaver birds",
+        "tilapia"
+      ]
+    },
+    {
+      "name": "Moroto",
+      "region": "Eastern",
+      "places": [
+        "Moroto Town",
+        "Nadunget",
+        "Rupa",
+        "Katikekile",
+        "Lotisan"
+      ],
+      "localNames": [
+        "Lokwang",
+        "Logwee",
+        "Nachom",
+        "Lopak",
+        "Abura"
+      ],
+      "landmarks": [
+        "Mount Moroto",
+        "Moroto Hospital",
+        "Moroto Market",
+        "Karamoja plains"
+      ],
+      "rivers": [
+        "River Moroto",
+        "River Dopeth"
+      ],
+      "foods": [
+        "Dried meat",
+        "millet bread",
+        "cow blood",
+        "sorghum",
+        "wild vegetables"
+      ],
+      "economy": [
+        "Cattle herding",
+        "mining",
+        "subsistence farming",
+        "trade"
+      ],
+      "animals": [
+        "Zebra",
+        "eland",
+        "giraffe",
+        "cheetah",
+        "lion"
+      ]
+    },
+    {
+      "name": "Moyo",
+      "region": "West Nile",
+      "places": [
+        "Moyo Town",
+        "Lefori",
+        "Gimara",
+        "Itula",
+        "Dufile"
+      ],
+      "localNames": [
+        "Drani",
+        "Candiru",
+        "Anguzu",
+        "Adrabo",
+        "Onzima"
+      ],
+      "landmarks": [
+        "Moyo Hospital",
+        "Moyo Market",
+        "River Nile crossing"
+      ],
+      "rivers": [
+        "River Nile",
+        "River Enyau"
+      ],
+      "foods": [
+        "Cassava bread",
+        "dried fish",
+        "groundnuts",
+        "simsim",
+        "beans"
+      ],
+      "economy": [
+        "Fishing",
+        "crop farming",
+        "cross-border trade",
+        "boda boda"
+      ],
+      "animals": [
+        "Nile perch",
+        "hippo",
+        "crocodile",
+        "monitor lizard",
+        "fish eagle"
+      ]
+    },
+    {
+      "name": "Mpigi",
+      "region": "Central",
+      "places": [
+        "Mpigi Town",
+        "Buwama",
+        "Nkozi",
+        "Muduuma",
+        "Kammengo"
+      ],
+      "localNames": [
+        "Mukasa",
+        "Nakato",
+        "Wasswa",
+        "Nambi",
+        "Kato",
+        "Babirye"
+      ],
+      "landmarks": [
+        "Mpigi Hospital",
+        "Mpigi Market",
+        "Lake Victoria nearby"
+      ],
+      "rivers": [
+        "Lake Victoria",
+        "River Katonga"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "groundnuts",
+        "tilapia",
+        "sweet potatoes"
+      ],
+      "economy": [
+        "Banana farming",
+        "fishing",
+        "coffee growing",
+        "retail"
+      ],
+      "animals": [
+        "Tilapia",
+        "monitor lizard",
+        "egrets",
+        "vervet monkey",
+        "kingfisher"
+      ]
+    },
+    {
+      "name": "Mubende",
+      "region": "Central",
+      "places": [
+        "Mubende Town",
+        "Kasanda",
+        "Kiganda",
+        "Butoloogo",
+        "Bageza"
+      ],
+      "localNames": [
+        "Mukasa",
+        "Nakato",
+        "Wasswa",
+        "Nambi",
+        "Kato",
+        "Ssali"
+      ],
+      "landmarks": [
+        "Mubende Hospital",
+        "Mubende Market",
+        "Nakayima Tree (Witch Tree)"
+      ],
+      "rivers": [
+        "River Katonga"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "groundnuts",
+        "beans",
+        "sweet potatoes"
+      ],
+      "economy": [
+        "Gold mining",
+        "crop farming",
+        "banana growing",
+        "retail"
+      ],
+      "animals": [
+        "Monitor lizard",
+        "egrets",
+        "weaver birds",
+        "vervet monkey"
+      ]
+    },
+    {
+      "name": "Mukono",
+      "region": "Central",
+      "places": [
+        "Mukono Town",
+        "Seeta",
+        "Namataba",
+        "Ntawo",
+        "Kimenyedde"
+      ],
+      "localNames": [
+        "Ssemakula",
+        "Nakato",
+        "Wasswa",
+        "Nambi",
+        "Kato",
+        "Babirye"
+      ],
+      "landmarks": [
+        "Uganda Christian University",
+        "Mukono Market",
+        "Lake Victoria shores"
+      ],
+      "rivers": [
+        "Lake Victoria",
+        "River Sezibwa"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "sweet potatoes",
+        "groundnuts",
+        "beans"
+      ],
+      "economy": [
+        "Pineapple farming",
+        "coffee growing",
+        "education sector",
+        "retail"
+      ],
+      "animals": [
+        "Tilapia",
+        "monitor lizard",
+        "egrets",
+        "kingfisher",
+        "vervet monkey"
+      ]
+    },
+    {
+      "name": "Nabilatuk",
+      "region": "Eastern",
+      "places": [
+        "Nabilatuk Town",
+        "Lorengedwat",
+        "Moruita",
+        "Karita",
+        "Lolachat"
+      ],
+      "localNames": [
+        "Chebet",
+        "Kiplangat",
+        "Cheptoek",
+        "Lokol",
+        "Chemutai"
+      ],
+      "landmarks": [
+        "Nabilatuk Hospital",
+        "Nabilatuk Market",
+        "Karamoja escarpment"
+      ],
+      "rivers": [
+        "River Amudat",
+        "River Suam"
+      ],
+      "foods": [
+        "Dried meat",
+        "millet bread",
+        "sorghum",
+        "wild tubers",
+        "groundnuts"
+      ],
+      "economy": [
+        "Cattle herding",
+        "goat keeping",
+        "subsistence farming",
+        "charcoal trade"
+      ],
+      "animals": [
+        "Zebra",
+        "eland",
+        "hartebeest",
+        "giraffe",
+        "ostrich"
+      ]
+    },
+    {
+      "name": "Nakapiripirit",
+      "region": "Eastern",
+      "places": [
+        "Nakapiripirit Town",
+        "Namalu",
+        "Chekwii",
+        "Lorengedwat",
+        "Karita"
+      ],
+      "localNames": [
+        "Lokwang",
+        "Logwee",
+        "Nachom",
+        "Lopak",
+        "Abura"
+      ],
+      "landmarks": [
+        "Nakapiripirit Hospital",
+        "Nakapiripirit Market",
+        "Karamoja plains"
+      ],
+      "rivers": [
+        "River Nakapiripirit",
+        "River Dopeth"
+      ],
+      "foods": [
+        "Dried meat",
+        "millet bread",
+        "sorghum",
+        "wild vegetables",
+        "groundnuts"
+      ],
+      "economy": [
+        "Cattle herding",
+        "subsistence farming",
+        "mining",
+        "honey production"
+      ],
+      "animals": [
+        "Eland",
+        "zebra",
+        "hartebeest",
+        "giraffe",
+        "lion"
+      ]
+    },
+    {
+      "name": "Nakaseke",
+      "region": "Central",
+      "places": [
+        "Nakaseke Town",
+        "Semuto",
+        "Kiwoko",
+        "Ngoma",
+        "Wakyato"
+      ],
+      "localNames": [
+        "Mukasa",
+        "Nakato",
+        "Wasswa",
+        "Nambi",
+        "Kato",
+        "Babirye"
+      ],
+      "landmarks": [
+        "Nakaseke Hospital",
+        "Nakaseke Market",
+        "Kiwoko Hospital"
+      ],
+      "rivers": [
+        "River Mayanja"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "groundnuts",
+        "beans",
+        "sweet potatoes"
+      ],
+      "economy": [
+        "Crop farming",
+        "banana growing",
+        "retail trade",
+        "boda boda"
+      ],
+      "animals": [
+        "Monitor lizard",
+        "egrets",
+        "weaver birds",
+        "vervet monkey"
+      ]
+    },
+    {
+      "name": "Nakasongola",
+      "region": "Central",
+      "places": [
+        "Nakasongola Town",
+        "Lwampanga",
+        "Wabinyonyi",
+        "Migyera",
+        "Kalungi"
+      ],
+      "localNames": [
+        "Mukasa",
+        "Nakato",
+        "Wasswa",
+        "Nambi",
+        "Kato"
+      ],
+      "landmarks": [
+        "Nakasongola Hospital",
+        "Nakasongola Market",
+        "Lake Nakasongola"
+      ],
+      "rivers": [
+        "Lake Kyoga",
+        "Victoria Nile"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "groundnuts",
+        "dried fish",
+        "sweet potatoes"
+      ],
+      "economy": [
+        "Cattle keeping",
+        "fishing",
+        "crop farming",
+        "retail"
+      ],
+      "animals": [
+        "Hippo",
+        "tilapia",
+        "shoebill stork",
+        "monitor lizard",
+        "egrets"
+      ]
+    },
+    {
+      "name": "Namayingo",
+      "region": "Eastern",
+      "places": [
+        "Namayingo Town",
+        "Sigulu Island",
+        "Buyinja",
+        "Bulumba",
+        "Namaingo"
+      ],
+      "localNames": [
+        "Waiswa",
+        "Nabirye",
+        "Mukhwana",
+        "Nambozo",
+        "Wafula"
+      ],
+      "landmarks": [
+        "Sigulu Islands",
+        "Namayingo Hospital",
+        "Lake Victoria shores"
+      ],
+      "rivers": [
+        "Lake Victoria"
+      ],
+      "foods": [
+        "Tilapia",
+        "Nile perch",
+        "cassava",
+        "matooke",
+        "sweet potatoes"
+      ],
+      "economy": [
+        "Fishing",
+        "retail trade",
+        "boat transport",
+        "crop farming"
+      ],
+      "animals": [
+        "Tilapia",
+        "Nile perch",
+        "monitor lizard",
+        "egrets",
+        "kingfisher"
+      ]
+    },
+    {
+      "name": "Namisindwa",
+      "region": "Eastern",
+      "places": [
+        "Namisindwa Town",
+        "Bumbo",
+        "Bukhaweka",
+        "Matara",
+        "Buluguyi"
+      ],
+      "localNames": [
+        "Wafula",
+        "Nambozo",
+        "Wekesa",
+        "Nabirye",
+        "Masaba"
+      ],
+      "landmarks": [
+        "Namisindwa Hospital",
+        "Namisindwa Market",
+        "Mount Elgon foothills"
+      ],
+      "rivers": [
+        "River Sironko",
+        "River Manafwa"
+      ],
+      "foods": [
+        "Malewa (bamboo shoots)",
+        "millet bread",
+        "matooke",
+        "beans",
+        "groundnuts"
+      ],
+      "economy": [
+        "Coffee farming",
+        "crop farming",
+        "retail trade",
+        "boda boda"
+      ],
+      "animals": [
+        "Colobus monkey",
+        "forest birds",
+        "monitor lizard",
+        "buffalo"
+      ]
+    },
+    {
+      "name": "Namutumba",
+      "region": "Eastern",
+      "places": [
+        "Namutumba Town",
+        "Busembatia",
+        "Nsinze",
+        "Bulange",
+        "Magada"
+      ],
+      "localNames": [
+        "Waiswa",
+        "Nabirye",
+        "Mukhwana",
+        "Nambozo",
+        "Wafula"
+      ],
+      "landmarks": [
+        "Namutumba Hospital",
+        "Namutumba Market",
+        "Busoga region"
+      ],
+      "rivers": [
+        "River Mpologoma",
+        "Lake Kyoga"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "sweet potatoes",
+        "groundnuts",
+        "beans"
+      ],
+      "economy": [
+        "Sugarcane farming",
+        "crop farming",
+        "retail trade",
+        "boda boda"
+      ],
+      "animals": [
+        "Tilapia",
+        "monitor lizard",
+        "egrets",
+        "weaver birds",
+        "hippo"
+      ]
+    },
+    {
+      "name": "Napak",
+      "region": "Eastern",
+      "places": [
+        "Napak Town",
+        "Iriri",
+        "Lopeei",
+        "Ngariam",
+        "Matany"
+      ],
+      "localNames": [
+        "Lokwang",
+        "Logwee",
+        "Nachom",
+        "Lopak",
+        "Abura"
+      ],
+      "landmarks": [
+        "Napak Hospital",
+        "Matany Hospital",
+        "Karamoja plains"
+      ],
+      "rivers": [
+        "River Dopeth",
+        "River Pager"
+      ],
+      "foods": [
+        "Dried meat",
+        "millet bread",
+        "sorghum",
+        "wild tubers",
+        "groundnuts"
+      ],
+      "economy": [
+        "Cattle herding",
+        "subsistence farming",
+        "honey production",
+        "mining"
+      ],
+      "animals": [
+        "Eland",
+        "zebra",
+        "ostrich",
+        "giraffe",
+        "lion"
+      ]
+    },
+    {
+      "name": "Nebbi",
+      "region": "West Nile",
+      "places": [
+        "Nebbi Town",
+        "Paidha",
+        "Pakwach",
+        "Jonam",
+        "Zombo Road"
+      ],
+      "localNames": [
+        "Drani",
+        "Candiru",
+        "Anguzu",
+        "Adrabo",
+        "Onzima"
+      ],
+      "landmarks": [
+        "Nebbi Hospital",
+        "Nebbi Market",
+        "Albert Nile shores"
+      ],
+      "rivers": [
+        "River Nile (Albert Nile)",
+        "Lake Albert"
+      ],
+      "foods": [
+        "Cassava bread",
+        "dried fish",
+        "groundnuts",
+        "simsim",
+        "millet bread"
+      ],
+      "economy": [
+        "Fishing",
+        "crop farming",
+        "cross-border trade",
+        "boda boda"
+      ],
+      "animals": [
+        "Nile perch",
+        "hippo",
+        "crocodile",
+        "monitor lizard",
+        "fish eagle"
+      ]
+    },
+    {
+      "name": "Ngora",
+      "region": "Eastern",
+      "places": [
+        "Ngora Town",
+        "Kapir",
+        "Mukura",
+        "Kobwin",
+        "Atela"
+      ],
+      "localNames": [
+        "Emong",
+        "Akol",
+        "Egunyu",
+        "Apio",
+        "Amongin"
+      ],
+      "landmarks": [
+        "Ngora Hospital",
+        "Ngora Market",
+        "Teso College Aloet nearby"
+      ],
+      "rivers": [
+        "Lake Bisina",
+        "River Okere"
+      ],
+      "foods": [
+        "Atap (millet bread)",
+        "simsim",
+        "groundnuts",
+        "dried fish",
+        "cassava"
+      ],
+      "economy": [
+        "Cattle keeping",
+        "cotton growing",
+        "crop farming",
+        "market trade"
+      ],
+      "animals": [
+        "Grey Crowned Crane",
+        "tilapia",
+        "monitor lizard",
+        "eland",
+        "egrets"
+      ]
+    },
+    {
+      "name": "Ntoroko",
+      "region": "Western",
+      "places": [
+        "Ntoroko Town",
+        "Kanara",
+        "Butuku",
+        "Karugutu",
+        "Lake Albert shore"
+      ],
+      "localNames": [
+        "Baluku",
+        "Mbambu",
+        "Bwambale",
+        "Masika",
+        "Kabugho"
+      ],
+      "landmarks": [
+        "Ntoroko Hospital",
+        "Lake Albert shores",
+        "Semliki National Park border"
+      ],
+      "rivers": [
+        "Lake Albert",
+        "River Semliki"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "fish",
+        "groundnuts",
+        "beans"
+      ],
+      "economy": [
+        "Fishing",
+        "crop farming",
+        "oil sector",
+        "retail"
+      ],
+      "animals": [
+        "Shoebill stork",
+        "Nile perch",
+        "hippo",
+        "crocodile",
+        "tilapia"
+      ]
+    },
+    {
+      "name": "Ntungamo",
+      "region": "Western",
+      "places": [
+        "Ntungamo Town",
+        "Rubaare",
+        "Rwashamaire",
+        "Kayonza",
+        "Itojo"
+      ],
+      "localNames": [
+        "Tumuhairwe",
+        "Tusiime",
+        "Mugisha",
+        "Byaruhanga",
+        "Arinaitwe"
+      ],
+      "landmarks": [
+        "Ntungamo Hospital",
+        "Ntungamo Market",
+        "Ankole cattle ranches"
+      ],
+      "rivers": [
+        "River Kagera"
+      ],
+      "foods": [
+        "Eshabwe",
+        "karo",
+        "beef",
+        "milk",
+        "matooke"
+      ],
+      "economy": [
+        "Cattle ranching",
+        "dairy farming",
+        "banana growing",
+        "trade"
+      ],
+      "animals": [
+        "Ankole cattle",
+        "goats",
+        "sheep",
+        "monitor lizard",
+        "cranes"
+      ]
+    },
+    {
+      "name": "Nwoya",
+      "region": "Northern",
+      "places": [
+        "Nwoya Town",
+        "Anaka",
+        "Koch Goma",
+        "Purongo",
+        "Alero"
+      ],
+      "localNames": [
+        "Okello",
+        "Akello",
+        "Opio",
+        "Auma",
+        "Otim",
+        "Acen"
+      ],
+      "landmarks": [
+        "Nwoya Hospital",
+        "Nwoya Market",
+        "Murchison Falls nearby"
+      ],
+      "rivers": [
+        "Albert Nile",
+        "River Aswa"
+      ],
+      "foods": [
+        "Malakwang",
+        "millet bread",
+        "simsim paste",
+        "dried fish",
+        "cassava"
+      ],
+      "economy": [
+        "Crop farming",
+        "cattle keeping",
+        "fishing",
+        "market trading"
+      ],
+      "animals": [
+        "Elephant",
+        "hippo",
+        "Nile crocodile",
+        "buffalo",
+        "Grey Crowned Crane"
+      ]
+    },
+    {
+      "name": "Obongi",
+      "region": "West Nile",
+      "places": [
+        "Obongi Town",
+        "Laropi",
+        "Parolinya",
+        "Moyo Road",
+        "Nile crossing"
+      ],
+      "localNames": [
+        "Drani",
+        "Candiru",
+        "Anguzu",
+        "Adrabo",
+        "Onzima"
+      ],
+      "landmarks": [
+        "Obongi Hospital",
+        "Obongi Market",
+        "Nile River crossing",
+        "refugee settlements"
+      ],
+      "rivers": [
+        "River Nile"
+      ],
+      "foods": [
+        "Cassava bread",
+        "dried fish",
+        "groundnuts",
+        "simsim",
+        "beans"
+      ],
+      "economy": [
+        "Fishing",
+        "crop farming",
+        "humanitarian sector",
+        "cross-border trade"
+      ],
+      "animals": [
+        "Nile perch",
+        "hippo",
+        "crocodile",
+        "monitor lizard",
+        "fish eagle"
+      ]
+    },
+    {
+      "name": "Omdabar",
+      "region": "Eastern",
+      "places": [
+        "Omdabar Town",
+        "Karamoja area",
+        "Nakapiripirit Road"
+      ],
+      "localNames": [
+        "Lokwang",
+        "Logwee",
+        "Nachom",
+        "Lopak",
+        "Abura"
+      ],
+      "landmarks": [
+        "Omdabar Hospital",
+        "Omdabar Market",
+        "Karamoja plains"
+      ],
+      "rivers": [
+        "River Dopeth",
+        "River Pager"
+      ],
+      "foods": [
+        "Dried meat",
+        "millet bread",
+        "sorghum",
+        "wild tubers",
+        "groundnuts"
+      ],
+      "economy": [
+        "Cattle herding",
+        "subsistence farming",
+        "honey production",
+        "charcoal trade"
+      ],
+      "animals": [
+        "Zebra",
+        "eland",
+        "giraffe",
+        "ostrich",
+        "lion"
+      ]
+    },
+    {
+      "name": "Omoro",
+      "region": "Northern",
+      "places": [
+        "Omoro Town",
+        "Bobi",
+        "Lalogi",
+        "Odek",
+        "Ongako"
+      ],
+      "localNames": [
+        "Okello",
+        "Akello",
+        "Odong",
+        "Achen",
+        "Opiyo",
+        "Adong"
+      ],
+      "landmarks": [
+        "Omoro Hospital",
+        "Omoro Market",
+        "Acholi region"
+      ],
+      "rivers": [
+        "River Unyama",
+        "River Aswa"
+      ],
+      "foods": [
+        "Malakwang",
+        "millet bread",
+        "simsim paste",
+        "dried fish",
+        "cassava"
+      ],
+      "economy": [
+        "Crop farming",
+        "cattle keeping",
+        "boda boda",
+        "market trading"
+      ],
+      "animals": [
+        "Nile monitor",
+        "Grey Crowned Crane",
+        "marabou stork",
+        "tilapia"
+      ]
+    },
+    {
+      "name": "Otuke",
+      "region": "Northern",
+      "places": [
+        "Otuke Town",
+        "Okwang",
+        "Adwari",
+        "Orum",
+        "Olilim"
+      ],
+      "localNames": [
+        "Okello",
+        "Akello",
+        "Opio",
+        "Auma",
+        "Otim",
+        "Acen"
+      ],
+      "landmarks": [
+        "Otuke Hospital",
+        "Otuke Market",
+        "Lango plains"
+      ],
+      "rivers": [
+        "River Okole",
+        "River Moroto"
+      ],
+      "foods": [
+        "Boo (millet bread)",
+        "simsim paste",
+        "groundnut sauce",
+        "dried fish",
+        "cassava"
+      ],
+      "economy": [
+        "Sunflower farming",
+        "cattle keeping",
+        "crop farming",
+        "market trade"
+      ],
+      "animals": [
+        "Grey Crowned Crane",
+        "marabou stork",
+        "monitor lizard",
+        "tilapia"
+      ]
+    },
+    {
+      "name": "Oyam",
+      "region": "Northern",
+      "places": [
+        "Oyam Town",
+        "Apac Road",
+        "Loro",
+        "Myene",
+        "Minakulu"
+      ],
+      "localNames": [
+        "Okello",
+        "Akello",
+        "Opio",
+        "Auma",
+        "Otim",
+        "Acen"
+      ],
+      "landmarks": [
+        "Oyam Hospital",
+        "Oyam Market",
+        "Lango plains"
+      ],
+      "rivers": [
+        "Lake Kwania",
+        "River Moroto"
+      ],
+      "foods": [
+        "Boo (millet bread)",
+        "simsim paste",
+        "groundnut sauce",
+        "dried fish",
+        "cassava"
+      ],
+      "economy": [
+        "Cotton farming",
+        "cattle keeping",
+        "simsim growing",
+        "fishing"
+      ],
+      "animals": [
+        "Grey Crowned Crane",
+        "tilapia",
+        "hippo",
+        "marabou stork",
+        "monitor lizard"
+      ]
+    },
+    {
+      "name": "Pader",
+      "region": "Northern",
+      "places": [
+        "Pader Town",
+        "Atanga",
+        "Laguti",
+        "Ogom",
+        "Puranga"
+      ],
+      "localNames": [
+        "Okello",
+        "Akello",
+        "Opio",
+        "Auma",
+        "Otim",
+        "Acen"
+      ],
+      "landmarks": [
+        "Pader Hospital",
+        "Pader Market",
+        "Acholi region"
+      ],
+      "rivers": [
+        "River Pager",
+        "River Agago"
+      ],
+      "foods": [
+        "Malakwang",
+        "millet bread",
+        "simsim paste",
+        "dried fish",
+        "cassava"
+      ],
+      "economy": [
+        "Subsistence farming",
+        "cattle keeping",
+        "honey production",
+        "market trade"
+      ],
+      "animals": [
+        "Lion",
+        "hippo",
+        "buffalo",
+        "Grey Crowned Crane",
+        "monitor lizard"
+      ]
+    },
+    {
+      "name": "Pakwach",
+      "region": "West Nile",
+      "places": [
+        "Pakwach Town",
+        "Panyimur",
+        "Wadelai",
+        "Pawor",
+        "Oli"
+      ],
+      "localNames": [
+        "Drani",
+        "Candiru",
+        "Anguzu",
+        "Adrabo",
+        "Onzima"
+      ],
+      "landmarks": [
+        "Pakwach Hospital",
+        "Albert Nile Bridge",
+        "Pakwach Market"
+      ],
+      "rivers": [
+        "Albert Nile",
+        "Lake Albert"
+      ],
+      "foods": [
+        "Cassava bread",
+        "dried fish",
+        "Nile perch",
+        "groundnuts",
+        "millet bread"
+      ],
+      "economy": [
+        "Fishing",
+        "crop farming",
+        "cross-border trade",
+        "boda boda"
+      ],
+      "animals": [
+        "Nile perch",
+        "hippo",
+        "crocodile",
+        "shoebill stork",
+        "monitor lizard"
+      ]
+    },
+    {
+      "name": "Pallisa",
+      "region": "Eastern",
+      "places": [
+        "Pallisa Town",
+        "Butebo",
+        "Kamuge",
+        "Agule",
+        "Gogonyo"
+      ],
+      "localNames": [
+        "Wafula",
+        "Nambozo",
+        "Wekesa",
+        "Nabirye",
+        "Masaba"
+      ],
+      "landmarks": [
+        "Pallisa Hospital",
+        "Pallisa Market",
+        "Teso-Bugisu border"
+      ],
+      "rivers": [
+        "Lake Bisina",
+        "River Mpologoma"
+      ],
+      "foods": [
+        "Atap (millet bread)",
+        "cassava",
+        "groundnuts",
+        "dried fish",
+        "beans"
+      ],
+      "economy": [
+        "Cattle keeping",
+        "cotton growing",
+        "crop farming",
+        "market trade"
+      ],
+      "animals": [
+        "Grey Crowned Crane",
+        "tilapia",
+        "hippo",
+        "monitor lizard",
+        "egrets"
+      ]
+    },
+    {
+      "name": "Rakai",
+      "region": "Central",
+      "places": [
+        "Rakai Town",
+        "Lyantonde Road",
+        "Kasensero",
+        "Lwamaggwa",
+        "Kakuto"
+      ],
+      "localNames": [
+        "Mukasa",
+        "Nakato",
+        "Wasswa",
+        "Nambi",
+        "Kato",
+        "Ssali"
+      ],
+      "landmarks": [
+        "Rakai Hospital",
+        "Rakai Market",
+        "Lake Victoria nearby"
+      ],
+      "rivers": [
+        "Lake Victoria",
+        "River Kagera"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "tilapia",
+        "groundnuts",
+        "sweet potatoes"
+      ],
+      "economy": [
+        "Coffee growing",
+        "fishing",
+        "banana farming",
+        "retail"
+      ],
+      "animals": [
+        "Tilapia",
+        "Nile perch",
+        "monitor lizard",
+        "egrets",
+        "kingfisher"
+      ]
+    },
+    {
+      "name": "Rubanda",
+      "region": "Western",
+      "places": [
+        "Rubanda Town",
+        "Ikumba",
+        "Bufundi",
+        "Ruhija",
+        "Muko"
+      ],
+      "localNames": [
+        "Tumusiime",
+        "Arinaitwe",
+        "Twinomuhangi",
+        "Muhwezi",
+        "Byaruhanga"
+      ],
+      "landmarks": [
+        "Bwindi Impenetrable Forest",
+        "Rubanda Hospital",
+        "Ruhija gorilla sector"
+      ],
+      "rivers": [
+        "Lake Bunyonyi",
+        "River Kiyanja"
+      ],
+      "foods": [
+        "Irish potatoes",
+        "beans",
+        "peas",
+        "millet bread",
+        "sorghum"
+      ],
+      "economy": [
+        "Tourism",
+        "Irish potato trade",
+        "terraced farming",
+        "handicrafts"
+      ],
+      "animals": [
+        "Mountain gorilla",
+        "golden monkey",
+        "chameleon",
+        "forest birds",
+        "otters"
+      ]
+    },
+    {
+      "name": "Rubirizi",
+      "region": "Western",
+      "places": [
+        "Rubirizi Town",
+        "Katerera",
+        "Bunyaruguru",
+        "Ryeru",
+        "Kasasa"
+      ],
+      "localNames": [
+        "Tumuhairwe",
+        "Tusiime",
+        "Mugisha",
+        "Byaruhanga",
+        "Arinaitwe"
+      ],
+      "landmarks": [
+        "Queen Elizabeth National Park",
+        "Rubirizi Hospital",
+        "Kazinga Channel"
+      ],
+      "rivers": [
+        "Lake George",
+        "Lake Edward",
+        "Kazinga Channel"
+      ],
+      "foods": [
+        "Matooke",
+        "fish",
+        "groundnuts",
+        "cassava",
+        "sweet potatoes"
+      ],
+      "economy": [
+        "Tourism",
+        "fishing",
+        "cattle ranching",
+        "crop farming"
+      ],
+      "animals": [
+        "Hippo",
+        "elephant",
+        "buffalo",
+        "lion",
+        "flamingo"
+      ]
+    },
+    {
+      "name": "Rukiga",
+      "region": "Western",
+      "places": [
+        "Rukiga Town",
+        "Kabale Road",
+        "Kamwezi",
+        "Bukinda",
+        "Rwamucucu"
+      ],
+      "localNames": [
+        "Tumusiime",
+        "Arinaitwe",
+        "Twinomuhangi",
+        "Muhwezi",
+        "Byaruhanga"
+      ],
+      "landmarks": [
+        "Rukiga Hospital",
+        "Rukiga Market",
+        "Kigezi highlands"
+      ],
+      "rivers": [
+        "Lake Bunyonyi",
+        "River Kiyanja"
+      ],
+      "foods": [
+        "Irish potatoes",
+        "beans",
+        "peas",
+        "sorghum",
+        "millet bread"
+      ],
+      "economy": [
+        "Terraced farming",
+        "potato trade",
+        "dairy farming",
+        "retail"
+      ],
+      "animals": [
+        "Mountain gorilla nearby",
+        "golden monkey",
+        "chameleon",
+        "forest birds",
+        "otters"
+      ]
+    },
+    {
+      "name": "Rukungiri",
+      "region": "Western",
+      "places": [
+        "Rukungiri Town",
+        "Kebisoni",
+        "Buyanja",
+        "Nyarushanje",
+        "Kagunga"
+      ],
+      "localNames": [
+        "Tumuhairwe",
+        "Tusiime",
+        "Mugisha",
+        "Byaruhanga",
+        "Mwesigwa"
+      ],
+      "landmarks": [
+        "Rukungiri Hospital",
+        "Rukungiri Market",
+        "Bwindi nearby"
+      ],
+      "rivers": [
+        "River Kiyanja",
+        "River Mpanga"
+      ],
+      "foods": [
+        "Matooke",
+        "beans",
+        "Irish potatoes",
+        "millet bread",
+        "groundnuts"
+      ],
+      "economy": [
+        "Coffee growing",
+        "banana farming",
+        "crop farming",
+        "retail"
+      ],
+      "animals": [
+        "Mountain gorilla nearby",
+        "colobus monkey",
+        "forest birds",
+        "monitor lizard"
+      ]
+    },
+    {
+      "name": "Rwampara",
+      "region": "Western",
+      "places": [
+        "Rwampara Town",
+        "Mbarara Road",
+        "Bwizibwera",
+        "Nyakayojo",
+        "Kagongi"
+      ],
+      "localNames": [
+        "Tumuhairwe",
+        "Tusiime",
+        "Mugisha",
+        "Byaruhanga",
+        "Ainomugisha"
+      ],
+      "landmarks": [
+        "Rwampara Hospital",
+        "Rwampara Market",
+        "Ankole plains"
+      ],
+      "rivers": [
+        "River Rwizi"
+      ],
+      "foods": [
+        "Eshabwe (ghee)",
+        "karo",
+        "beef",
+        "milk",
+        "matooke"
+      ],
+      "economy": [
+        "Cattle ranching",
+        "dairy farming",
+        "banana growing",
+        "trade"
+      ],
+      "animals": [
+        "Ankole cattle",
+        "goats",
+        "sheep",
+        "monitor lizard",
+        "cranes"
+      ]
+    },
+    {
+      "name": "Rwenzori",
+      "region": "Western",
+      "places": [
+        "Bundibugyo Town",
+        "Ntandi",
+        "Nyahuka",
+        "Bubandi",
+        "Harugale"
+      ],
+      "localNames": [
+        "Baluku",
+        "Mbambu",
+        "Bwambale",
+        "Masika",
+        "Kabugho"
+      ],
+      "landmarks": [
+        "Rwenzori Mountains",
+        "Bundibugyo Hospital",
+        "Semuliki National Park"
+      ],
+      "rivers": [
+        "River Semliki",
+        "River Lamia"
+      ],
+      "foods": [
+        "Matooke",
+        "cassava",
+        "cocoa",
+        "groundnuts",
+        "beans"
+      ],
+      "economy": [
+        "Cocoa farming",
+        "tourism",
+        "crop farming",
+        "retail"
+      ],
+      "animals": [
+        "Chimpanzee",
+        "forest elephant",
+        "colobus monkey",
+        "okapi",
+        "forest birds"
+      ]
+    },
+    {
+      "name": "Sembabule",
+      "region": "Central",
+      "places": [
+        "Sembabule Town",
+        "Mateete",
+        "Lugusulu",
+        "Lwemiyaga",
+        "Mijwala"
+      ],
+      "localNames": [
+        "Mukasa",
+        "Nakato",
+        "Wasswa",
+        "Nambi",
+        "Kato",
+        "Ssali"
+      ],
+      "landmarks": [
+        "Sembabule Hospital",
+        "Sembabule Market",
+        "Masaka-Mbarara corridor"
+      ],
+      "rivers": [
+        "River Katonga"
+      ],
+      "foods": [
+        "Matooke",
+        "beef",
+        "milk",
+        "cassava",
+        "groundnuts"
+      ],
+      "economy": [
+        "Cattle ranching",
+        "crop farming",
+        "dairy farming",
+        "retail"
+      ],
+      "animals": [
+        "Ankole cattle",
+        "monitor lizard",
+        "egrets",
+        "cranes",
+        "weaver birds"
+      ]
+    },
+    {
+      "name": "Serere",
+      "region": "Eastern",
+      "places": [
+        "Serere Town",
+        "Pingire",
+        "Olio",
+        "Kateta",
+        "Kasilo"
+      ],
+      "localNames": [
+        "Emong",
+        "Akol",
+        "Egunyu",
+        "Apio",
+        "Amongin"
+      ],
+      "landmarks": [
+        "Serere Hospital",
+        "Serere Market",
+        "Lake Kyoga shores"
+      ],
+      "rivers": [
+        "Lake Kyoga",
+        "River Okere"
+      ],
+      "foods": [
+        "Atap (millet bread)",
+        "cassava",
+        "groundnuts",
+        "dried fish",
+        "beans"
+      ],
+      "economy": [
+        "Fishing",
+        "cattle keeping",
+        "crop farming",
+        "market trade"
+      ],
+      "animals": [
+        "Tilapia",
+        "hippo",
+        "shoebill stork",
+        "Grey Crowned Crane",
+        "monitor lizard"
+      ]
+    },
+    {
+      "name": "Sheema",
+      "region": "Western",
+      "places": [
+        "Sheema Town",
+        "Kabwohe",
+        "Kitagata",
+        "Endiinzi",
+        "Birere"
+      ],
+      "localNames": [
+        "Tumuhairwe",
+        "Tusiime",
+        "Mugisha",
+        "Byaruhanga",
+        "Arinaitwe"
+      ],
+      "landmarks": [
+        "Sheema Hospital",
+        "Sheema Market",
+        "Kitagata Hot Springs"
+      ],
+      "rivers": [
+        "River Rwizi"
+      ],
+      "foods": [
+        "Eshabwe (ghee)",
+        "karo",
+        "matooke",
+        "beans",
+        "Irish potatoes"
+      ],
+      "economy": [
+        "Tea farming",
+        "cattle ranching",
+        "banana growing",
+        "trade"
+      ],
+      "animals": [
+        "Ankole cattle",
+        "goats",
+        "sheep",
+        "monitor lizard",
+        "forest birds"
+      ]
+    },
+    {
+      "name": "Sironko",
+      "region": "Eastern",
+      "places": [
+        "Sironko Town",
+        "Bukhiende",
+        "Buwalasi",
+        "Nalusala",
+        "Buwagogo"
+      ],
+      "localNames": [
+        "Wafula",
+        "Nambozo",
+        "Wekesa",
+        "Nabirye",
+        "Masaba"
+      ],
+      "landmarks": [
+        "Sironko Hospital",
+        "Sironko Market",
+        "Mount Elgon foothills"
+      ],
+      "rivers": [
+        "River Sironko",
+        "River Bukwa"
+      ],
+      "foods": [
+        "Malewa (bamboo shoots)",
+        "millet bread",
+        "matooke",
+        "groundnuts",
+        "beans"
+      ],
+      "economy": [
+        "Coffee farming",
+        "crop farming",
+        "retail trade",
+        "boda boda"
+      ],
+      "animals": [
+        "Colobus monkey",
+        "forest birds",
+        "buffalo",
+        "monitor lizard",
+        "sunbirds"
+      ]
+    },
+    {
+      "name": "Soroti",
+      "region": "Eastern",
+      "places": [
+        "Soroti City",
+        "Arapai",
+        "Tubur",
+        "Gweri",
+        "Katine"
+      ],
+      "localNames": [
+        "Emong",
+        "Akol",
+        "Egunyu",
+        "Apio",
+        "Okello",
+        "Amongin"
+      ],
+      "landmarks": [
+        "Soroti Rock",
+        "Soroti Flying School",
+        "Soroti University",
+        "Teso College"
+      ],
+      "rivers": [
+        "Lake Kyoga",
+        "River Okole"
+      ],
+      "foods": [
+        "Atap (millet bread)",
+        "malakwang",
+        "groundnut paste",
+        "dried fish",
+        "cassava"
+      ],
+      "economy": [
+        "Cattle keeping",
+        "crop farming",
+        "fishing",
+        "boda boda",
+        "market trade"
+      ],
+      "animals": [
+        "Grey Crowned Crane",
+        "tilapia",
+        "monitor lizard",
+        "cattle",
+        "egrets"
+      ]
+    },
+    {
+      "name": "Terego",
+      "region": "West Nile",
+      "places": [
+        "Terego Town",
+        "Yumbe Road",
+        "Odravu",
+        "Gimara",
+        "Kuluba"
+      ],
+      "localNames": [
+        "Drani",
+        "Candiru",
+        "Anguzu",
+        "Adrabo",
+        "Onzima"
+      ],
+      "landmarks": [
+        "Terego Hospital",
+        "Terego Market",
+        "refugee settlements",
+        "West Nile plains"
+      ],
+      "rivers": [
+        "River Kochi",
+        "River Ora"
+      ],
+      "foods": [
+        "Cassava bread",
+        "groundnuts",
+        "simsim",
+        "dried fish",
+        "beans"
+      ],
+      "economy": [
+        "Tobacco farming",
+        "cassava growing",
+        "humanitarian sector",
+        "trade"
+      ],
+      "animals": [
+        "Warthog",
+        "baboon",
+        "monitor lizard",
+        "fish eagle",
+        "hippo"
+      ]
+    },
+    {
+      "name": "Tororo",
+      "region": "Eastern",
+      "places": [
+        "Tororo Town",
+        "Nagongera",
+        "Mulanda",
+        "Petta",
+        "Osukuru"
+      ],
+      "localNames": [
+        "Wafula",
+        "Nambozo",
+        "Wekesa",
+        "Nabirye",
+        "Masaba",
+        "Wandera"
+      ],
+      "landmarks": [
+        "Tororo Rock",
+        "Tororo Cement",
+        "Tororo Girls School"
+      ],
+      "rivers": [
+        "River Malaba",
+        "River Mpologoma"
+      ],
+      "foods": [
+        "Matooke",
+        "millet bread",
+        "groundnuts",
+        "beans",
+        "cassava"
+      ],
+      "economy": [
+        "Cement industry",
+        "crop farming",
+        "cross-border trade",
+        "boda boda"
+      ],
+      "animals": [
+        "Rock hyrax",
+        "monitor lizard",
+        "tilapia",
+        "egrets",
+        "weaver birds"
+      ]
+    },
+    {
+      "name": "Wakiso",
+      "region": "Central",
+      "places": [
+        "Entebbe",
+        "Nansana",
+        "Kira",
+        "Makindye-Ssabagabo",
+        "Kasangati",
+        "Namugongo"
+      ],
+      "localNames": [
+        "Mukasa",
+        "Nakato",
+        "Wasswa",
+        "Babirye",
+        "Kato",
+        "Nambi"
+      ],
+      "landmarks": [
+        "Entebbe Airport",
+        "Uganda Martyrs Shrine",
+        "Lake Victoria Beach",
+        "Botanical Gardens"
+      ],
+      "rivers": [
+        "Lake Victoria"
+      ],
+      "foods": [
+        "Matooke",
+        "rolex",
+        "tilapia",
+        "groundnut sauce",
+        "cassava"
+      ],
+      "economy": [
+        "Aviation",
+        "tourism",
+        "fishing",
+        "retail",
+        "real estate"
+      ],
+      "animals": [
+        "Tilapia",
+        "Nile perch",
+        "monitor lizard",
+        "vervet monkey",
+        "kingfisher"
+      ]
+    },
+    {
+      "name": "Yumbe",
+      "region": "West Nile",
+      "places": [
+        "Yumbe Town",
+        "Kerwa",
+        "Romogi",
+        "Ariwa",
+        "Kuluba"
+      ],
+      "localNames": [
+        "Drani",
+        "Candiru",
+        "Anguzu",
+        "Adrabo",
+        "Onzima"
+      ],
+      "landmarks": [
+        "Yumbe Hospital",
+        "Yumbe Market",
+        "Bidibidi Refugee Settlement"
+      ],
+      "rivers": [
+        "River Kochi",
+        "River Ora"
+      ],
+      "foods": [
+        "Cassava bread",
+        "groundnuts",
+        "simsim",
+        "dried fish",
+        "millet bread"
+      ],
+      "economy": [
+        "Tobacco farming",
+        "cassava growing",
+        "humanitarian sector",
+        "trade"
+      ],
+      "animals": [
+        "Warthog",
+        "baboon",
+        "monitor lizard",
+        "fish eagle",
+        "hippo"
+      ]
+    },
+    {
+      "name": "Zombo",
+      "region": "West Nile",
+      "places": [
+        "Zombo Town",
+        "Paidha",
+        "Warr",
+        "Atyak",
+        "Zeu"
+      ],
+      "localNames": [
+        "Drani",
+        "Candiru",
+        "Anguzu",
+        "Adrabo",
+        "Onzima"
+      ],
+      "landmarks": [
+        "Zombo Hospital",
+        "Zombo Market",
+        "Albert Nile nearby"
+      ],
+      "rivers": [
+        "River Ora",
+        "Albert Nile"
+      ],
+      "foods": [
+        "Cassava bread",
+        "groundnuts",
+        "simsim",
+        "dried fish",
+        "millet bread"
+      ],
+      "economy": [
+        "Crop farming",
+        "tobacco growing",
+        "cross-border trade",
+        "boda boda"
+      ],
+      "animals": [
+        "Hippo",
+        "crocodile",
+        "monitor lizard",
+        "fish eagle",
+        "warthog"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,690 @@
+-- Merging decision tree log ---
+manifest
+ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:2:1-72:12
+INJECTED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:2:1-72:12
+INJECTED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:2:1-72:12
+INJECTED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:2:1-72:12
+MERGED from [com.google.mlkit:text-recognition:16.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\491e732bb10f76c5d10c0e45b33b5892\transformed\jetified-text-recognition-16.0.0\AndroidManifest.xml:2:1-7:12
+MERGED from [com.google.android.gms:play-services-mlkit-text-recognition:19.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\23f54a6751e6582267801a678c64e9e8\transformed\jetified-play-services-mlkit-text-recognition-19.0.0\AndroidManifest.xml:2:1-8:12
+MERGED from [com.google.mlkit:text-recognition-bundled-common:16.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\0c72b4a233e66b99353da377229b5358\transformed\jetified-text-recognition-bundled-common-16.0.0\AndroidManifest.xml:2:1-7:12
+MERGED from [com.google.android.gms:play-services-mlkit-text-recognition-common:19.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\33b6177fec570a5a4c4b2701f8635c8d\transformed\jetified-play-services-mlkit-text-recognition-common-19.0.0\AndroidManifest.xml:2:1-18:12
+MERGED from [com.google.mlkit:vision-common:17.3.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\046709757b66d39fceea762f2b817b5b\transformed\jetified-vision-common-17.3.0\AndroidManifest.xml:2:1-18:12
+MERGED from [com.google.mlkit:common:18.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ad4c689748f75845882b8b2793227377\transformed\jetified-common-18.8.0\AndroidManifest.xml:2:1-26:12
+MERGED from [com.google.android.gms:play-services-base:18.1.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\e6fc7599450d427eb0426af078a30220\transformed\jetified-play-services-base-18.1.0\AndroidManifest.xml:16:1-24:12
+MERGED from [com.google.mlkit:vision-interfaces:16.2.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\8360ddfbf46fd1f6af269d46cf184e65\transformed\jetified-vision-interfaces-16.2.0\AndroidManifest.xml:2:1-7:12
+MERGED from [com.google.android.gms:play-services-tasks:18.0.2] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\380d405243fbfa2ad06a00c1d9c4e8eb\transformed\jetified-play-services-tasks-18.0.2\AndroidManifest.xml:2:1-6:12
+MERGED from [com.google.android.gms:play-services-basement:18.1.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\5ae7b79a62402a18ae79ebde0b67f168\transformed\jetified-play-services-basement-18.1.0\AndroidManifest.xml:16:1-26:12
+MERGED from [androidx.navigation:navigation-common:2.7.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c10af624912bd8186cb26a1eb616b79e\transformed\navigation-common-2.7.7\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.navigation:navigation-runtime:2.7.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\976150303e8467928de0a8c504d611c3\transformed\navigation-runtime-2.7.7\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.navigation:navigation-common-ktx:2.7.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\631b712cf12c4d182d206689eaecc83a\transformed\navigation-common-ktx-2.7.7\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.navigation:navigation-runtime-ktx:2.7.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\28e9a1e39fa7c984e8f5896857a658bf\transformed\navigation-runtime-ktx-2.7.7\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.navigation:navigation-compose:2.7.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\a779b9883e26aa62e3bce999622da282\transformed\jetified-navigation-compose-2.7.7\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.material3:material3-android:1.2.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\b672cd268af5c44e54157e3b5066ba34\transformed\jetified-material3-release\AndroidManifest.xml:17:1-22:12
+MERGED from [io.coil-kt:coil-compose:2.6.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\4eedee548a6c4ce748ca564d173f096d\transformed\jetified-coil-compose-2.6.0\AndroidManifest.xml:2:1-7:12
+MERGED from [io.coil-kt:coil-compose-base:2.6.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\d32075c1945e9032b1f36c7e22776ff5\transformed\jetified-coil-compose-base-2.6.0\AndroidManifest.xml:2:1-7:12
+MERGED from [io.coil-kt:coil:2.6.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\63ff396a51ff9abb99a2fa0103eecf07\transformed\jetified-coil-2.6.0\AndroidManifest.xml:2:1-7:12
+MERGED from [io.coil-kt:coil-base:2.6.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\134a812681707d4b5e7538da1457665d\transformed\jetified-coil-base-2.6.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.fragment:fragment:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ff2818f152e4ff698b291a4565cbd222\transformed\fragment-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.legacy:legacy-support-core-ui:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\df20c6babb0006a4d473fc84958e0f74\transformed\legacy-support-core-ui-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c4f06fcc158a8fe28af3fa7f749c2ca0\transformed\legacy-support-core-utils-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.loader:loader:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\7729f13c5665a5746f4e8e94dff6778e\transformed\loader-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.compose.material:material-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ff59a15233abe72c6e8e25e44c9ec575\transformed\jetified-material-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.material:material-icons-core-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\4613fff7367272cfd17273951a975a4d\transformed\jetified-material-icons-core-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.material:material-icons-extended-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\3cb4b20e83943ff2634f2453b9de3df2\transformed\jetified-material-icons-extended-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.material:material-ripple-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\e8b78c5fa467b4049f444ea34924d0a2\transformed\jetified-material-ripple-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.animation:animation-core-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\df65d91932170ed7d8a5243ff43053da\transformed\jetified-animation-core-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.animation:animation-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\76cdf5194f37acec239b48ed978af355\transformed\jetified-animation-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.foundation:foundation-layout-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\724d152390f4fd273680dc0ae26e62b6\transformed\jetified-foundation-layout-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.foundation:foundation-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c32c1777938f91d3a529ba92e7d9da9e\transformed\jetified-foundation-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-tooling-data-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\15b6ebff638930154b6713fc60b17bcd\transformed\jetified-ui-tooling-data-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-unit-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c34a0b45db8f196dd4e26f1103bf97bb\transformed\jetified-ui-unit-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-geometry-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\d73c714dce2d49276909de7226b96b54\transformed\jetified-ui-geometry-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-util-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\4ff7c30c61ae2cb30a9893f7fbcd87fa\transformed\jetified-ui-util-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-tooling-preview-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\84429f057404d7290f49ca1412672c39\transformed\jetified-ui-tooling-preview-release\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.compose.ui:ui-graphics-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\be6ffaf5d542dc6b1efcd7c3ccac4d67\transformed\jetified-ui-graphics-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-text-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\a4343d6265ad278cd82108a40e20b7a3\transformed\jetified-ui-text-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\01d195a2d6ca05942448775fdd9a2956\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:17:1-35:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-core-ktx:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\e4b08a2a818d98fb988125a3adef2a29\transformed\jetified-lifecycle-livedata-core-ktx-2.8.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\051d1fd4ca1354e389592a3327401a37\transformed\jetified-lifecycle-process-2.8.0\AndroidManifest.xml:17:1-35:12
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\bb0184ddf9f012104e642b4c2fc212b5\transformed\lifecycle-livedata-2.8.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\e4a897528bd0f188b99519d90a68f8e4\transformed\lifecycle-livedata-core-2.8.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.savedstate:savedstate-ktx:1.2.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\63937858071d2dbb11092751f2732d5c\transformed\jetified-savedstate-ktx-1.2.1\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.savedstate:savedstate:1.2.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\b4c424d54414688d24df4bbfdcff3e88\transformed\jetified-savedstate-1.2.1\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ce7919443a037d1a3a5817a1766110be\transformed\lifecycle-viewmodel-2.8.0\AndroidManifest.xml:2:1-5:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-android:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\b95fd9881ac541e7fc14f5b923f18115\transformed\jetified-lifecycle-viewmodel-release\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-runtime-android:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\6b8cec554fddbaf876e33a69b6fc2c37\transformed\jetified-lifecycle-runtime-release\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\949dc36e4ba59dc991d032465dae482b\transformed\jetified-lifecycle-viewmodel-ktx-2.8.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\8af2b356e7aae6170560d33a7e1bd653\transformed\jetified-lifecycle-viewmodel-savedstate-2.8.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-runtime-compose-android:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ea30df8a17232a674ff99b07bf1e6a13\transformed\jetified-lifecycle-runtime-compose-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx-android:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\bac8b3db65e993cfb2b23f536d3d8a7c\transformed\jetified-lifecycle-runtime-ktx-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-compose-android:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\e7463ca5e2f6c7e747c071046b6950c0\transformed\jetified-lifecycle-viewmodel-compose-release\AndroidManifest.xml:2:1-7:12
+MERGED from [com.google.accompanist:accompanist-drawablepainter:0.32.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\1b39c9be7b2b24c175f26a4487086ef3\transformed\jetified-accompanist-drawablepainter-0.32.0\AndroidManifest.xml:17:1-23:12
+MERGED from [androidx.compose.ui:ui-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\87f16c3dd4bac876134c92222bc1866b\transformed\jetified-ui-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-tooling-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\40ac7ec7f9a7c7b033c183e9d78dd0fc\transformed\jetified-ui-tooling-release\AndroidManifest.xml:17:1-28:12
+MERGED from [androidx.activity:activity-compose:1.9.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\75586403571d86bfa9ec6822bd7acb3d\transformed\jetified-activity-compose-1.9.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.activity:activity-ktx:1.9.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\06ca636d5751b6c55276c480d49d4811\transformed\jetified-activity-ktx-1.9.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.activity:activity:1.9.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\a9701312fccb583cad7479c851013291\transformed\jetified-activity-1.9.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.autofill:autofill:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\208cbf818b3907fde79c59532cbbcc78\transformed\jetified-autofill-1.0.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.appcompat:appcompat-resources:1.6.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\6fa4c36b54d91e11808c563ddd3bf9e5\transformed\jetified-appcompat-resources-1.6.1\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\4bed42315e314f202b9cb372851383a3\transformed\vectordrawable-animated-1.1.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\a1620ee8b07c2fec51722e38c7f5a89f\transformed\vectordrawable-1.1.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.viewpager:viewpager:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\99fe5a04b73dc6bd33092c49d41b18fd\transformed\viewpager-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.coordinatorlayout:coordinatorlayout:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\8b7f3765ca06d9528955bed3d5823083\transformed\coordinatorlayout-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\756c2446138a7e5f0d479048f9223b7b\transformed\drawerlayout-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.slidingpanelayout:slidingpanelayout:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\e4a58d8aa2890736374b3eaf651f4c7d\transformed\slidingpanelayout-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.customview:customview:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\92b3d1640be049081af8850d45b24d48\transformed\customview-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ee027ebaaab21cf4deb2f003900b52a7\transformed\swiperefreshlayout-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.asynclayoutinflater:asynclayoutinflater:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\5ee51e8220f4d696987e966ab837385a\transformed\asynclayoutinflater-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.core:core:1.13.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\8d8f2c1a0b94ff801252ad7bfd3318ca\transformed\core-1.13.1\AndroidManifest.xml:17:1-30:12
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\f81a4e1300868200e46cc48a72623f6b\transformed\jetified-customview-poolingcontainer-1.0.0\AndroidManifest.xml:17:1-23:12
+MERGED from [androidx.core:core-ktx:1.13.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\2aa3d020599d3a807b4eb99fa2cfeee5\transformed\jetified-core-ktx-1.13.1\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.datastore:datastore-core-android:1.1.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\f5658251444c70c79d0f4899da60ac2a\transformed\jetified-datastore-core-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.datastore:datastore-android:1.1.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\d16b60ced5ae08d268f82809daa0b432\transformed\jetified-datastore-release\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.datastore:datastore-preferences-android:1.1.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\079739ea70df037329f3c4b13c6e464f\transformed\jetified-datastore-preferences-release\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.compose.runtime:runtime-saveable-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\b216aa4d217104d5ef003e9c171f4bc5\transformed\jetified-runtime-saveable-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.runtime:runtime-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\88f1dd4634e852c63bbd9e437b3778fd\transformed\jetified-runtime-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.annotation:annotation-experimental:1.4.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\e2a13bea61ced77d0aa5c47c79f40e06\transformed\jetified-annotation-experimental-1.4.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\eb27047f4b4052cb143abae9a442fd3b\transformed\interpolator-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\5cc81b8dfcf58e306eef0b07557eaf5e\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:17:1-27:12
+MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c7dd10b05129f6f1343336367052b52d\transformed\jetified-transport-backend-cct-2.3.3\AndroidManifest.xml:15:1-38:12
+MERGED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9cdb9234bf23005017f0bc56ad7c6673\transformed\jetified-transport-runtime-2.2.6\AndroidManifest.xml:15:1-41:12
+MERGED from [com.google.android.datatransport:transport-api:2.2.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c35135f0225d517d96c4b2dce92ffae5\transformed\jetified-transport-api-2.2.1\AndroidManifest.xml:15:1-22:12
+MERGED from [com.google.firebase:firebase-components:16.1.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\d491e2c85fc5c40ef1a6267b127dd27f\transformed\jetified-firebase-components-16.1.0\AndroidManifest.xml:15:1-23:12
+MERGED from [com.google.firebase:firebase-encoders-json:17.1.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\388f28c8e9d776a863b2ec054e9d2d4a\transformed\jetified-firebase-encoders-json-17.1.0\AndroidManifest.xml:15:1-23:12
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9b6c2ea791c6385569f44a1888cff2ee\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:17:1-55:12
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c7bfa47926806c16b7ad9b923b617d6b\transformed\jetified-startup-runtime-1.1.1\AndroidManifest.xml:17:1-33:12
+MERGED from [androidx.tracing:tracing:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\781aa10e763eb4657c69c300c37f923e\transformed\jetified-tracing-1.0.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.exifinterface:exifinterface:1.3.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\3979ad2719dc27846bf49a939dd984f7\transformed\exifinterface-1.3.7\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.arch.core:core-runtime:2.2.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\473a2ff5eece6ac294be5f785de659d4\transformed\core-runtime-2.2.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\a0ed4e99cc21a0c13ad4c9cec6a31d27\transformed\cursoradapter-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.documentfile:documentfile:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\15c4a1e553498a9e170e495d79613d60\transformed\documentfile-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\73a806674255f59a181b7d2990cd6e74\transformed\localbroadcastmanager-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.print:print:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\27fdda448cfed44705744325e9e89e73\transformed\print-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [com.google.android.odml:image:1.0.0-beta1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\b5835ce0b8a271acb120f8105b3f5e8a\transformed\jetified-image-1.0.0-beta1\AndroidManifest.xml:2:1-9:12
+	package
+		INJECTED from C:\TutorUG_App\app\src\main\AndroidManifest.xml
+	android:versionName
+		INJECTED from C:\TutorUG_App\app\src\main\AndroidManifest.xml
+	android:versionCode
+		INJECTED from C:\TutorUG_App\app\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:2:11-69
+uses-permission#android.permission.INTERNET
+ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:4:5-67
+MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c7dd10b05129f6f1343336367052b52d\transformed\jetified-transport-backend-cct-2.3.3\AndroidManifest.xml:26:5-67
+MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c7dd10b05129f6f1343336367052b52d\transformed\jetified-transport-backend-cct-2.3.3\AndroidManifest.xml:26:5-67
+	android:name
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:4:22-64
+uses-permission#android.permission.RECORD_AUDIO
+ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:5:5-71
+	android:name
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:5:22-68
+uses-permission#android.permission.READ_EXTERNAL_STORAGE
+ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:6:5-107
+	android:maxSdkVersion
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:6:78-104
+	android:name
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:6:22-77
+uses-permission#android.permission.READ_MEDIA_IMAGES
+ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:7:5-76
+	android:name
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:7:22-73
+uses-permission#android.permission.READ_MEDIA_DOCUMENTS
+ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:8:5-79
+	android:name
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:8:22-76
+uses-permission#android.permission.POST_NOTIFICATIONS
+ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:9:5-77
+	android:name
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:9:22-74
+uses-permission#android.permission.ACCESS_FINE_LOCATION
+ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:10:5-79
+	android:name
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:10:22-76
+uses-permission#android.permission.ACCESS_COARSE_LOCATION
+ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:11:5-81
+	android:name
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:11:22-78
+uses-permission#android.permission.SCHEDULE_EXACT_ALARM
+ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:12:5-79
+	android:name
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:12:22-76
+uses-permission#android.permission.USE_EXACT_ALARM
+ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:13:5-74
+	android:name
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:13:22-71
+uses-permission#android.permission.RECEIVE_BOOT_COMPLETED
+ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:14:5-81
+	android:name
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:14:22-78
+uses-permission#android.permission.VIBRATE
+ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:15:5-66
+	android:name
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:15:22-63
+uses-permission#android.permission.USE_FULL_SCREEN_INTENT
+ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:16:5-81
+	android:name
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:16:22-78
+uses-permission#android.permission.WAKE_LOCK
+ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:17:5-68
+	android:name
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:17:22-65
+application
+ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:19:5-70:19
+INJECTED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:19:5-70:19
+MERGED from [com.google.android.gms:play-services-mlkit-text-recognition-common:19.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\33b6177fec570a5a4c4b2701f8635c8d\transformed\jetified-play-services-mlkit-text-recognition-common-19.0.0\AndroidManifest.xml:8:5-16:19
+MERGED from [com.google.android.gms:play-services-mlkit-text-recognition-common:19.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\33b6177fec570a5a4c4b2701f8635c8d\transformed\jetified-play-services-mlkit-text-recognition-common-19.0.0\AndroidManifest.xml:8:5-16:19
+MERGED from [com.google.mlkit:vision-common:17.3.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\046709757b66d39fceea762f2b817b5b\transformed\jetified-vision-common-17.3.0\AndroidManifest.xml:8:5-16:19
+MERGED from [com.google.mlkit:vision-common:17.3.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\046709757b66d39fceea762f2b817b5b\transformed\jetified-vision-common-17.3.0\AndroidManifest.xml:8:5-16:19
+MERGED from [com.google.mlkit:common:18.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ad4c689748f75845882b8b2793227377\transformed\jetified-common-18.8.0\AndroidManifest.xml:8:5-24:19
+MERGED from [com.google.mlkit:common:18.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ad4c689748f75845882b8b2793227377\transformed\jetified-common-18.8.0\AndroidManifest.xml:8:5-24:19
+MERGED from [com.google.android.gms:play-services-base:18.1.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\e6fc7599450d427eb0426af078a30220\transformed\jetified-play-services-base-18.1.0\AndroidManifest.xml:19:5-23:19
+MERGED from [com.google.android.gms:play-services-base:18.1.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\e6fc7599450d427eb0426af078a30220\transformed\jetified-play-services-base-18.1.0\AndroidManifest.xml:19:5-23:19
+MERGED from [com.google.android.gms:play-services-tasks:18.0.2] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\380d405243fbfa2ad06a00c1d9c4e8eb\transformed\jetified-play-services-tasks-18.0.2\AndroidManifest.xml:5:5-20
+MERGED from [com.google.android.gms:play-services-tasks:18.0.2] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\380d405243fbfa2ad06a00c1d9c4e8eb\transformed\jetified-play-services-tasks-18.0.2\AndroidManifest.xml:5:5-20
+MERGED from [com.google.android.gms:play-services-basement:18.1.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\5ae7b79a62402a18ae79ebde0b67f168\transformed\jetified-play-services-basement-18.1.0\AndroidManifest.xml:20:5-24:19
+MERGED from [com.google.android.gms:play-services-basement:18.1.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\5ae7b79a62402a18ae79ebde0b67f168\transformed\jetified-play-services-basement-18.1.0\AndroidManifest.xml:20:5-24:19
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\01d195a2d6ca05942448775fdd9a2956\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\01d195a2d6ca05942448775fdd9a2956\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\051d1fd4ca1354e389592a3327401a37\transformed\jetified-lifecycle-process-2.8.0\AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\051d1fd4ca1354e389592a3327401a37\transformed\jetified-lifecycle-process-2.8.0\AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.compose.ui:ui-tooling-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\40ac7ec7f9a7c7b033c183e9d78dd0fc\transformed\jetified-ui-tooling-release\AndroidManifest.xml:22:5-26:19
+MERGED from [androidx.compose.ui:ui-tooling-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\40ac7ec7f9a7c7b033c183e9d78dd0fc\transformed\jetified-ui-tooling-release\AndroidManifest.xml:22:5-26:19
+MERGED from [androidx.core:core:1.13.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\8d8f2c1a0b94ff801252ad7bfd3318ca\transformed\core-1.13.1\AndroidManifest.xml:28:5-89
+MERGED from [androidx.core:core:1.13.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\8d8f2c1a0b94ff801252ad7bfd3318ca\transformed\core-1.13.1\AndroidManifest.xml:28:5-89
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\5cc81b8dfcf58e306eef0b07557eaf5e\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:24:5-25:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\5cc81b8dfcf58e306eef0b07557eaf5e\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:24:5-25:19
+MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c7dd10b05129f6f1343336367052b52d\transformed\jetified-transport-backend-cct-2.3.3\AndroidManifest.xml:28:5-36:19
+MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c7dd10b05129f6f1343336367052b52d\transformed\jetified-transport-backend-cct-2.3.3\AndroidManifest.xml:28:5-36:19
+MERGED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9cdb9234bf23005017f0bc56ad7c6673\transformed\jetified-transport-runtime-2.2.6\AndroidManifest.xml:25:5-39:19
+MERGED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9cdb9234bf23005017f0bc56ad7c6673\transformed\jetified-transport-runtime-2.2.6\AndroidManifest.xml:25:5-39:19
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9b6c2ea791c6385569f44a1888cff2ee\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:23:5-53:19
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9b6c2ea791c6385569f44a1888cff2ee\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:23:5-53:19
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c7bfa47926806c16b7ad9b923b617d6b\transformed\jetified-startup-runtime-1.1.1\AndroidManifest.xml:25:5-31:19
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c7bfa47926806c16b7ad9b923b617d6b\transformed\jetified-startup-runtime-1.1.1\AndroidManifest.xml:25:5-31:19
+MERGED from [com.google.android.odml:image:1.0.0-beta1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\b5835ce0b8a271acb120f8105b3f5e8a\transformed\jetified-image-1.0.0-beta1\AndroidManifest.xml:7:5-20
+MERGED from [com.google.android.odml:image:1.0.0-beta1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\b5835ce0b8a271acb120f8105b3f5e8a\transformed\jetified-image-1.0.0-beta1\AndroidManifest.xml:7:5-20
+	android:extractNativeLibs
+		INJECTED from C:\TutorUG_App\app\src\main\AndroidManifest.xml
+	android:appComponentFactory
+		ADDED from [androidx.core:core:1.13.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\8d8f2c1a0b94ff801252ad7bfd3318ca\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
+	android:supportsRtl
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:25:9-35
+	android:label
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:23:9-32
+	android:roundIcon
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:24:9-54
+	android:icon
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:22:9-43
+	android:allowBackup
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:21:9-35
+	android:theme
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:26:9-45
+	android:usesCleartextTraffic
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:27:9-45
+	android:name
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:20:9-35
+receiver#com.tutorug.app.util.TimetableAlarmReceiver
+ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:30:9-32:40
+	android:exported
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:32:13-37
+	android:name
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:31:13-56
+receiver#com.tutorug.app.util.BootReceiver
+ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:35:9-43:20
+	android:exported
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:37:13-36
+	android:name
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:36:13-46
+intent-filter#action:name:android.intent.action.BOOT_COMPLETED+action:name:android.intent.action.QUICKBOOT_POWERON+category:name:android.intent.category.DEFAULT
+ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:38:13-42:29
+	android:priority
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:38:28-50
+action#android.intent.action.BOOT_COMPLETED
+ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:39:17-79
+	android:name
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:39:25-76
+action#android.intent.action.QUICKBOOT_POWERON
+ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:40:17-82
+	android:name
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:40:25-79
+category#android.intent.category.DEFAULT
+ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:41:17-76
+	android:name
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:41:27-73
+activity#com.tutorug.app.util.AlarmActivity
+ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:46:9-52:49
+	android:turnScreenOn
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:50:13-40
+	android:excludeFromRecents
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:52:13-46
+	android:exported
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:48:13-37
+	android:showOnLockScreen
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:49:13-44
+	android:theme
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:51:13-49
+	android:name
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:47:13-47
+activity#com.tutorug.app.MainActivity
+ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:54:9-68:20
+	android:windowSoftInputMode
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:57:13-55
+	android:exported
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:56:13-36
+	android:name
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:55:13-41
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:58:13-61:29
+action#android.intent.action.MAIN
+ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:59:17-69
+	android:name
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:59:25-66
+category#android.intent.category.LAUNCHER
+ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:60:17-77
+	android:name
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:60:27-74
+intent-filter#action:name:android.intent.action.VIEW+category:name:android.intent.category.BROWSABLE+category:name:android.intent.category.DEFAULT+data:host:reset-password+data:scheme:tutorug
+ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:62:13-67:29
+action#android.intent.action.VIEW
+ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:63:17-69
+	android:name
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:63:25-66
+category#android.intent.category.BROWSABLE
+ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:65:17-78
+	android:name
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:65:27-75
+data
+ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:66:17-80
+	android:host
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:66:48-77
+	android:scheme
+		ADDED from C:\TutorUG_App\app\src\main\AndroidManifest.xml:66:23-47
+uses-sdk
+INJECTED from C:\TutorUG_App\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from C:\TutorUG_App\app\src\main\AndroidManifest.xml
+INJECTED from C:\TutorUG_App\app\src\main\AndroidManifest.xml
+MERGED from [com.google.mlkit:text-recognition:16.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\491e732bb10f76c5d10c0e45b33b5892\transformed\jetified-text-recognition-16.0.0\AndroidManifest.xml:5:5-44
+MERGED from [com.google.mlkit:text-recognition:16.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\491e732bb10f76c5d10c0e45b33b5892\transformed\jetified-text-recognition-16.0.0\AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-mlkit-text-recognition:19.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\23f54a6751e6582267801a678c64e9e8\transformed\jetified-play-services-mlkit-text-recognition-19.0.0\AndroidManifest.xml:6:5-44
+MERGED from [com.google.android.gms:play-services-mlkit-text-recognition:19.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\23f54a6751e6582267801a678c64e9e8\transformed\jetified-play-services-mlkit-text-recognition-19.0.0\AndroidManifest.xml:6:5-44
+MERGED from [com.google.mlkit:text-recognition-bundled-common:16.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\0c72b4a233e66b99353da377229b5358\transformed\jetified-text-recognition-bundled-common-16.0.0\AndroidManifest.xml:5:5-44
+MERGED from [com.google.mlkit:text-recognition-bundled-common:16.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\0c72b4a233e66b99353da377229b5358\transformed\jetified-text-recognition-bundled-common-16.0.0\AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-mlkit-text-recognition-common:19.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\33b6177fec570a5a4c4b2701f8635c8d\transformed\jetified-play-services-mlkit-text-recognition-common-19.0.0\AndroidManifest.xml:6:5-44
+MERGED from [com.google.android.gms:play-services-mlkit-text-recognition-common:19.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\33b6177fec570a5a4c4b2701f8635c8d\transformed\jetified-play-services-mlkit-text-recognition-common-19.0.0\AndroidManifest.xml:6:5-44
+MERGED from [com.google.mlkit:vision-common:17.3.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\046709757b66d39fceea762f2b817b5b\transformed\jetified-vision-common-17.3.0\AndroidManifest.xml:6:5-44
+MERGED from [com.google.mlkit:vision-common:17.3.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\046709757b66d39fceea762f2b817b5b\transformed\jetified-vision-common-17.3.0\AndroidManifest.xml:6:5-44
+MERGED from [com.google.mlkit:common:18.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ad4c689748f75845882b8b2793227377\transformed\jetified-common-18.8.0\AndroidManifest.xml:6:5-44
+MERGED from [com.google.mlkit:common:18.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ad4c689748f75845882b8b2793227377\transformed\jetified-common-18.8.0\AndroidManifest.xml:6:5-44
+MERGED from [com.google.android.gms:play-services-base:18.1.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\e6fc7599450d427eb0426af078a30220\transformed\jetified-play-services-base-18.1.0\AndroidManifest.xml:18:5-43
+MERGED from [com.google.android.gms:play-services-base:18.1.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\e6fc7599450d427eb0426af078a30220\transformed\jetified-play-services-base-18.1.0\AndroidManifest.xml:18:5-43
+MERGED from [com.google.mlkit:vision-interfaces:16.2.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\8360ddfbf46fd1f6af269d46cf184e65\transformed\jetified-vision-interfaces-16.2.0\AndroidManifest.xml:5:5-44
+MERGED from [com.google.mlkit:vision-interfaces:16.2.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\8360ddfbf46fd1f6af269d46cf184e65\transformed\jetified-vision-interfaces-16.2.0\AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-tasks:18.0.2] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\380d405243fbfa2ad06a00c1d9c4e8eb\transformed\jetified-play-services-tasks-18.0.2\AndroidManifest.xml:4:5-43
+MERGED from [com.google.android.gms:play-services-tasks:18.0.2] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\380d405243fbfa2ad06a00c1d9c4e8eb\transformed\jetified-play-services-tasks-18.0.2\AndroidManifest.xml:4:5-43
+MERGED from [com.google.android.gms:play-services-basement:18.1.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\5ae7b79a62402a18ae79ebde0b67f168\transformed\jetified-play-services-basement-18.1.0\AndroidManifest.xml:18:5-43
+MERGED from [com.google.android.gms:play-services-basement:18.1.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\5ae7b79a62402a18ae79ebde0b67f168\transformed\jetified-play-services-basement-18.1.0\AndroidManifest.xml:18:5-43
+MERGED from [androidx.navigation:navigation-common:2.7.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c10af624912bd8186cb26a1eb616b79e\transformed\navigation-common-2.7.7\AndroidManifest.xml:20:5-44
+MERGED from [androidx.navigation:navigation-common:2.7.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c10af624912bd8186cb26a1eb616b79e\transformed\navigation-common-2.7.7\AndroidManifest.xml:20:5-44
+MERGED from [androidx.navigation:navigation-runtime:2.7.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\976150303e8467928de0a8c504d611c3\transformed\navigation-runtime-2.7.7\AndroidManifest.xml:20:5-44
+MERGED from [androidx.navigation:navigation-runtime:2.7.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\976150303e8467928de0a8c504d611c3\transformed\navigation-runtime-2.7.7\AndroidManifest.xml:20:5-44
+MERGED from [androidx.navigation:navigation-common-ktx:2.7.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\631b712cf12c4d182d206689eaecc83a\transformed\navigation-common-ktx-2.7.7\AndroidManifest.xml:5:5-44
+MERGED from [androidx.navigation:navigation-common-ktx:2.7.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\631b712cf12c4d182d206689eaecc83a\transformed\navigation-common-ktx-2.7.7\AndroidManifest.xml:5:5-44
+MERGED from [androidx.navigation:navigation-runtime-ktx:2.7.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\28e9a1e39fa7c984e8f5896857a658bf\transformed\navigation-runtime-ktx-2.7.7\AndroidManifest.xml:5:5-44
+MERGED from [androidx.navigation:navigation-runtime-ktx:2.7.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\28e9a1e39fa7c984e8f5896857a658bf\transformed\navigation-runtime-ktx-2.7.7\AndroidManifest.xml:5:5-44
+MERGED from [androidx.navigation:navigation-compose:2.7.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\a779b9883e26aa62e3bce999622da282\transformed\jetified-navigation-compose-2.7.7\AndroidManifest.xml:5:5-44
+MERGED from [androidx.navigation:navigation-compose:2.7.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\a779b9883e26aa62e3bce999622da282\transformed\jetified-navigation-compose-2.7.7\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material3:material3-android:1.2.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\b672cd268af5c44e54157e3b5066ba34\transformed\jetified-material3-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.material3:material3-android:1.2.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\b672cd268af5c44e54157e3b5066ba34\transformed\jetified-material3-release\AndroidManifest.xml:20:5-44
+MERGED from [io.coil-kt:coil-compose:2.6.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\4eedee548a6c4ce748ca564d173f096d\transformed\jetified-coil-compose-2.6.0\AndroidManifest.xml:5:5-44
+MERGED from [io.coil-kt:coil-compose:2.6.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\4eedee548a6c4ce748ca564d173f096d\transformed\jetified-coil-compose-2.6.0\AndroidManifest.xml:5:5-44
+MERGED from [io.coil-kt:coil-compose-base:2.6.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\d32075c1945e9032b1f36c7e22776ff5\transformed\jetified-coil-compose-base-2.6.0\AndroidManifest.xml:5:5-44
+MERGED from [io.coil-kt:coil-compose-base:2.6.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\d32075c1945e9032b1f36c7e22776ff5\transformed\jetified-coil-compose-base-2.6.0\AndroidManifest.xml:5:5-44
+MERGED from [io.coil-kt:coil:2.6.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\63ff396a51ff9abb99a2fa0103eecf07\transformed\jetified-coil-2.6.0\AndroidManifest.xml:5:5-44
+MERGED from [io.coil-kt:coil:2.6.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\63ff396a51ff9abb99a2fa0103eecf07\transformed\jetified-coil-2.6.0\AndroidManifest.xml:5:5-44
+MERGED from [io.coil-kt:coil-base:2.6.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\134a812681707d4b5e7538da1457665d\transformed\jetified-coil-base-2.6.0\AndroidManifest.xml:5:5-44
+MERGED from [io.coil-kt:coil-base:2.6.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\134a812681707d4b5e7538da1457665d\transformed\jetified-coil-base-2.6.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.fragment:fragment:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ff2818f152e4ff698b291a4565cbd222\transformed\fragment-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.fragment:fragment:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ff2818f152e4ff698b291a4565cbd222\transformed\fragment-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-ui:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\df20c6babb0006a4d473fc84958e0f74\transformed\legacy-support-core-ui-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-ui:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\df20c6babb0006a4d473fc84958e0f74\transformed\legacy-support-core-ui-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c4f06fcc158a8fe28af3fa7f749c2ca0\transformed\legacy-support-core-utils-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c4f06fcc158a8fe28af3fa7f749c2ca0\transformed\legacy-support-core-utils-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\7729f13c5665a5746f4e8e94dff6778e\transformed\loader-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\7729f13c5665a5746f4e8e94dff6778e\transformed\loader-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.material:material-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ff59a15233abe72c6e8e25e44c9ec575\transformed\jetified-material-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ff59a15233abe72c6e8e25e44c9ec575\transformed\jetified-material-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-icons-core-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\4613fff7367272cfd17273951a975a4d\transformed\jetified-material-icons-core-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-icons-core-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\4613fff7367272cfd17273951a975a4d\transformed\jetified-material-icons-core-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-icons-extended-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\3cb4b20e83943ff2634f2453b9de3df2\transformed\jetified-material-icons-extended-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-icons-extended-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\3cb4b20e83943ff2634f2453b9de3df2\transformed\jetified-material-icons-extended-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-ripple-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\e8b78c5fa467b4049f444ea34924d0a2\transformed\jetified-material-ripple-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-ripple-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\e8b78c5fa467b4049f444ea34924d0a2\transformed\jetified-material-ripple-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-core-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\df65d91932170ed7d8a5243ff43053da\transformed\jetified-animation-core-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-core-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\df65d91932170ed7d8a5243ff43053da\transformed\jetified-animation-core-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\76cdf5194f37acec239b48ed978af355\transformed\jetified-animation-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\76cdf5194f37acec239b48ed978af355\transformed\jetified-animation-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-layout-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\724d152390f4fd273680dc0ae26e62b6\transformed\jetified-foundation-layout-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-layout-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\724d152390f4fd273680dc0ae26e62b6\transformed\jetified-foundation-layout-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c32c1777938f91d3a529ba92e7d9da9e\transformed\jetified-foundation-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c32c1777938f91d3a529ba92e7d9da9e\transformed\jetified-foundation-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-tooling-data-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\15b6ebff638930154b6713fc60b17bcd\transformed\jetified-ui-tooling-data-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-tooling-data-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\15b6ebff638930154b6713fc60b17bcd\transformed\jetified-ui-tooling-data-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-unit-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c34a0b45db8f196dd4e26f1103bf97bb\transformed\jetified-ui-unit-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-unit-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c34a0b45db8f196dd4e26f1103bf97bb\transformed\jetified-ui-unit-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-geometry-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\d73c714dce2d49276909de7226b96b54\transformed\jetified-ui-geometry-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-geometry-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\d73c714dce2d49276909de7226b96b54\transformed\jetified-ui-geometry-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-util-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\4ff7c30c61ae2cb30a9893f7fbcd87fa\transformed\jetified-ui-util-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-util-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\4ff7c30c61ae2cb30a9893f7fbcd87fa\transformed\jetified-ui-util-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-tooling-preview-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\84429f057404d7290f49ca1412672c39\transformed\jetified-ui-tooling-preview-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.ui:ui-tooling-preview-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\84429f057404d7290f49ca1412672c39\transformed\jetified-ui-tooling-preview-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.ui:ui-graphics-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\be6ffaf5d542dc6b1efcd7c3ccac4d67\transformed\jetified-ui-graphics-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-graphics-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\be6ffaf5d542dc6b1efcd7c3ccac4d67\transformed\jetified-ui-graphics-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-text-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\a4343d6265ad278cd82108a40e20b7a3\transformed\jetified-ui-text-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-text-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\a4343d6265ad278cd82108a40e20b7a3\transformed\jetified-ui-text-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\01d195a2d6ca05942448775fdd9a2956\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:21:5-44
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\01d195a2d6ca05942448775fdd9a2956\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core-ktx:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\e4b08a2a818d98fb988125a3adef2a29\transformed\jetified-lifecycle-livedata-core-ktx-2.8.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core-ktx:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\e4b08a2a818d98fb988125a3adef2a29\transformed\jetified-lifecycle-livedata-core-ktx-2.8.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\051d1fd4ca1354e389592a3327401a37\transformed\jetified-lifecycle-process-2.8.0\AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\051d1fd4ca1354e389592a3327401a37\transformed\jetified-lifecycle-process-2.8.0\AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\bb0184ddf9f012104e642b4c2fc212b5\transformed\lifecycle-livedata-2.8.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\bb0184ddf9f012104e642b4c2fc212b5\transformed\lifecycle-livedata-2.8.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\e4a897528bd0f188b99519d90a68f8e4\transformed\lifecycle-livedata-core-2.8.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\e4a897528bd0f188b99519d90a68f8e4\transformed\lifecycle-livedata-core-2.8.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate-ktx:1.2.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\63937858071d2dbb11092751f2732d5c\transformed\jetified-savedstate-ktx-1.2.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate-ktx:1.2.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\63937858071d2dbb11092751f2732d5c\transformed\jetified-savedstate-ktx-1.2.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate:1.2.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\b4c424d54414688d24df4bbfdcff3e88\transformed\jetified-savedstate-1.2.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate:1.2.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\b4c424d54414688d24df4bbfdcff3e88\transformed\jetified-savedstate-1.2.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ce7919443a037d1a3a5817a1766110be\transformed\lifecycle-viewmodel-2.8.0\AndroidManifest.xml:4:5-43
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ce7919443a037d1a3a5817a1766110be\transformed\lifecycle-viewmodel-2.8.0\AndroidManifest.xml:4:5-43
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-android:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\b95fd9881ac541e7fc14f5b923f18115\transformed\jetified-lifecycle-viewmodel-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-android:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\b95fd9881ac541e7fc14f5b923f18115\transformed\jetified-lifecycle-viewmodel-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-android:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\6b8cec554fddbaf876e33a69b6fc2c37\transformed\jetified-lifecycle-runtime-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-android:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\6b8cec554fddbaf876e33a69b6fc2c37\transformed\jetified-lifecycle-runtime-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\949dc36e4ba59dc991d032465dae482b\transformed\jetified-lifecycle-viewmodel-ktx-2.8.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\949dc36e4ba59dc991d032465dae482b\transformed\jetified-lifecycle-viewmodel-ktx-2.8.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\8af2b356e7aae6170560d33a7e1bd653\transformed\jetified-lifecycle-viewmodel-savedstate-2.8.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\8af2b356e7aae6170560d33a7e1bd653\transformed\jetified-lifecycle-viewmodel-savedstate-2.8.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-compose-android:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ea30df8a17232a674ff99b07bf1e6a13\transformed\jetified-lifecycle-runtime-compose-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-compose-android:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ea30df8a17232a674ff99b07bf1e6a13\transformed\jetified-lifecycle-runtime-compose-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx-android:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\bac8b3db65e993cfb2b23f536d3d8a7c\transformed\jetified-lifecycle-runtime-ktx-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx-android:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\bac8b3db65e993cfb2b23f536d3d8a7c\transformed\jetified-lifecycle-runtime-ktx-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-compose-android:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\e7463ca5e2f6c7e747c071046b6950c0\transformed\jetified-lifecycle-viewmodel-compose-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-compose-android:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\e7463ca5e2f6c7e747c071046b6950c0\transformed\jetified-lifecycle-viewmodel-compose-release\AndroidManifest.xml:5:5-44
+MERGED from [com.google.accompanist:accompanist-drawablepainter:0.32.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\1b39c9be7b2b24c175f26a4487086ef3\transformed\jetified-accompanist-drawablepainter-0.32.0\AndroidManifest.xml:21:5-44
+MERGED from [com.google.accompanist:accompanist-drawablepainter:0.32.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\1b39c9be7b2b24c175f26a4487086ef3\transformed\jetified-accompanist-drawablepainter-0.32.0\AndroidManifest.xml:21:5-44
+MERGED from [androidx.compose.ui:ui-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\87f16c3dd4bac876134c92222bc1866b\transformed\jetified-ui-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\87f16c3dd4bac876134c92222bc1866b\transformed\jetified-ui-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-tooling-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\40ac7ec7f9a7c7b033c183e9d78dd0fc\transformed\jetified-ui-tooling-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.ui:ui-tooling-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\40ac7ec7f9a7c7b033c183e9d78dd0fc\transformed\jetified-ui-tooling-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity-compose:1.9.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\75586403571d86bfa9ec6822bd7acb3d\transformed\jetified-activity-compose-1.9.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.activity:activity-compose:1.9.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\75586403571d86bfa9ec6822bd7acb3d\transformed\jetified-activity-compose-1.9.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.activity:activity-ktx:1.9.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\06ca636d5751b6c55276c480d49d4811\transformed\jetified-activity-ktx-1.9.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.activity:activity-ktx:1.9.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\06ca636d5751b6c55276c480d49d4811\transformed\jetified-activity-ktx-1.9.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.activity:activity:1.9.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\a9701312fccb583cad7479c851013291\transformed\jetified-activity-1.9.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity:1.9.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\a9701312fccb583cad7479c851013291\transformed\jetified-activity-1.9.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.autofill:autofill:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\208cbf818b3907fde79c59532cbbcc78\transformed\jetified-autofill-1.0.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.autofill:autofill:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\208cbf818b3907fde79c59532cbbcc78\transformed\jetified-autofill-1.0.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.appcompat:appcompat-resources:1.6.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\6fa4c36b54d91e11808c563ddd3bf9e5\transformed\jetified-appcompat-resources-1.6.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.appcompat:appcompat-resources:1.6.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\6fa4c36b54d91e11808c563ddd3bf9e5\transformed\jetified-appcompat-resources-1.6.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\4bed42315e314f202b9cb372851383a3\transformed\vectordrawable-animated-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\4bed42315e314f202b9cb372851383a3\transformed\vectordrawable-animated-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\a1620ee8b07c2fec51722e38c7f5a89f\transformed\vectordrawable-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\a1620ee8b07c2fec51722e38c7f5a89f\transformed\vectordrawable-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.viewpager:viewpager:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\99fe5a04b73dc6bd33092c49d41b18fd\transformed\viewpager-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.viewpager:viewpager:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\99fe5a04b73dc6bd33092c49d41b18fd\transformed\viewpager-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.coordinatorlayout:coordinatorlayout:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\8b7f3765ca06d9528955bed3d5823083\transformed\coordinatorlayout-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.coordinatorlayout:coordinatorlayout:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\8b7f3765ca06d9528955bed3d5823083\transformed\coordinatorlayout-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\756c2446138a7e5f0d479048f9223b7b\transformed\drawerlayout-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\756c2446138a7e5f0d479048f9223b7b\transformed\drawerlayout-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.slidingpanelayout:slidingpanelayout:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\e4a58d8aa2890736374b3eaf651f4c7d\transformed\slidingpanelayout-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.slidingpanelayout:slidingpanelayout:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\e4a58d8aa2890736374b3eaf651f4c7d\transformed\slidingpanelayout-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\92b3d1640be049081af8850d45b24d48\transformed\customview-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\92b3d1640be049081af8850d45b24d48\transformed\customview-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ee027ebaaab21cf4deb2f003900b52a7\transformed\swiperefreshlayout-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ee027ebaaab21cf4deb2f003900b52a7\transformed\swiperefreshlayout-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.asynclayoutinflater:asynclayoutinflater:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\5ee51e8220f4d696987e966ab837385a\transformed\asynclayoutinflater-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.asynclayoutinflater:asynclayoutinflater:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\5ee51e8220f4d696987e966ab837385a\transformed\asynclayoutinflater-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core:1.13.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\8d8f2c1a0b94ff801252ad7bfd3318ca\transformed\core-1.13.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core:1.13.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\8d8f2c1a0b94ff801252ad7bfd3318ca\transformed\core-1.13.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\f81a4e1300868200e46cc48a72623f6b\transformed\jetified-customview-poolingcontainer-1.0.0\AndroidManifest.xml:20:5-21:38
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\f81a4e1300868200e46cc48a72623f6b\transformed\jetified-customview-poolingcontainer-1.0.0\AndroidManifest.xml:20:5-21:38
+MERGED from [androidx.core:core-ktx:1.13.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\2aa3d020599d3a807b4eb99fa2cfeee5\transformed\jetified-core-ktx-1.13.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.core:core-ktx:1.13.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\2aa3d020599d3a807b4eb99fa2cfeee5\transformed\jetified-core-ktx-1.13.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.datastore:datastore-core-android:1.1.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\f5658251444c70c79d0f4899da60ac2a\transformed\jetified-datastore-core-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.datastore:datastore-core-android:1.1.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\f5658251444c70c79d0f4899da60ac2a\transformed\jetified-datastore-core-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.datastore:datastore-android:1.1.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\d16b60ced5ae08d268f82809daa0b432\transformed\jetified-datastore-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.datastore:datastore-android:1.1.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\d16b60ced5ae08d268f82809daa0b432\transformed\jetified-datastore-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.datastore:datastore-preferences-android:1.1.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\079739ea70df037329f3c4b13c6e464f\transformed\jetified-datastore-preferences-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.datastore:datastore-preferences-android:1.1.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\079739ea70df037329f3c4b13c6e464f\transformed\jetified-datastore-preferences-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.runtime:runtime-saveable-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\b216aa4d217104d5ef003e9c171f4bc5\transformed\jetified-runtime-saveable-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-saveable-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\b216aa4d217104d5ef003e9c171f4bc5\transformed\jetified-runtime-saveable-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\88f1dd4634e852c63bbd9e437b3778fd\transformed\jetified-runtime-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\88f1dd4634e852c63bbd9e437b3778fd\transformed\jetified-runtime-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.4.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\e2a13bea61ced77d0aa5c47c79f40e06\transformed\jetified-annotation-experimental-1.4.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.4.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\e2a13bea61ced77d0aa5c47c79f40e06\transformed\jetified-annotation-experimental-1.4.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\eb27047f4b4052cb143abae9a442fd3b\transformed\interpolator-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\eb27047f4b4052cb143abae9a442fd3b\transformed\interpolator-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\5cc81b8dfcf58e306eef0b07557eaf5e\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\5cc81b8dfcf58e306eef0b07557eaf5e\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:20:5-22:41
+MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c7dd10b05129f6f1343336367052b52d\transformed\jetified-transport-backend-cct-2.3.3\AndroidManifest.xml:19:5-21:41
+MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c7dd10b05129f6f1343336367052b52d\transformed\jetified-transport-backend-cct-2.3.3\AndroidManifest.xml:19:5-21:41
+MERGED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9cdb9234bf23005017f0bc56ad7c6673\transformed\jetified-transport-runtime-2.2.6\AndroidManifest.xml:18:5-20:41
+MERGED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9cdb9234bf23005017f0bc56ad7c6673\transformed\jetified-transport-runtime-2.2.6\AndroidManifest.xml:18:5-20:41
+MERGED from [com.google.android.datatransport:transport-api:2.2.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c35135f0225d517d96c4b2dce92ffae5\transformed\jetified-transport-api-2.2.1\AndroidManifest.xml:18:5-20:41
+MERGED from [com.google.android.datatransport:transport-api:2.2.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c35135f0225d517d96c4b2dce92ffae5\transformed\jetified-transport-api-2.2.1\AndroidManifest.xml:18:5-20:41
+MERGED from [com.google.firebase:firebase-components:16.1.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\d491e2c85fc5c40ef1a6267b127dd27f\transformed\jetified-firebase-components-16.1.0\AndroidManifest.xml:19:5-21:41
+MERGED from [com.google.firebase:firebase-components:16.1.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\d491e2c85fc5c40ef1a6267b127dd27f\transformed\jetified-firebase-components-16.1.0\AndroidManifest.xml:19:5-21:41
+MERGED from [com.google.firebase:firebase-encoders-json:17.1.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\388f28c8e9d776a863b2ec054e9d2d4a\transformed\jetified-firebase-encoders-json-17.1.0\AndroidManifest.xml:19:5-21:41
+MERGED from [com.google.firebase:firebase-encoders-json:17.1.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\388f28c8e9d776a863b2ec054e9d2d4a\transformed\jetified-firebase-encoders-json-17.1.0\AndroidManifest.xml:19:5-21:41
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9b6c2ea791c6385569f44a1888cff2ee\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:21:5-44
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9b6c2ea791c6385569f44a1888cff2ee\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:21:5-44
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c7bfa47926806c16b7ad9b923b617d6b\transformed\jetified-startup-runtime-1.1.1\AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c7bfa47926806c16b7ad9b923b617d6b\transformed\jetified-startup-runtime-1.1.1\AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.tracing:tracing:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\781aa10e763eb4657c69c300c37f923e\transformed\jetified-tracing-1.0.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.tracing:tracing:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\781aa10e763eb4657c69c300c37f923e\transformed\jetified-tracing-1.0.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.exifinterface:exifinterface:1.3.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\3979ad2719dc27846bf49a939dd984f7\transformed\exifinterface-1.3.7\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.exifinterface:exifinterface:1.3.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\3979ad2719dc27846bf49a939dd984f7\transformed\exifinterface-1.3.7\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.arch.core:core-runtime:2.2.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\473a2ff5eece6ac294be5f785de659d4\transformed\core-runtime-2.2.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.arch.core:core-runtime:2.2.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\473a2ff5eece6ac294be5f785de659d4\transformed\core-runtime-2.2.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\a0ed4e99cc21a0c13ad4c9cec6a31d27\transformed\cursoradapter-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\a0ed4e99cc21a0c13ad4c9cec6a31d27\transformed\cursoradapter-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.documentfile:documentfile:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\15c4a1e553498a9e170e495d79613d60\transformed\documentfile-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.documentfile:documentfile:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\15c4a1e553498a9e170e495d79613d60\transformed\documentfile-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\73a806674255f59a181b7d2990cd6e74\transformed\localbroadcastmanager-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\73a806674255f59a181b7d2990cd6e74\transformed\localbroadcastmanager-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.print:print:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\27fdda448cfed44705744325e9e89e73\transformed\print-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.print:print:1.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\27fdda448cfed44705744325e9e89e73\transformed\print-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.odml:image:1.0.0-beta1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\b5835ce0b8a271acb120f8105b3f5e8a\transformed\jetified-image-1.0.0-beta1\AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.odml:image:1.0.0-beta1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\b5835ce0b8a271acb120f8105b3f5e8a\transformed\jetified-image-1.0.0-beta1\AndroidManifest.xml:5:5-44
+	android:targetSdkVersion
+		INJECTED from C:\TutorUG_App\app\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from C:\TutorUG_App\app\src\main\AndroidManifest.xml
+service#com.google.mlkit.common.internal.MlKitComponentDiscoveryService
+ADDED from [com.google.android.gms:play-services-mlkit-text-recognition-common:19.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\33b6177fec570a5a4c4b2701f8635c8d\transformed\jetified-play-services-mlkit-text-recognition-common-19.0.0\AndroidManifest.xml:9:9-15:19
+MERGED from [com.google.mlkit:vision-common:17.3.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\046709757b66d39fceea762f2b817b5b\transformed\jetified-vision-common-17.3.0\AndroidManifest.xml:9:9-15:19
+MERGED from [com.google.mlkit:vision-common:17.3.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\046709757b66d39fceea762f2b817b5b\transformed\jetified-vision-common-17.3.0\AndroidManifest.xml:9:9-15:19
+MERGED from [com.google.mlkit:common:18.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ad4c689748f75845882b8b2793227377\transformed\jetified-common-18.8.0\AndroidManifest.xml:15:9-23:19
+MERGED from [com.google.mlkit:common:18.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ad4c689748f75845882b8b2793227377\transformed\jetified-common-18.8.0\AndroidManifest.xml:15:9-23:19
+	android:exported
+		ADDED from [com.google.android.gms:play-services-mlkit-text-recognition-common:19.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\33b6177fec570a5a4c4b2701f8635c8d\transformed\jetified-play-services-mlkit-text-recognition-common-19.0.0\AndroidManifest.xml:11:13-37
+	tools:targetApi
+		ADDED from [com.google.mlkit:common:18.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ad4c689748f75845882b8b2793227377\transformed\jetified-common-18.8.0\AndroidManifest.xml:19:13-32
+	android:directBootAware
+		ADDED from [com.google.mlkit:common:18.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ad4c689748f75845882b8b2793227377\transformed\jetified-common-18.8.0\AndroidManifest.xml:17:13-43
+	android:name
+		ADDED from [com.google.android.gms:play-services-mlkit-text-recognition-common:19.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\33b6177fec570a5a4c4b2701f8635c8d\transformed\jetified-play-services-mlkit-text-recognition-common-19.0.0\AndroidManifest.xml:10:13-91
+meta-data#com.google.firebase.components:com.google.mlkit.vision.text.internal.TextRegistrar
+ADDED from [com.google.android.gms:play-services-mlkit-text-recognition-common:19.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\33b6177fec570a5a4c4b2701f8635c8d\transformed\jetified-play-services-mlkit-text-recognition-common-19.0.0\AndroidManifest.xml:12:13-14:85
+	android:value
+		ADDED from [com.google.android.gms:play-services-mlkit-text-recognition-common:19.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\33b6177fec570a5a4c4b2701f8635c8d\transformed\jetified-play-services-mlkit-text-recognition-common-19.0.0\AndroidManifest.xml:14:17-82
+	android:name
+		ADDED from [com.google.android.gms:play-services-mlkit-text-recognition-common:19.0.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\33b6177fec570a5a4c4b2701f8635c8d\transformed\jetified-play-services-mlkit-text-recognition-common-19.0.0\AndroidManifest.xml:13:17-114
+meta-data#com.google.firebase.components:com.google.mlkit.vision.common.internal.VisionCommonRegistrar
+ADDED from [com.google.mlkit:vision-common:17.3.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\046709757b66d39fceea762f2b817b5b\transformed\jetified-vision-common-17.3.0\AndroidManifest.xml:12:13-14:85
+	android:value
+		ADDED from [com.google.mlkit:vision-common:17.3.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\046709757b66d39fceea762f2b817b5b\transformed\jetified-vision-common-17.3.0\AndroidManifest.xml:14:17-82
+	android:name
+		ADDED from [com.google.mlkit:vision-common:17.3.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\046709757b66d39fceea762f2b817b5b\transformed\jetified-vision-common-17.3.0\AndroidManifest.xml:13:17-124
+provider#com.google.mlkit.common.internal.MlKitInitProvider
+ADDED from [com.google.mlkit:common:18.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ad4c689748f75845882b8b2793227377\transformed\jetified-common-18.8.0\AndroidManifest.xml:9:9-13:38
+	android:authorities
+		ADDED from [com.google.mlkit:common:18.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ad4c689748f75845882b8b2793227377\transformed\jetified-common-18.8.0\AndroidManifest.xml:11:13-69
+	android:exported
+		ADDED from [com.google.mlkit:common:18.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ad4c689748f75845882b8b2793227377\transformed\jetified-common-18.8.0\AndroidManifest.xml:12:13-37
+	android:initOrder
+		ADDED from [com.google.mlkit:common:18.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ad4c689748f75845882b8b2793227377\transformed\jetified-common-18.8.0\AndroidManifest.xml:13:13-35
+	android:name
+		ADDED from [com.google.mlkit:common:18.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ad4c689748f75845882b8b2793227377\transformed\jetified-common-18.8.0\AndroidManifest.xml:10:13-78
+meta-data#com.google.firebase.components:com.google.mlkit.common.internal.CommonComponentRegistrar
+ADDED from [com.google.mlkit:common:18.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ad4c689748f75845882b8b2793227377\transformed\jetified-common-18.8.0\AndroidManifest.xml:20:13-22:85
+	android:value
+		ADDED from [com.google.mlkit:common:18.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ad4c689748f75845882b8b2793227377\transformed\jetified-common-18.8.0\AndroidManifest.xml:22:17-82
+	android:name
+		ADDED from [com.google.mlkit:common:18.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\ad4c689748f75845882b8b2793227377\transformed\jetified-common-18.8.0\AndroidManifest.xml:21:17-120
+activity#com.google.android.gms.common.api.GoogleApiActivity
+ADDED from [com.google.android.gms:play-services-base:18.1.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\e6fc7599450d427eb0426af078a30220\transformed\jetified-play-services-base-18.1.0\AndroidManifest.xml:20:9-22:45
+	android:exported
+		ADDED from [com.google.android.gms:play-services-base:18.1.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\e6fc7599450d427eb0426af078a30220\transformed\jetified-play-services-base-18.1.0\AndroidManifest.xml:22:19-43
+	android:theme
+		ADDED from [com.google.android.gms:play-services-base:18.1.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\e6fc7599450d427eb0426af078a30220\transformed\jetified-play-services-base-18.1.0\AndroidManifest.xml:21:19-78
+	android:name
+		ADDED from [com.google.android.gms:play-services-base:18.1.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\e6fc7599450d427eb0426af078a30220\transformed\jetified-play-services-base-18.1.0\AndroidManifest.xml:20:19-85
+meta-data#com.google.android.gms.version
+ADDED from [com.google.android.gms:play-services-basement:18.1.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\5ae7b79a62402a18ae79ebde0b67f168\transformed\jetified-play-services-basement-18.1.0\AndroidManifest.xml:21:9-23:69
+	android:value
+		ADDED from [com.google.android.gms:play-services-basement:18.1.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\5ae7b79a62402a18ae79ebde0b67f168\transformed\jetified-play-services-basement-18.1.0\AndroidManifest.xml:23:13-66
+	android:name
+		ADDED from [com.google.android.gms:play-services-basement:18.1.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\5ae7b79a62402a18ae79ebde0b67f168\transformed\jetified-play-services-basement-18.1.0\AndroidManifest.xml:22:13-58
+provider#androidx.startup.InitializationProvider
+ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\01d195a2d6ca05942448775fdd9a2956\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\051d1fd4ca1354e389592a3327401a37\transformed\jetified-lifecycle-process-2.8.0\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\051d1fd4ca1354e389592a3327401a37\transformed\jetified-lifecycle-process-2.8.0\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9b6c2ea791c6385569f44a1888cff2ee\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9b6c2ea791c6385569f44a1888cff2ee\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c7bfa47926806c16b7ad9b923b617d6b\transformed\jetified-startup-runtime-1.1.1\AndroidManifest.xml:26:9-30:34
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c7bfa47926806c16b7ad9b923b617d6b\transformed\jetified-startup-runtime-1.1.1\AndroidManifest.xml:26:9-30:34
+	tools:node
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\01d195a2d6ca05942448775fdd9a2956\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:28:13-31
+	android:authorities
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\01d195a2d6ca05942448775fdd9a2956\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:26:13-68
+	android:exported
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\01d195a2d6ca05942448775fdd9a2956\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:27:13-37
+	android:name
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\01d195a2d6ca05942448775fdd9a2956\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:25:13-67
+meta-data#androidx.emoji2.text.EmojiCompatInitializer
+ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\01d195a2d6ca05942448775fdd9a2956\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\01d195a2d6ca05942448775fdd9a2956\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\01d195a2d6ca05942448775fdd9a2956\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:30:17-75
+meta-data#androidx.lifecycle.ProcessLifecycleInitializer
+ADDED from [androidx.lifecycle:lifecycle-process:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\051d1fd4ca1354e389592a3327401a37\transformed\jetified-lifecycle-process-2.8.0\AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.lifecycle:lifecycle-process:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\051d1fd4ca1354e389592a3327401a37\transformed\jetified-lifecycle-process-2.8.0\AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.lifecycle:lifecycle-process:2.8.0] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\051d1fd4ca1354e389592a3327401a37\transformed\jetified-lifecycle-process-2.8.0\AndroidManifest.xml:30:17-78
+activity#androidx.compose.ui.tooling.PreviewActivity
+ADDED from [androidx.compose.ui:ui-tooling-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\40ac7ec7f9a7c7b033c183e9d78dd0fc\transformed\jetified-ui-tooling-release\AndroidManifest.xml:23:9-25:39
+	android:exported
+		ADDED from [androidx.compose.ui:ui-tooling-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\40ac7ec7f9a7c7b033c183e9d78dd0fc\transformed\jetified-ui-tooling-release\AndroidManifest.xml:25:13-36
+	android:name
+		ADDED from [androidx.compose.ui:ui-tooling-android:1.6.7] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\40ac7ec7f9a7c7b033c183e9d78dd0fc\transformed\jetified-ui-tooling-release\AndroidManifest.xml:24:13-71
+permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.13.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\8d8f2c1a0b94ff801252ad7bfd3318ca\transformed\core-1.13.1\AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.13.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\8d8f2c1a0b94ff801252ad7bfd3318ca\transformed\core-1.13.1\AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.13.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\8d8f2c1a0b94ff801252ad7bfd3318ca\transformed\core-1.13.1\AndroidManifest.xml:23:9-81
+permission#com.tutorug.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.13.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\8d8f2c1a0b94ff801252ad7bfd3318ca\transformed\core-1.13.1\AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.13.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\8d8f2c1a0b94ff801252ad7bfd3318ca\transformed\core-1.13.1\AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.13.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\8d8f2c1a0b94ff801252ad7bfd3318ca\transformed\core-1.13.1\AndroidManifest.xml:23:9-81
+uses-permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.13.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\8d8f2c1a0b94ff801252ad7bfd3318ca\transformed\core-1.13.1\AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.13.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\8d8f2c1a0b94ff801252ad7bfd3318ca\transformed\core-1.13.1\AndroidManifest.xml:26:22-94
+uses-permission#com.tutorug.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.13.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\8d8f2c1a0b94ff801252ad7bfd3318ca\transformed\core-1.13.1\AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.13.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\8d8f2c1a0b94ff801252ad7bfd3318ca\transformed\core-1.13.1\AndroidManifest.xml:26:22-94
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c7dd10b05129f6f1343336367052b52d\transformed\jetified-transport-backend-cct-2.3.3\AndroidManifest.xml:25:5-79
+MERGED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9cdb9234bf23005017f0bc56ad7c6673\transformed\jetified-transport-runtime-2.2.6\AndroidManifest.xml:22:5-79
+MERGED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9cdb9234bf23005017f0bc56ad7c6673\transformed\jetified-transport-runtime-2.2.6\AndroidManifest.xml:22:5-79
+	android:name
+		ADDED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c7dd10b05129f6f1343336367052b52d\transformed\jetified-transport-backend-cct-2.3.3\AndroidManifest.xml:25:22-76
+service#com.google.android.datatransport.runtime.backends.TransportBackendDiscovery
+ADDED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c7dd10b05129f6f1343336367052b52d\transformed\jetified-transport-backend-cct-2.3.3\AndroidManifest.xml:29:9-35:19
+MERGED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9cdb9234bf23005017f0bc56ad7c6673\transformed\jetified-transport-runtime-2.2.6\AndroidManifest.xml:36:9-38:40
+MERGED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9cdb9234bf23005017f0bc56ad7c6673\transformed\jetified-transport-runtime-2.2.6\AndroidManifest.xml:36:9-38:40
+	android:exported
+		ADDED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c7dd10b05129f6f1343336367052b52d\transformed\jetified-transport-backend-cct-2.3.3\AndroidManifest.xml:31:13-37
+	android:name
+		ADDED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c7dd10b05129f6f1343336367052b52d\transformed\jetified-transport-backend-cct-2.3.3\AndroidManifest.xml:30:13-103
+meta-data#backend:com.google.android.datatransport.cct.CctBackendFactory
+ADDED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c7dd10b05129f6f1343336367052b52d\transformed\jetified-transport-backend-cct-2.3.3\AndroidManifest.xml:32:13-34:39
+	android:value
+		ADDED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c7dd10b05129f6f1343336367052b52d\transformed\jetified-transport-backend-cct-2.3.3\AndroidManifest.xml:34:17-36
+	android:name
+		ADDED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\c7dd10b05129f6f1343336367052b52d\transformed\jetified-transport-backend-cct-2.3.3\AndroidManifest.xml:33:17-94
+service#com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService
+ADDED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9cdb9234bf23005017f0bc56ad7c6673\transformed\jetified-transport-runtime-2.2.6\AndroidManifest.xml:26:9-30:19
+	android:exported
+		ADDED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9cdb9234bf23005017f0bc56ad7c6673\transformed\jetified-transport-runtime-2.2.6\AndroidManifest.xml:28:13-37
+	android:permission
+		ADDED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9cdb9234bf23005017f0bc56ad7c6673\transformed\jetified-transport-runtime-2.2.6\AndroidManifest.xml:29:13-69
+	android:name
+		ADDED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9cdb9234bf23005017f0bc56ad7c6673\transformed\jetified-transport-runtime-2.2.6\AndroidManifest.xml:27:13-117
+receiver#com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver
+ADDED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9cdb9234bf23005017f0bc56ad7c6673\transformed\jetified-transport-runtime-2.2.6\AndroidManifest.xml:32:9-34:40
+	android:exported
+		ADDED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9cdb9234bf23005017f0bc56ad7c6673\transformed\jetified-transport-runtime-2.2.6\AndroidManifest.xml:34:13-37
+	android:name
+		ADDED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9cdb9234bf23005017f0bc56ad7c6673\transformed\jetified-transport-runtime-2.2.6\AndroidManifest.xml:33:13-132
+meta-data#androidx.profileinstaller.ProfileInstallerInitializer
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9b6c2ea791c6385569f44a1888cff2ee\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9b6c2ea791c6385569f44a1888cff2ee\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9b6c2ea791c6385569f44a1888cff2ee\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
+receiver#androidx.profileinstaller.ProfileInstallReceiver
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9b6c2ea791c6385569f44a1888cff2ee\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
+	android:enabled
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9b6c2ea791c6385569f44a1888cff2ee\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
+	android:exported
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9b6c2ea791c6385569f44a1888cff2ee\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
+	android:permission
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9b6c2ea791c6385569f44a1888cff2ee\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
+	android:directBootAware
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9b6c2ea791c6385569f44a1888cff2ee\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9b6c2ea791c6385569f44a1888cff2ee\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
+intent-filter#action:name:androidx.profileinstaller.action.INSTALL_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9b6c2ea791c6385569f44a1888cff2ee\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
+action#androidx.profileinstaller.action.INSTALL_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9b6c2ea791c6385569f44a1888cff2ee\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9b6c2ea791c6385569f44a1888cff2ee\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
+intent-filter#action:name:androidx.profileinstaller.action.SKIP_FILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9b6c2ea791c6385569f44a1888cff2ee\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
+action#androidx.profileinstaller.action.SKIP_FILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9b6c2ea791c6385569f44a1888cff2ee\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9b6c2ea791c6385569f44a1888cff2ee\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
+intent-filter#action:name:androidx.profileinstaller.action.SAVE_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9b6c2ea791c6385569f44a1888cff2ee\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
+action#androidx.profileinstaller.action.SAVE_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9b6c2ea791c6385569f44a1888cff2ee\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9b6c2ea791c6385569f44a1888cff2ee\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
+intent-filter#action:name:androidx.profileinstaller.action.BENCHMARK_OPERATION
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9b6c2ea791c6385569f44a1888cff2ee\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
+action#androidx.profileinstaller.action.BENCHMARK_OPERATION
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9b6c2ea791c6385569f44a1888cff2ee\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\OPETO ISAAC\.gradle\caches\9.0.0\transforms\9b6c2ea791c6385569f44a1888cff2ee\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
