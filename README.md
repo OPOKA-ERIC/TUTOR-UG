@@ -6,149 +6,328 @@ AI-Powered Localized Education Platform for Uganda
 
 ---
 
-## 🚀 Quick Start
+## Prerequisites
 
-### Prerequisites
 - Android Studio Hedgehog or later
-- JDK 17+
-- Firebase account
-- Anthropic Claude API key
-
-### Setup Instructions
-
-1. **Clone and Open Project**
-   ```bash
-   cd d:\TutorUG\TutorUG_App
-   ```
-   Open in Android Studio
-
-2. **Firebase Setup**
-   - Create a Firebase project at https://console.firebase.google.com
-   - Enable Authentication (Email/Password)
-   - Enable Firestore Database
-   - Enable Storage
-   - Enable Cloud Functions
-   - Download `google-services.json` and place in `app/` folder
-
-3. **Configure Anthropic API**
-   ```bash
-   firebase functions:config:set anthropic.key="YOUR_ANTHROPIC_API_KEY"
-   ```
-
-4. **Deploy Cloud Functions**
-   ```bash
-   cd functions
-   npm install
-   firebase deploy --only functions
-   ```
-
-5. **Run the App**
-   - Connect Android device or start emulator
-   - Click Run ▶ in Android Studio
+- JDK 8+
+- Android device or emulator (minSdk 26 / Android 8.0)
+- Supabase account — https://supabase.com
+- Anthropic API key — https://console.anthropic.com
 
 ---
 
-## 📱 Features Implemented
+## Setup Instructions
 
-✅ **Phase 1 — Core Features**
-- Firebase Authentication (Email/Password)
-- Student Profile with District Selection
-- 135+ Uganda Districts Database
-- AI Chat with Localized Context
-- Voice Input (Speech-to-Text)
-- Voice Output (Text-to-Speech)
-- Material 3 Design with Uganda Theme (Black/Gold/Red)
-- Chat History
-- Subject Sidebar Navigation
+### 1. Clone and Open Project
 
-✅ **Phase 2 — Document & Quiz**
-- Document Upload (PDF, Images)
-- ML Kit OCR for handwritten notes
-- Section-by-section learning flow
-- Adaptive Quiz Engine (70% pass threshold)
-- Quiz results tracking
-- Progress dashboard
+```bash
+git clone https://github.com/OPOKA-ERIC/TUTOR-UG.git
+cd TUTOR-UG
+```
 
-🔄 **Phase 3 — Coming Soon**
-- Teacher Dashboard
-- Offline Mode
-- Multi-language Support (Luganda, Acholi, Runyankole)
+Open the project in Android Studio and wait for Gradle sync.
+
+### 2. Supabase Setup
+
+1. Create a new project at https://supabase.com
+2. Go to **SQL Editor** and run the full contents of `supabase/setup.sql` — this creates all tables, indexes, and RLS policies
+3. Go to **Project Settings → API** and copy your **Project URL** and **anon key**
+4. Open `app/src/main/java/com/tutorug/app/data/remote/SupabaseClient.kt` and update:
+
+```kotlin
+const val SUPABASE_URL = "https://<your-project-ref>.supabase.co"
+const val SUPABASE_ANON_KEY = "<your-anon-key>"
+```
+
+### 3. Deploy Supabase Edge Functions
+
+```bash
+npm install -g supabase
+supabase login
+supabase link --project-ref <your-project-ref>
+supabase secrets set ANTHROPIC_KEY=sk-ant-...
+supabase functions deploy
+```
+
+> The secret name must be `ANTHROPIC_KEY` — that is what the edge functions read via `Deno.env.get("ANTHROPIC_KEY")`.
+
+### 4. Run the App
+
+- Connect an Android device or start an emulator
+- Click **Run ▶** in Android Studio
 
 ---
 
-## 🏗️ Architecture
+## Features
+
+### Authentication
+- Email/password registration and login via Supabase Auth
+- OTP-based password reset (6-digit code sent by email via Edge Function)
+- In-app password change
+- JWT stored in memory — never written to disk
+
+### Student Profile
+- Name, email, district, region, school, education level
+- A-Level combination (S5/S6), university course, or profession
+- Profile photo upload to Supabase Storage (avatars bucket)
+- Optional GPS-based district auto-detection using Android Geocoder
+- Activity stats: total messages, total quizzes, total documents, streak days
+
+### AI Chat (powered by Claude Haiku via Supabase Edge Function)
+- Streaming responses (Server-Sent Events)
+- Full Ugandan localization — examples use the student's district, local names, UGX currency, local foods, landmarks, and economy
+- Subject-aware sidebar navigation:
+  - **P1–P7:** English, Mathematics, Science, Social Studies, Religious Education
+  - **S1–S4:** Full O-Level subject list (20 subjects)
+  - **S5–S6:** Only subjects from the student's A-Level combination + General Paper
+  - **University / Professional:** Free-form chat, no subject sidebar
+- Chat history stored in Supabase (chat_sessions + chat_messages tables)
+- Delete individual chat sessions
+- Math rendering using custom `[math]...[/math]` and `[math-block]...[/math-block]` tags rendered via KaTeX (katex.html WebView asset)
+
+### Voice
+- Speech-to-Text using Android SpeechRecognizer (en-GB)
+- Text-to-Speech using Android TTS engine (en-GB)
+- Adjustable speech rate
+- Male/Female voice selection (uses voice name matching + pitch fallback)
+- Auto-read toggle (AI responses read aloud automatically)
+
+### Document Learning
+- Upload PDF, images (JPG/PNG/WEBP), DOCX, PPTX, XLSX, or plain text files
+- Text extraction on-device before sending to the Edge Function:
+  - **PDF** — rendered page-by-page via Android PdfRenderer, then OCR'd with ML Kit
+  - **Images** — ML Kit Text Recognition (OCR)
+  - **DOCX** — unzipped, `word/document.xml` parsed, embedded images OCR'd
+  - **PPTX** — unzipped, slide XML parsed, embedded images OCR'd
+  - **XLSX** — unzipped, shared strings and worksheet XML parsed
+  - **Plain text** — read directly as UTF-8
+- Extracted text (up to 12,000 characters) sent to `process-document` Edge Function
+- AI splits the document into titled sections stored in `document_sections` table
+- Section-by-section learning mode with a dedicated AI chat session per document
+- Per-section quiz pass tracking (best score, attempt count)
+- Delete documents (removes DB record and document_sections rows)
+
+### Quizzes
+- Multiple-choice questions generated by `generate-quiz` Edge Function using Claude
+- Questions use Ugandan local context matching the student's district
+- 70% pass threshold
+- Tracks: score, total questions, correct answers, time taken, difficulty, pass/fail
+- Results saved to `quiz_results` table
+- Increments user's `total_quizzes` counter on each attempt
+
+### Timetable
+- Weekly study schedule (Monday–Sunday)
+- Add, edit, and delete timetable entries (subject, day, start time, end time, colour)
+- Exact alarm scheduling using Android AlarmManager
+- Full-screen alarm activity that shows over the lock screen and wakes the device
+- Alarms automatically rescheduled after device reboot (BootReceiver)
+- Study session attendance logging (scheduled minutes vs attended minutes) in `study_session_logs`
+
+### Settings
+- Voice on/off, auto-read on/off, quiz sound on/off
+- Notifications on/off, study reminders on/off
+- Quiz difficulty: Adaptive / Easy / Medium / Hard
+- App theme: Deep Space / Midnight / Forest / Ocean / Sunset
+- Speech rate slider
+- Voice gender toggle (Female / Male)
+- All settings persisted locally via SharedPreferences and synced to `user_settings` table in Supabase
+
+### Other Screens
+- **Learning Progress** — quiz history and study stats
+- **Privacy Policy** — in-app screen
+- **Terms of Service** — in-app screen
+- **Custom Toast** — branded TutorUG toast notifications
+
+---
+
+## Architecture
 
 ```
-TutorUG_App/
-├── app/
-│   ├── src/main/
-│   │   ├── java/com/tutorug/app/
-│   │   │   ├── data/
-│   │   │   │   ├── model/          # Data models
-│   │   │   │   ├── repository/     # Firebase repositories
-│   │   │   │   └── local/          # District database
-│   │   │   ├── ui/
-│   │   │   │   ├── screens/        # All UI screens
-│   │   │   │   └── theme/          # Uganda theme colors
-│   │   │   ├── viewmodel/          # ViewModels
-│   │   │   ├── util/               # Voice, Constants
-│   │   │   ├── MainActivity.kt
-│   │   │   └── TutorUGApp.kt
-│   │   ├── res/
-│   │   │   ├── raw/
-│   │   │   │   └── districts.json  # 135+ districts
-│   │   │   └── values/
-│   │   └── AndroidManifest.xml
-│   └── build.gradle.kts
+app/src/main/java/com/tutorug/app/
+├── data/
+│   ├── model/Models.kt              # All data classes
+│   ├── remote/SupabaseClient.kt     # OkHttp client + auth interceptor
+│   ├── local/DistrictDatabase.kt    # Loads districts.json (135+ districts)
+│   └── repository/
+│       ├── AuthRepository.kt        # Supabase Auth REST calls
+│       ├── ChatRepository.kt        # chat_sessions + chat_messages
+│       ├── DocumentRepository.kt    # documents + document_sections + Storage
+│       ├── QuizRepository.kt        # quiz_results + generate-quiz function
+│       ├── TimetableRepository.kt   # timetable_entries
+│       └── StudySessionRepository.kt # study_session_logs
+├── ui/
+│   ├── screens/                     # All Jetpack Compose screens
+│   └── theme/                       # Material 3 Uganda theme
+├── viewmodel/
+│   ├── AuthViewModel.kt
+│   ├── ChatViewModel.kt
+│   ├── DocumentViewModel.kt
+│   ├── QuizViewModel.kt
+│   ├── SettingsViewModel.kt
+│   └── TimetableViewModel.kt
+├── util/
+│   ├── VoiceManager.kt              # TTS + STT
+│   ├── AnthropicClient.kt           # Direct Anthropic HTTP client (utility)
+│   ├── AlarmActivity.kt             # Full-screen alarm over lock screen
+│   ├── TimetableAlarmReceiver.kt    # Fires scheduled study alarms
+│   ├── BootReceiver.kt              # Reschedules alarms after reboot
+│   └── Constants.kt                 # Education levels, subjects, regions
+├── MainActivity.kt
+├── TutorUGApp.kt
+└── TutorUGMessagingService.kt       # FCM placeholder (not yet active)
+
+supabase/
 ├── functions/
-│   ├── index.js                    # Claude API integration
-│   └── package.json
-├── firestore.rules
-├── storage.rules
-└── firebase.json
+│   ├── send-chat-message/           # Streaming Claude Haiku chat (SSE)
+│   ├── process-document/            # Document → sections via Claude
+│   ├── generate-quiz/               # Quiz question generation via Claude
+│   ├── send-otp/                    # Sends OTP email for password reset
+│   ├── verify-otp/                  # Validates OTP code
+│   ├── reset-password/              # Resets password after OTP verified
+│   └── send-reminder/               # Study reminder notifications
+└── setup.sql                        # Full DB schema + RLS policies
 ```
 
 ---
 
-## 🎨 Screens
+## Database Schema (Supabase PostgreSQL)
 
-1. **Splash Screen** — Uganda flag colors with gold glow
-2. **Login Screen** — Email/password with gold CTA
-3. **Register Screen** — Multi-step with district & level selection
-4. **Chat Screen** — AI tutor with voice I/O, sidebar navigation
-5. **Document Upload** — Drag-drop with subject selection
-6. **Quiz Screen** — Multiple choice with local context questions
-7. **Settings Screen** — Profile, voice settings, logout
+| Table | Description |
+|---|---|
+| `users` | Student profiles and activity stats |
+| `user_settings` | Per-user app preferences |
+| `chat_sessions` | Chat and learning sessions |
+| `chat_messages` | Individual messages per session |
+| `documents` | Uploaded document metadata |
+| `document_sections` | AI-generated sections per document |
+| `quiz_results` | Quiz attempt records |
+| `timetable_entries` | Weekly study schedule entries |
+| `study_session_logs` | Attendance logs per timetable entry per day |
 
----
+All tables are protected by **Row Level Security (RLS)** — users can only read and write their own data.
 
-## 🔐 Security
+### Storage Buckets
 
-- Firebase Authentication with JWT tokens
-- Firestore Security Rules (user data isolation)
-- Storage Rules (private document access)
-- API keys secured in Cloud Functions (never exposed in app)
-- All data encrypted in transit (HTTPS/TLS) and at rest (AES-256)
-
----
-
-## 💰 Cost Estimate
-
-**MVP Phase (0-500 users):**
-- Anthropic Claude API: $60-$360/month
-- Firebase: $2-$10/month
-- **Total: $60-$400/month**
-
-**Growth Phase (1,000+ daily users):**
-- Anthropic Claude API: $600-$3,600/month
-- Firebase: $10-$50/month
-- **Total: $600-$4,000/month**
+| Bucket | Access | Path pattern |
+|---|---|---|
+| `documents` | Private | `documents/{userId}/{documentId}/{fileName}` |
+| `avatars` | Public read | `{userId}/avatar_{timestamp}.{ext}` |
 
 ---
 
-## 📞 Support
+## Supabase Edge Functions
 
-**Founding Team:**
+| Function | Claude model | Description |
+|---|---|---|
+| `send-chat-message` | claude-haiku-4-5 | Streams AI tutor responses (SSE), supports learning mode |
+| `process-document` | Claude | Splits extracted document text into titled study sections |
+| `generate-quiz` | Claude | Generates multiple-choice questions with Ugandan context |
+| `send-otp` | — | Sends a 6-digit OTP to the user's email |
+| `verify-otp` | — | Validates the submitted OTP code |
+| `reset-password` | — | Resets the user's Supabase Auth password |
+| `send-reminder` | — | Sends study reminder push notifications |
+
+---
+
+## Android Permissions
+
+| Permission | Reason |
+|---|---|
+| `INTERNET` | All API calls |
+| `RECORD_AUDIO` | Speech-to-Text |
+| `READ_MEDIA_IMAGES` / `READ_MEDIA_DOCUMENTS` | Document upload |
+| `POST_NOTIFICATIONS` | Study reminders |
+| `ACCESS_FINE_LOCATION` / `ACCESS_COARSE_LOCATION` | Optional GPS district detection |
+| `SCHEDULE_EXACT_ALARM` / `USE_EXACT_ALARM` | Timetable alarms |
+| `RECEIVE_BOOT_COMPLETED` | Reschedule alarms after reboot |
+| `VIBRATE` / `WAKE_LOCK` / `USE_FULL_SCREEN_INTENT` | Alarm activity |
+
+---
+
+## Key Dependencies
+
+| Library | Version | Purpose |
+|---|---|---|
+| Jetpack Compose BOM | 2024.05.00 | UI framework |
+| Material 3 | via BOM | Design system |
+| Navigation Compose | 2.7.7 | Screen navigation |
+| OkHttp | 4.12.0 | Supabase REST + Edge Function calls |
+| Gson | 2.11.0 | JSON serialization |
+| ML Kit Text Recognition | 16.0.0 | OCR for images and PDFs |
+| Coil | 2.6.0 | Image loading (profile photos) |
+| DataStore Preferences | 1.1.1 | Local key-value storage |
+| Coroutines | 1.8.1 | Async operations |
+
+> Firebase SDK is listed in `libs.versions.toml` but only `firebase-messaging-ktx` is declared as a dependency. The `TutorUGMessagingService` is currently a placeholder — FCM push notifications are not yet active.
+
+---
+
+## Screens
+
+| Screen | Description |
+|---|---|
+| Splash | Animated logo |
+| Login | Email + password |
+| Register | Multi-step: name → district/region → education level → school/combination/course |
+| OTP Verify | 6-digit code entry for password reset |
+| Forgot Password | Enter email to receive OTP |
+| New Password | Set new password after OTP verified |
+| Change Password | In-app password change (requires current session) |
+| Chat | AI tutor with subject sidebar, voice I/O, streaming responses, math rendering |
+| Learning | Section-by-section document study with AI chat |
+| Document Upload | Pick file, select subject, upload and process |
+| Quiz | Multiple-choice with timer, score, and pass/fail result |
+| Learning Progress | Quiz history and study statistics |
+| Timetable | Weekly schedule with add/edit/delete and alarm management |
+| Settings | Voice, theme, quiz difficulty, profile photo, logout |
+| Privacy Policy | Static in-app screen |
+| Terms of Service | Static in-app screen |
+
+---
+
+## Localization Engine
+
+Every AI response is grounded in the student's district. The `districts.json` file (loaded by `DistrictDatabase.kt`) contains for each district:
+
+- Local place names and landmarks
+- Common local names
+- Rivers
+- Local foods
+- Economic activities
+- Local animals
+
+This context is passed to the `send-chat-message` Edge Function on every request so Claude always uses examples the student recognises.
+
+**Example** — student in Gulu learning profit and loss:
+> "If Akello buys 3 bunches of matooke at Gulu Main Market for UGX 15,000 each, how much does she spend in total?"
+
+---
+
+## Curriculum Coverage
+
+- **Primary (P1–P7):** English, Mathematics, Science, Social Studies, Religious Education
+- **O-Level (S1–S4):** 20 subjects including English, Maths, Physics, Chemistry, Biology, History, Geography, Agriculture, Commerce, ICT, Fine Art, Music, Luganda, French, and more
+- **A-Level (S5–S6):** Subjects derived from the student's combination letters (P, C, B, M, E, G, H, L, D, A, T, F, U, S, K) + General Paper
+- **University / Professional:** Free-form chat — no subject restriction
+
+---
+
+## Cost Estimate
+
+**MVP (0–500 users):**
+- Anthropic Claude API: ~$60–$360/month
+- Supabase: Free tier (500 MB DB, 1 GB storage, 2M Edge Function invocations/month)
+- **Total: ~$60–$360/month**
+
+**Growth (1,000+ daily users):**
+- Anthropic Claude API: ~$600–$3,600/month
+- Supabase Pro: $25/month
+- **Total: ~$625–$3,625/month**
+
+---
+
+## Team
+
 - Opoka Eric — Co-Founder
 - Ojok Erick — Co-Founder
 - Opeto Isaac — Co-Founder
