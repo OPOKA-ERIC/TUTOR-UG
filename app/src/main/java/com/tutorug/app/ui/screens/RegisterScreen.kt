@@ -143,6 +143,18 @@ fun RegisterScreen(
                 )
                 Spacer(modifier = Modifier.height(14.dp))
 
+                val passwordsMatch    = confirmPassword.isNotEmpty() && password == confirmPassword
+                val passwordsMismatch = confirmPassword.isNotEmpty() && password != confirmPassword
+                val confirmBorderColor = when {
+                    passwordsMatch    -> Color(0xFF27AE60)
+                    passwordsMismatch -> Color(0xFFE74C3C)
+                    else              -> outline
+                }
+                val confirmFocusedBorderColor = when {
+                    passwordsMatch    -> Color(0xFF27AE60)
+                    passwordsMismatch -> Color(0xFFE74C3C)
+                    else              -> primary
+                }
                 OutlinedTextField(
                     value = confirmPassword, onValueChange = { confirmPassword = it }, label = { Text("Confirm Password") },
                     modifier = Modifier.fillMaxWidth(),
@@ -152,8 +164,24 @@ fun RegisterScreen(
                             Icon(if (confirmPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff, null, tint = onSurfaceVar)
                         }
                     },
-                    colors = fieldColors, singleLine = true, shape = RoundedCornerShape(12.dp)
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor        = AppColors.textPrimary,
+                        unfocusedTextColor      = AppColors.textPrimary,
+                        focusedBorderColor      = confirmFocusedBorderColor,
+                        unfocusedBorderColor    = confirmBorderColor,
+                        focusedContainerColor   = surfaceInput,
+                        unfocusedContainerColor = surfaceInput,
+                        cursorColor             = primary,
+                        focusedLabelColor       = confirmFocusedBorderColor,
+                        unfocusedLabelColor     = onSurfaceVar
+                    ),
+                    singleLine = true, shape = RoundedCornerShape(12.dp)
                 )
+                if (passwordsMatch) {
+                    Text("✓ Passwords match", color = Color(0xFF27AE60), fontSize = 12.sp, modifier = Modifier.padding(start = 4.dp, top = 4.dp))
+                } else if (passwordsMismatch) {
+                    Text("✗ Passwords do not match", color = Color(0xFFE74C3C), fontSize = 12.sp, modifier = Modifier.padding(start = 4.dp, top = 4.dp))
+                }
                 Spacer(modifier = Modifier.height(14.dp))
 
                 ExposedDropdownMenuBox(expanded = districtExpanded, onExpandedChange = { districtExpanded = it }) {

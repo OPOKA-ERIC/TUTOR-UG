@@ -176,7 +176,19 @@ class AuthRepository {
                 .build()
             val response = http.newCall(request).execute()
             val responseBody = response.body?.string() ?: ""
-            if (!response.isSuccessful) throw Exception(parseSupabaseError(responseBody))
+            if (!response.isSuccessful) {
+                val parsed = try {
+                    val map = gson.fromJson<Map<String, Any>>(responseBody, object : TypeToken<Map<String, Any>>() {}.type)
+                    map["error"] as? String
+                } catch (_: Exception) { null }
+                val userMessage = when {
+                    parsed?.contains("not found", ignoreCase = true) == true ->
+                        "No account found with this email address."
+                    else ->
+                        "You cannot reset your password yet. Please contact admin for support."
+                }
+                throw Exception(userMessage)
+            }
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -208,7 +220,21 @@ class AuthRepository {
                 .build()
             val response = http.newCall(request).execute()
             val responseBody = response.body?.string() ?: ""
-            if (!response.isSuccessful) throw Exception(parseSupabaseError(responseBody))
+            if (!response.isSuccessful) {
+                val parsed = try {
+                    val map = gson.fromJson<Map<String, Any>>(responseBody, object : TypeToken<Map<String, Any>>() {}.type)
+                    map["error"] as? String
+                } catch (_: Exception) { null }
+                // Only show the clean user-not-found message; everything else is a server/config
+                // issue the user cannot fix themselves
+                val userMessage = when {
+                    parsed?.contains("not found", ignoreCase = true) == true ->
+                        "No account found with this email address."
+                    else ->
+                        "You cannot reset your password yet. Please contact admin for support."
+                }
+                throw Exception(userMessage)
+            }
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
