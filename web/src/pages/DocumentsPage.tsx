@@ -112,7 +112,7 @@ export default function DocumentsPage() {
 
       {/* ── TOP BAR — matches Android gradient bar ── */}
       <div className="bg-gradient-to-r from-surface to-surface-var px-2 py-2 flex items-center gap-1 shrink-0">
-        <button onClick={() => navigate('/documents')}
+        <button onClick={() => navigate('/chat')}
           className="w-12 h-12 flex items-center justify-center shrink-0">
           <div className="w-9 h-9 bg-surface-input rounded-full flex items-center justify-center">
             <ArrowLeft size={18} className="text-text-white" />
