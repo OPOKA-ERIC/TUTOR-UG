@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: #0A0A1F;
+    color: #F0F0FF;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #12122A; }
+  ::-webkit-scrollbar-thumb { background: #2A2A4A; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #FFB800; }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-grad-primary text-ink font-bold py-3 px-6 rounded-xl
+           hover:opacity-90 active:scale-95 transition-all duration-150
+           disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+  .btn-secondary {
+    @apply bg-surface-var text-text-light font-medium py-3 px-6 rounded-xl
+           border border-outline hover:border-primary hover:text-text-white
+           transition-all duration-150;
+  }
+  .input-field {
+    @apply w-full bg-surface-input border border-outline rounded-xl px-4 py-3
+           text-text-white placeholder-text-disabled
+           focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary
+           transition-colors duration-150;
+  }
+  .card {
+    @apply bg-surface rounded-2xl border border-outline p-5;
+  }
+  .sidebar-item {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer
+           text-text-light hover:bg-surface-var hover:text-text-white
+           transition-all duration-150;
+  }
+  .sidebar-item.active {
+    @apply bg-primary/10 text-primary border border-primary/20;
+  }
+}
