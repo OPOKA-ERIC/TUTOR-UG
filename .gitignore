@@ -1,3 +1,4 @@
+# Android
 .gradle/
 .idea/
 *.iml
@@ -7,7 +8,32 @@
 .externalNativeBuild
 .cxx
 local.properties
-# google-services.json
+google-services.json
+
+# Android build outputs (large files)
+app/build/
+**/build/
+*.apk
+*.aab
+*.ap_
+
+# Firebase / Functions
 /functions/node_modules/
 /functions/.env
 *.log
+
+# Supabase
+supabase.exe
+supabase/.temp/
+
+# Web
+web/node_modules/
+web/dist/
+web/.env
+web/.env.local
+
+# Keys & secrets
+*.keystore
+*.jks
+.env
+.env.*
