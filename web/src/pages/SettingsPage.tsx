@@ -5,7 +5,8 @@ import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { SUPABASE_URL, SUPABASE_ANON } from '@/lib/supabase'
 import { EDUCATION_LEVELS, REGIONS, getSubjectsForLevel } from '@/lib/constants'
-import Layout from '@/components/Layout'
+import { ArrowLeft } from 'lucide-react'
+import Logo from '@/components/Logo'
 import type { UserSettings } from '@/types'
 
 const THEMES = ['DEEP_SPACE','MIDNIGHT','FOREST','OCEAN','SUNSET']
@@ -94,9 +95,18 @@ export default function SettingsPage() {
   )
 
   return (
-    <Layout>
-      <div className="flex-1 overflow-y-auto p-6 max-w-2xl mx-auto w-full space-y-6">
-        <h1 className="text-text-white text-2xl font-bold">Settings</h1>
+    <div className="flex flex-col h-full bg-gradient-to-b from-surface to-bg">
+      {/* TOP BAR */}
+      <div className="bg-gradient-to-r from-surface to-surface-var px-2 py-2 flex items-center gap-1 shrink-0">
+        <button onClick={() => navigate('/chat')} className="w-12 h-12 flex items-center justify-center shrink-0">
+          <div className="w-9 h-9 bg-surface-input rounded-full flex items-center justify-center">
+            <ArrowLeft size={18} className="text-text-white" />
+          </div>
+        </button>
+        <Logo size="sm" />
+        <span className="text-text-white font-bold text-xl ml-2">Settings</span>
+      </div>
+      <div className="flex-1 overflow-y-auto p-4 space-y-5">
 
         {/* Avatar + Profile */}
         <div className="card">
@@ -227,7 +237,8 @@ export default function SettingsPage() {
           className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-error/30 text-error hover:bg-error/10 transition-colors font-medium">
           <LogOut size={18} /> Sign Out
         </button>
+        <div className="h-4" />
       </div>
-    </Layout>
+    </div>
   )
 }

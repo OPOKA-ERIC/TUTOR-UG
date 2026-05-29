@@ -9,7 +9,19 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <App />
+        {/* Mobile app frame — centers content like an Android phone on desktop */}
+        <div className="min-h-screen bg-black flex items-center justify-center">
+          <div
+            className="relative bg-bg overflow-hidden"
+            style={{
+              width: '100%',
+              maxWidth: '430px',
+              height: '100dvh',
+              maxHeight: '100dvh',
+            }}>
+            <App />
+          </div>
+        </div>
       </AuthProvider>
     </BrowserRouter>
   </StrictMode>

@@ -32,6 +32,7 @@ export default function App() {
   )
 
   return (
+    <div className="h-full flex flex-col">
     <Routes>
       <Route path="/" element={<SplashPage />} />
       <Route path="/login" element={profile ? <Navigate to="/chat" replace /> : <LoginPage />} />
@@ -46,5 +47,6 @@ export default function App() {
       <Route path="/settings" element={<PrivateRoute><SettingsPage /></PrivateRoute>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </div>
   )
 }
