@@ -62,6 +62,8 @@
            transition-all duration-150;
   }
   .sidebar-item.active {
-    @apply bg-primary/10 text-primary border border-primary/20;
+    @apply text-primary border border-primary;
+    background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);
+    border-color: color-mix(in srgb, var(--color-primary) 20%, transparent);
   }
 }
