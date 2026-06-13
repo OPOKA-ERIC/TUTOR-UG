@@ -3,21 +3,37 @@
 @tailwind utilities;
 
 @layer base {
+  /* Default theme tokens (Deep Space) — overridden at runtime by ThemeContext */
+  :root {
+    --color-bg:            #0A0A1F;
+    --color-surface:       #12122A;
+    --color-surface-var:   #1A1A3A;
+    --color-surface-card:  #1E1E40;
+    --color-surface-input: #252545;
+    --color-primary:       #FFB800;
+    --color-primary-dark:  #E6A500;
+    --color-secondary:     #7C3AED;
+    --color-tertiary:      #6D28D9;
+    --color-outline:       #2A2A4A;
+    --color-bar-start:     #12122A;
+    --color-bar-end:       #1A1A3A;
+  }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body, #root {
     height: 100%;
     height: 100dvh;
   }
   body {
-    background-color: #0A0A1F;
+    background-color: var(--color-bg);
     color: #F0F0FF;
     font-family: 'Inter', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
   ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: #12122A; }
-  ::-webkit-scrollbar-thumb { background: #2A2A4A; border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: #FFB800; }
+  ::-webkit-scrollbar-track { background: var(--color-surface); }
+  ::-webkit-scrollbar-thumb { background: var(--color-outline); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--color-primary); }
 }
 
 @layer components {

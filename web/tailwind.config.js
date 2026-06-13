@@ -4,36 +4,36 @@ export default {
   theme: {
     extend: {
       colors: {
-        // ── TutorUG Deep Space Theme (matches Android exactly) ──
-        bg:           '#0A0A1F',
-        surface:      '#12122A',
-        'surface-var':'#1A1A3A',
-        'surface-card':'#1E1E40',
-        'surface-input':'#252545',
-        primary:      '#FFB800',   // Gold
-        'primary-dark':'#E6A500',
-        secondary:    '#7C3AED',   // Violet
-        tertiary:     '#6D28D9',
-        error:        '#EF4444',
-        outline:      '#2A2A4A',
-        // Text
-        'text-white': '#F0F0FF',
-        'text-light': '#C0C0D8',
+        // All colors reference CSS variables injected by ThemeContext
+        bg:             'var(--color-bg)',
+        surface:        'var(--color-surface)',
+        'surface-var':  'var(--color-surface-var)',
+        'surface-card': 'var(--color-surface-card)',
+        'surface-input':'var(--color-surface-input)',
+        primary:        'var(--color-primary)',
+        'primary-dark': 'var(--color-primary-dark)',
+        secondary:      'var(--color-secondary)',
+        tertiary:       'var(--color-tertiary)',
+        error:          '#EF4444',
+        outline:        'var(--color-outline)',
+        // Text — fixed across all themes
+        'text-white':   '#F0F0FF',
+        'text-light':   '#C0C0D8',
         'text-disabled':'#606080',
-        // Accents
-        lime:         '#84CC16',
-        'lime-dark':  '#65A30D',
-        amber:        '#F59E0B',
-        coral:        '#F87171',
-        ink:          '#0A0A1F',
+        // Fixed accents
+        lime:           '#84CC16',
+        'lime-dark':    '#65A30D',
+        amber:          '#F59E0B',
+        coral:          '#F87171',
+        ink:            '#0A0A1F',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       backgroundImage: {
-        'grad-primary': 'linear-gradient(135deg, #FFB800, #E6A500)',
-        'grad-bar':     'linear-gradient(90deg, #12122A, #1A1A3A)',
-        'grad-page':    'linear-gradient(180deg, #12122A 0%, #0A0A1F 100%)',
+        'grad-primary': 'linear-gradient(135deg, var(--color-primary), var(--color-primary-dark))',
+        'grad-bar':     'linear-gradient(90deg, var(--color-bar-start), var(--color-bar-end))',
+        'grad-page':    'linear-gradient(180deg, var(--color-surface) 0%, var(--color-bg) 100%)',
         'grad-violet':  'linear-gradient(135deg, #7C3AED, #6D28D9)',
         'grad-lime':    'linear-gradient(135deg, #84CC16, #65A30D)',
       },

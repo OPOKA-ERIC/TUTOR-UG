@@ -7,6 +7,7 @@ import {
   Lock, LogOut, Eye, EyeOff, School, Briefcase,
 } from 'lucide-react'
 import { useAuth } from '@/lib/AuthContext'
+import { useTheme } from '@/lib/ThemeContext'
 import { supabase } from '@/lib/supabase'
 import { SUPABASE_URL } from '@/lib/supabase'
 import { EDUCATION_LEVELS } from '@/lib/constants'
@@ -113,6 +114,7 @@ function StatItem({ icon: Icon, color, label, value }: { icon: any; color: strin
 
 export default function SettingsPage() {
   const { profile, logout, refreshProfile } = useAuth()
+  const { theme: activeTheme, setTheme } = useTheme()
   const navigate = useNavigate()
   const fileRef = useRef<HTMLInputElement>(null)
 
@@ -158,6 +160,8 @@ export default function SettingsPage() {
     if (!profile) return
     setSettings(s => ({ ...s, [field]: value }))
     await supabase.from('user_settings').upsert({ [field]: value, user_id: profile.user_id, updated_at: new Date().toISOString() }, { onConflict: 'user_id' })
+    // Apply theme immediately when it changes
+    if (field === 'app_theme') setTheme(value)
   }
 
   async function saveDistrict() {
@@ -418,7 +422,7 @@ export default function SettingsPage() {
               <div className="flex gap-2">
                 {THEMES.map(theme => {
                   const [bg, c1, c2] = THEME_COLORS[theme]
-                  const active = (settings.app_theme || 'DEEP_SPACE') === theme
+                  const active = activeTheme === theme
                   return (
                     <button key={theme} onClick={() => saveSetting('app_theme', theme)}
                       className="flex-1 flex flex-col items-center gap-1">

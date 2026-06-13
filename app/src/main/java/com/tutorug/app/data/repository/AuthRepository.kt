@@ -34,7 +34,8 @@ class AuthRepository {
                     ?: throw Exception("Registration failed. Please try again.")
 
                 val token = map["access_token"] as? String
-                if (token != null) SupabaseClient.authToken = token
+                val refreshToken = map["refresh_token"] as? String ?: ""
+                if (token != null) SupabaseClient.persistSession(token, refreshToken, userId)
 
                 val updatedProfile = profile.copy(userId = userId, email = email)
                 insertProfile(updatedProfile).getOrThrow()
@@ -61,9 +62,10 @@ class AuthRepository {
                 val map = gson.fromJson<Map<String, Any>>(responseBody, object : TypeToken<Map<String, Any>>() {}.type)
                 val userId = (map["user"] as? Map<*, *>)?.get("id") as? String
                     ?: throw Exception("Login failed. Please try again.")
-                SupabaseClient.authToken = map["access_token"] as? String
+                val accessToken  = map["access_token"]  as? String ?: ""
+                val refreshToken = map["refresh_token"] as? String ?: ""
+                SupabaseClient.persistSession(accessToken, refreshToken, userId)
 
-                // Update last_active
                 updateLastActive(userId)
 
                 val profileResult = getUserProfile(userId)
@@ -233,7 +235,7 @@ class AuthRepository {
         }
     }
 
-    fun logout() { SupabaseClient.authToken = null }
+    fun logout() { SupabaseClient.clearSession() }
 
     suspend fun updateUserField(userId: String, fields: Map<String, Any>) = withContext(Dispatchers.IO) {
         try {
@@ -245,6 +247,30 @@ class AuthRepository {
                 .build()
             http.newCall(request).execute()
         } catch (_: Exception) {}
+    }
+
+    /** Refreshes the access token using the stored refresh token. Returns the new userId or null on failure. */
+    suspend fun refreshSession(): String? = withContext(Dispatchers.IO) {
+        try {
+            val refreshToken = SupabaseClient.getPersistedRefreshToken() ?: return@withContext null
+            val body = gson.toJson(mapOf("refresh_token" to refreshToken))
+            val request = Request.Builder()
+                .url("$base/auth/v1/token?grant_type=refresh_token")
+                .post(body.toRequestBody(json))
+                .build()
+            val response = http.newCall(request).execute()
+            val responseBody = response.body?.string() ?: return@withContext null
+            if (!response.isSuccessful) {
+                SupabaseClient.clearSession()
+                return@withContext null
+            }
+            val map = gson.fromJson<Map<String, Any>>(responseBody, object : TypeToken<Map<String, Any>>() {}.type)
+            val userId       = (map["user"] as? Map<*, *>)?.get("id") as? String ?: return@withContext null
+            val accessToken  = map["access_token"]  as? String ?: return@withContext null
+            val newRefresh   = map["refresh_token"] as? String ?: refreshToken
+            SupabaseClient.persistSession(accessToken, newRefresh, userId)
+            userId
+        } catch (_: Exception) { null }
     }
 
     fun isLoggedIn(): Boolean = SupabaseClient.authToken != null

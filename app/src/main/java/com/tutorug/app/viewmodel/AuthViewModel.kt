@@ -32,16 +32,20 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     }
     
     private fun checkLoginStatus() {
-        val userId = authRepository.getCurrentUserId()
-        if (userId != null) {
-            viewModelScope.launch {
-                _authState.value = AuthState.Loading
-                authRepository.getUserProfile(userId).onSuccess { profile ->
-                    _authState.value = AuthState.Authenticated(profile)
-                }.onFailure {
-                    authRepository.logout()
-                    _authState.value = AuthState.Idle
-                }
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+            // 1. Try the persisted access token first
+            var userId = authRepository.getCurrentUserId()
+            // 2. If no valid token in memory but a refresh token is stored, silently refresh
+            if (userId == null) {
+                userId = authRepository.refreshSession()
+            }
+            if (userId != null) {
+                authRepository.getUserProfile(userId)
+                    .onSuccess { profile -> _authState.value = AuthState.Authenticated(profile) }
+                    .onFailure  { authRepository.logout(); _authState.value = AuthState.Idle }
+            } else {
+                _authState.value = AuthState.Idle
             }
         }
     }
