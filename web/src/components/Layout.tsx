@@ -1,7 +1,5 @@
-import { NavLink, useNavigate } from 'react-router-dom'
-import { MessageSquare, FileText, Calendar, BarChart2, Settings, LogOut, BookOpen } from 'lucide-react'
-import { useAuth } from '@/lib/AuthContext'
-import Logo from './Logo'
+import { NavLink, useLocation } from 'react-router-dom'
+import { MessageSquare, FileText, Calendar, BarChart2, Settings } from 'lucide-react'
 
 const NAV = [
   { to: '/chat',      icon: MessageSquare, label: 'Chat' },
@@ -12,70 +10,36 @@ const NAV = [
 ]
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const { profile, logout } = useAuth()
-  const navigate = useNavigate()
-
-  async function handleLogout() {
-    await logout()
-    navigate('/login')
-  }
+  const { pathname } = useLocation()
+  const hideNav = pathname === '/settings'
 
   return (
-    <div className="flex h-screen bg-bg overflow-hidden">
-      {/* ── Sidebar ── */}
-      <aside className="w-64 bg-surface border-r border-outline flex flex-col shrink-0">
-        {/* Logo */}
-        <div className="p-5 border-b border-outline">
-          <Logo />
-          <p className="text-text-disabled text-xs mt-1">Uganda's Smart Learning Companion</p>
-        </div>
+    <div className="flex flex-col h-screen bg-bg overflow-hidden">
+      <main className="flex-1 overflow-hidden flex flex-col min-w-0">
+        {children}
+      </main>
 
-        {/* User info */}
-        {profile && (
-          <div className="px-4 py-3 border-b border-outline">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm shrink-0">
-                {profile.avatar_url
-                  ? <img src={profile.avatar_url} className="w-9 h-9 rounded-full object-cover" alt="" />
-                  : profile.name.charAt(0).toUpperCase()}
-              </div>
-              <div className="min-w-0">
-                <p className="text-text-white text-sm font-semibold truncate">{profile.name}</p>
-                <p className="text-text-disabled text-xs truncate">{profile.education_level} · {profile.district}</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Nav links */}
-        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+      {!hideNav && (
+        <nav className="shrink-0 bg-surface border-t border-outline flex items-center justify-around px-2 py-1">
           {NAV.map(({ to, icon: Icon, label }) => (
             <NavLink
               key={to}
               to={to}
               className={({ isActive }) =>
-                `sidebar-item ${isActive ? 'active' : ''}`
-              }
-            >
-              <Icon size={18} />
-              <span className="text-sm font-medium">{label}</span>
+                `flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-colors min-w-0
+                 ${isActive ? 'text-primary' : 'text-text-disabled hover:text-text-light'}`
+              }>
+              {({ isActive }) => (
+                <>
+                  <Icon size={22} />
+                  <span className="text-xs font-medium">{label}</span>
+                  {isActive && <div className="w-1 h-1 rounded-full bg-primary" />}
+                </>
+              )}
             </NavLink>
           ))}
         </nav>
-
-        {/* Logout */}
-        <div className="p-3 border-t border-outline">
-          <button onClick={handleLogout} className="sidebar-item w-full text-error hover:bg-error/10 hover:text-error">
-            <LogOut size={18} />
-            <span className="text-sm font-medium">Logout</span>
-          </button>
-        </div>
-      </aside>
-
-      {/* ── Main content ── */}
-      <main className="flex-1 overflow-hidden flex flex-col">
-        {children}
-      </main>
+      )}
     </div>
   )
 }

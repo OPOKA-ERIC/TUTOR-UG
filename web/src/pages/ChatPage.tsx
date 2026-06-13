@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Menu, Send, Mic, Plus, Trash2, Loader2,
-  Settings, Calendar, LogOut, X, Volume2
+  Settings, Calendar, LogOut, X, Volume2, Paperclip
 } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -223,7 +223,7 @@ export default function ChatPage() {
   if (!profile) return null
 
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-b from-surface to-bg relative overflow-hidden">
+    <div className="flex flex-col h-full bg-gradient-to-b from-surface to-bg relative overflow-hidden">
 
       {/* ── TOP BAR — matches Android exactly ── */}
       <div className="bg-gradient-to-r from-surface to-surface-var px-1 py-2 flex items-center gap-1 shrink-0 z-10">
@@ -381,6 +381,22 @@ export default function ChatPage() {
             style={{ background: listening ? 'linear-gradient(135deg,#EF4444,#DC2626)' : 'linear-gradient(135deg,#F59E0B,#D97706)' }}>
             <Mic size={20} style={{ color: '#0A0A1F' }} />
           </button>
+
+          {/* Attach file — matches Android AttachFile button */}
+          <label className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 cursor-pointer"
+            style={{ background: 'rgba(255,184,0,0.12)' }}>
+            <Paperclip size={20} style={{ color: '#FFB800' }} />
+            <input type="file" accept="*/*" className="hidden"
+              onChange={e => {
+                const file = e.target.files?.[0]
+                if (file) {
+                  // Navigate to documents page with the file queued
+                  // For now mirrors mobile: triggers document upload flow
+                  alert(`File selected: ${file.name}\n\nTo upload and learn from documents, go to the Documents page.`)
+                }
+                e.target.value = ''
+              }} />
+          </label>
 
           <textarea
             value={input}
