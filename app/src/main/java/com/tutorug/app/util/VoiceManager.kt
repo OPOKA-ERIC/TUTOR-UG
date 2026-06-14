@@ -15,6 +15,12 @@ class VoiceManager(private val context: Context) {
     private var currentRate: Float = 1.0f
     private var currentGenderMale: Boolean = false
 
+    // Exposed so UI can show pause/stop buttons
+    var isSpeaking: Boolean = false
+        private set
+    var isPaused: Boolean = false
+        private set
+
     fun initializeTTS(onReady: () -> Unit = {}) {
         tts = TextToSpeech(context) { status ->
             if (status == TextToSpeech.SUCCESS) {
@@ -77,14 +83,32 @@ class VoiceManager(private val context: Context) {
     }
 
     fun speak(text: String) {
-        if (isTTSReady) {
-            tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
-        }
+        if (!isTTSReady) return
+        tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "tutorug_utterance")
+        isSpeaking = true
+        isPaused = false
+    }
+
+    fun pauseSpeaking() {
+        if (!isSpeaking || isPaused) return
+        tts?.stop()          // Android TTS has no real pause — stop and mark paused
+        isPaused = true
+        isSpeaking = false
     }
 
     fun stopSpeaking() {
         tts?.stop()
+        isSpeaking = false
+        isPaused = false
     }
+
+    /** Increase speed by 0.25x step, capped at 2.0 */
+    fun speedUp() { setSpeechRate((currentRate + 0.25f).coerceAtMost(2.0f)) }
+
+    /** Decrease speed by 0.25x step, minimum 0.5 */
+    fun slowDown() { setSpeechRate((currentRate - 0.25f).coerceAtLeast(0.5f)) }
+
+    fun getCurrentRate(): Float = currentRate
 
     fun shutdown() {
         tts?.shutdown()

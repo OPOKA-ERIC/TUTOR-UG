@@ -50,6 +50,8 @@ fun DocumentUploadScreen(
     var selectedFileName by remember { mutableStateOf("") }
     var selectedSubject  by remember { mutableStateOf("") }
     var subjectExpanded  by remember { mutableStateOf(false) }
+    // Resume/fresh dialog
+    var resumeDoc by remember { mutableStateOf<UploadedDocument?>(null) }
     val context = androidx.compose.ui.platform.LocalContext.current
 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -252,7 +254,7 @@ fun DocumentUploadScreen(
                             primary = primary,
                             onSurfaceVar = onSurfaceVar,
                             error = error,
-                            onClick = { if (doc.status == "ready") onDocumentClick(doc.documentId) },
+                            onClick = { if (doc.status == "ready") resumeDoc = doc },
                             onDelete = { viewModel.deleteDocument(doc.documentId, userId) }
                         )
                         Spacer(modifier = Modifier.height(8.dp))
@@ -347,6 +349,61 @@ fun DocumentUploadScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
             }
+        }
+
+        // ── RESUME / START FRESH DIALOG ──────────────────────────────
+        resumeDoc?.let { doc ->
+            AlertDialog(
+                onDismissRequest = { resumeDoc = null },
+                containerColor = AppColors.surfaceCard,
+                shape = RoundedCornerShape(20.dp),
+                icon = {
+                    Box(
+                        modifier = Modifier.size(48.dp)
+                            .background(Brush.linearGradient(listOf(Amber400, Amber600)), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) { Text("AI", fontSize = 13.sp, fontWeight = FontWeight.Black, color = AppColors.onPrimary) }
+                },
+                title = {
+                    Text("Continue Learning?", color = TextWhite,
+                        fontWeight = FontWeight.Bold, fontSize = 17.sp)
+                },
+                text = {
+                    Column {
+                        Text(
+                            "You have a previous session for \"${doc.subject.ifBlank { doc.fileName }}\".",
+                            color = TextMuted, fontSize = 13.sp
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            "TutorUG AI suggests continuing where you left off to build on what you already learned. Starting fresh will restart all ${doc.sectionCount} sections.",
+                            color = TextMuted, fontSize = 13.sp
+                        )
+                    }
+                },
+                confirmButton = {
+                    Button(
+                        onClick = { onDocumentClick(doc.documentId); resumeDoc = null },
+                        colors = ButtonDefaults.buttonColors(containerColor = Amber500),
+                        shape = RoundedCornerShape(10.dp)
+                    ) {
+                        Icon(Icons.Default.PlayArrow, null,
+                            tint = AppColors.onPrimary, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Continue", color = AppColors.onPrimary, fontWeight = FontWeight.Bold)
+                    }
+                },
+                dismissButton = {
+                    OutlinedButton(
+                        onClick = {
+                            viewModel.resetDocumentProgress(doc.documentId)
+                            onDocumentClick(doc.documentId)
+                            resumeDoc = null
+                        },
+                        shape = RoundedCornerShape(10.dp)
+                    ) { Text("Start Fresh", color = TextMuted) }
+                }
+            )
         }
 
         if (uploadState is UploadState.Uploading || uploadState is UploadState.Processing) {

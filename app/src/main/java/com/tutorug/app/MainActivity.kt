@@ -231,6 +231,8 @@ fun TutorUGNavigation(settingsViewModel: SettingsViewModel, intent: android.cont
                 val learningHistory by chatViewModel.learningHistory.collectAsState()
                 val streamingText by chatViewModel.streamingText.collectAsState()
 
+                val speakingMessageId by chatViewModel.speakingMessageId.collectAsState()
+
                 LaunchedEffect(profile.userId) {
                     chatViewModel.loadChatHistory(profile.userId)
                 }
@@ -252,8 +254,10 @@ fun TutorUGNavigation(settingsViewModel: SettingsViewModel, intent: android.cont
                     chatHistory = chatHistory + learningHistory,
                     currentSubject = currentSession?.subject ?: "",
                     isLoading = chatState is ChatState.Loading,
-                isStreaming = chatState is ChatState.Streaming,
-                streamingText = streamingText,
+                    isStreaming = chatState is ChatState.Streaming,
+                    streamingText = streamingText,
+                    speakingMessageId = speakingMessageId,
+                    currentSpeechRate = settingsViewModel.speechRate.collectAsState().value,
                     errorMessage = if (chatState is ChatState.Error) (chatState as ChatState.Error).message else null,
                     onSendMessage = { chatViewModel.sendMessage(it, profile) },
                     onVoiceInput = {
@@ -280,6 +284,10 @@ fun TutorUGNavigation(settingsViewModel: SettingsViewModel, intent: android.cont
                         }
                     },
                     onDeleteSession = { chatViewModel.deleteSession(it, profile.userId) },
+                    onSpeakMessage = { msgId, text -> chatViewModel.speakMessage(msgId, text) },
+                    onStopSpeaking = { chatViewModel.stopAndClearSpeaking() },
+                    onSpeedUp = { chatViewModel.speedUp() },
+                    onSlowDown = { chatViewModel.slowDown() },
                     onNewChat = {
                         chatViewModel.startNewChat(
                             profile.userId,

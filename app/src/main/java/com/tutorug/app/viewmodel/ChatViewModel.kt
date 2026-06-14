@@ -58,6 +58,31 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
 
     fun speak(text: String) = voiceManager.speak(text)
     fun stopSpeaking() = voiceManager.stopSpeaking()
+    fun pauseSpeaking() = voiceManager.pauseSpeaking()
+    fun speedUp() = voiceManager.speedUp()
+    fun slowDown() = voiceManager.slowDown()
+    fun currentSpeechRate() = voiceManager.getCurrentRate()
+    fun isSpeaking() = voiceManager.isSpeaking
+
+    // Which message_id is currently being spoken (empty = none)
+    private val _speakingMessageId = MutableStateFlow("")
+    val speakingMessageId: StateFlow<String> = _speakingMessageId
+
+    fun speakMessage(messageId: String, text: String) {
+        if (_speakingMessageId.value == messageId) {
+            // Already speaking this message — stop it
+            voiceManager.stopSpeaking()
+            _speakingMessageId.value = ""
+        } else {
+            voiceManager.speak(text)
+            _speakingMessageId.value = messageId
+        }
+    }
+
+    fun stopAndClearSpeaking() {
+        voiceManager.stopSpeaking()
+        _speakingMessageId.value = ""
+    }
 
     // Called when user enters chat screen — auto-creates a session if none exists
     fun initChat(userProfile: UserProfile) {

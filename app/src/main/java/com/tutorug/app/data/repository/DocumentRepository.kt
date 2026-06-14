@@ -302,6 +302,17 @@ class DocumentRepository(private val context: Context) {
         } catch (_: Exception) {}
     }
 
+    suspend fun resetSectionProgress(documentId: String) = withContext(Dispatchers.IO) {
+        try {
+            val body = gson.toJson(mapOf("quiz_passed" to false, "best_score" to 0, "attempt_count" to 0))
+            http.newCall(Request.Builder()
+                .url("$base/rest/v1/document_sections?document_id=eq.$documentId")
+                .addHeader("Prefer", "return=minimal")
+                .patch(body.toRequestBody(json))
+                .build()).execute()
+        } catch (_: Exception) {}
+    }
+
     suspend fun deleteDocument(documentId: String, userId: String): Result<Unit> = withContext(Dispatchers.IO) {
         try {
             http.newCall(Request.Builder()

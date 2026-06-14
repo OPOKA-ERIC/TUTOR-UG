@@ -82,6 +82,12 @@ class DocumentViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    fun resetDocumentProgress(documentId: String) {
+        viewModelScope.launch {
+            documentRepository.resetSectionProgress(documentId)
+        }
+    }
+
     fun resetUploadState() {
         _uploadState.value = UploadState.Idle
     }

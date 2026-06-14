@@ -53,6 +53,8 @@ fun ChatScreen(
     isStreaming: Boolean = false,
     streamingText: String = "",
     errorMessage: String? = null,
+    speakingMessageId: String = "",
+    currentSpeechRate: Float = 1.0f,
     onSendMessage: (String) -> Unit = {},
     onVoiceInput: () -> Unit = {},
     onFileSelected: (android.net.Uri, String) -> Unit = { _, _ -> },
@@ -62,7 +64,11 @@ fun ChatScreen(
     onSettingsClick: () -> Unit = {},
     onTimetableClick: () -> Unit = {},
     onLogout: () -> Unit = {},
-    onDeleteSession: (String) -> Unit = {}
+    onDeleteSession: (String) -> Unit = {},
+    onSpeakMessage: (String, String) -> Unit = { _, _ -> },
+    onStopSpeaking: () -> Unit = {},
+    onSpeedUp: () -> Unit = {},
+    onSlowDown: () -> Unit = {}
 ) {
     var messageText by remember { mutableStateOf("") }
     var drawerOpen by remember { mutableStateOf(false) }
@@ -221,7 +227,17 @@ fun ChatScreen(
                 }
 
                 items(messages) { message ->
-                    ChatBubble(message, primary, onPrimary, surface, surfaceVar)
+                    ChatBubble(
+                        message = message,
+                        primary = primary,
+                        onPrimary = onPrimary,
+                        surface = surface,
+                        surfaceVar = surfaceVar,
+                        error = error,
+                        onSurfaceVar = onSurfaceVar,
+                        speakingMsgId = speakingMessageId,
+                        onSpeakMessageCallback = onSpeakMessage
+                    )
                     Spacer(modifier = Modifier.height(10.dp))
                 }
 
@@ -299,6 +315,57 @@ fun ChatScreen(
                                     }, primary)
                                 }
                             }
+                        }
+                    }
+                }
+            }
+
+            // ── VOICE PLAYBACK BAR — shown when AI is speaking ────────
+            if (speakingMessageId.isNotEmpty()) {
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = surfaceVar
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Animated waveform dot
+                        val inf = rememberInfiniteTransition(label = "wave")
+                        val pulse by inf.animateFloat(
+                            initialValue = 0.4f, targetValue = 1f,
+                            animationSpec = infiniteRepeatable(tween(600), RepeatMode.Reverse),
+                            label = "pulse"
+                        )
+                        Box(
+                            modifier = Modifier.size(8.dp).alpha(pulse)
+                                .background(primary, CircleShape)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Speaking…", fontSize = 12.sp, color = onSurfaceVar,
+                            modifier = Modifier.weight(1f))
+                        // Slow down
+                        IconButton(onClick = onSlowDown, modifier = Modifier.size(32.dp)) {
+                            Icon(Icons.Default.SlowMotionVideo, null,
+                                tint = onSurfaceVar, modifier = Modifier.size(18.dp))
+                        }
+                        // Speed label
+                        Text(
+                            "${String.format("%.1f", currentSpeechRate)}x",
+                            fontSize = 11.sp, color = primary, fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(horizontal = 4.dp)
+                        )
+                        // Speed up
+                        IconButton(onClick = onSpeedUp, modifier = Modifier.size(32.dp)) {
+                            Icon(Icons.Default.FastForward, null,
+                                tint = onSurfaceVar, modifier = Modifier.size(18.dp))
+                        }
+                        // Stop
+                        IconButton(onClick = onStopSpeaking, modifier = Modifier.size(32.dp)) {
+                            Icon(Icons.Default.StopCircle, null,
+                                tint = error, modifier = Modifier.size(20.dp))
                         }
                     }
                 }
@@ -663,7 +730,11 @@ fun ChatBubble(
     primary: Color = Amber500,
     onPrimary: Color = Ink900,
     surface: Color = SurfaceCard,
-    surfaceVar: Color = SurfaceCard
+    surfaceVar: Color = SurfaceCard,
+    error: Color = Color(0xFFEF4444),
+    onSurfaceVar: Color = Color(0xFF606080),
+    speakingMsgId: String = "",
+    onSpeakMessageCallback: ((String, String) -> Unit)? = null
 ) {
     val isUser = message.role == "user"
 
@@ -699,46 +770,42 @@ fun ChatBubble(
                 Text(message.content, fontSize = 14.sp, color = Color(0xFF1A1A1A), lineHeight = 20.sp)
             }
         } else {
-            // AI bubble
-            Column(
-                modifier = Modifier.widthIn(max = 300.dp)
-            ) {
-                // Header label
+            // AI bubble — includes speak button on long press / tap on Volume icon
+            Column(modifier = Modifier.widthIn(max = 300.dp)) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(bottom = 4.dp, start = 2.dp)
                 ) {
-                    Text(
-                        "TutorUG AI",
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = primary
-                    )
+                    Text("TutorUG AI", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = primary)
                     Spacer(modifier = Modifier.width(4.dp))
-                    Surface(
-                        shape = RoundedCornerShape(4.dp),
-                        color = primary.copy(alpha = 0.15f)
-                    ) {
-                        Text(
-                            "✦",
-                            fontSize = 9.sp,
-                            color = primary,
-                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
-                        )
+                    Surface(shape = RoundedCornerShape(4.dp), color = primary.copy(alpha = 0.15f)) {
+                        Text("✦", fontSize = 9.sp, color = primary,
+                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp))
+                    }
+                    Spacer(modifier = Modifier.weight(1f))
+                    // 🔊 Speak button per message
+                    if (onSpeakMessageCallback != null) {
+                        val isSpeakingThis = speakingMsgId == message.messageId
+                        IconButton(
+                            onClick = { onSpeakMessageCallback(message.messageId, message.content) },
+                            modifier = Modifier.size(24.dp)
+                        ) {
+                            Icon(
+                                if (isSpeakingThis) Icons.Default.StopCircle else Icons.Default.VolumeUp,
+                                null,
+                                tint = if (isSpeakingThis) error else onSurfaceVar,
+                                modifier = Modifier.size(15.dp)
+                            )
+                        }
                     }
                 }
-                // Bubble with gradient border
                 Box(
                     modifier = Modifier
-                        .border(
-                            width = 1.dp,
-                            brush = Brush.linearGradient(listOf(primary.copy(alpha = 0.5f), Violet400.copy(alpha = 0.3f))),
-                            shape = RoundedCornerShape(4.dp, 18.dp, 18.dp, 18.dp)
-                        )
-                        .background(
-                            Brush.linearGradient(listOf(surface, surfaceVar)),
-                            RoundedCornerShape(4.dp, 18.dp, 18.dp, 18.dp)
-                        )
+                        .border(1.dp,
+                            Brush.linearGradient(listOf(primary.copy(alpha = 0.5f), Violet400.copy(alpha = 0.3f))),
+                            RoundedCornerShape(4.dp, 18.dp, 18.dp, 18.dp))
+                        .background(Brush.linearGradient(listOf(surface, surfaceVar)),
+                            RoundedCornerShape(4.dp, 18.dp, 18.dp, 18.dp))
                         .padding(horizontal = 14.dp, vertical = 12.dp)
                 ) {
                     FormattedAIText(message.content, primary)

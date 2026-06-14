@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Menu, Send, Mic, Plus, Trash2, Loader2,
-  Settings, Calendar, LogOut, X, Volume2, Paperclip
+  Settings, Calendar, LogOut, Volume2, Paperclip,
+  Square, ChevronUp, ChevronDown
 } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -36,6 +37,9 @@ export default function ChatPage() {
   const [streamingText, setStreamingText] = useState('')
   const [listening, setListening] = useState(false)
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
+  const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null)
+  const [speechRate, setSpeechRate] = useState(1.0)
+  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
   const subjects = profile ? getSidebarSubjects(profile) : []
 
@@ -211,8 +215,40 @@ export default function ChatPage() {
     rec.start()
   }
 
-  function speak(text: string) {
-    window.speechSynthesis.speak(Object.assign(new SpeechSynthesisUtterance(text), { lang: 'en-GB' }))
+  function speakMessage(msgId: string, text: string) {
+    if (speakingMsgId === msgId) {
+      stopSpeaking()
+      return
+    }
+    window.speechSynthesis.cancel()
+    const u = new SpeechSynthesisUtterance(text)
+    u.lang = 'en-GB'
+    u.rate = speechRate
+    u.onend = () => setSpeakingMsgId(null)
+    u.onerror = () => setSpeakingMsgId(null)
+    utteranceRef.current = u
+    window.speechSynthesis.speak(u)
+    setSpeakingMsgId(msgId)
+  }
+
+  function stopSpeaking() {
+    window.speechSynthesis.cancel()
+    setSpeakingMsgId(null)
+  }
+
+  function changeRate(delta: number) {
+    const next = Math.min(2.0, Math.max(0.5, parseFloat((speechRate + delta).toFixed(2))))
+    setSpeechRate(next)
+    // If currently speaking, restart with new rate
+    if (speakingMsgId && utteranceRef.current) {
+      const text = utteranceRef.current.text
+      window.speechSynthesis.cancel()
+      const u = new SpeechSynthesisUtterance(text)
+      u.lang = 'en-GB'; u.rate = next
+      u.onend = () => setSpeakingMsgId(null)
+      utteranceRef.current = u
+      window.speechSynthesis.speak(u)
+    }
   }
 
   async function handleLogout() {
@@ -298,11 +334,18 @@ export default function ChatPage() {
           <div key={msg.message_id}
             className={`flex items-end gap-2 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
             {msg.role === 'assistant' && <AIAvatar />}
-            <div className={`max-w-[78%] ${msg.role === 'assistant' ? '' : ''}`}>
+            <div className="max-w-[78%]">
               {msg.role === 'assistant' && (
                 <div className="flex items-center gap-1.5 mb-1 ml-0.5">
                   <span className="text-primary text-xs font-bold">TutorUG AI</span>
                   <span className="text-xs px-1 rounded" style={{ backgroundColor: 'rgba(255,184,0,0.15)', color: '#FFB800' }}>✦</span>
+                  {/* Per-message speak/stop button */}
+                  <button onClick={() => speakMessage(msg.message_id, msg.content)}
+                    className="ml-auto text-text-disabled hover:text-primary transition-colors">
+                    {speakingMsgId === msg.message_id
+                      ? <Square size={12} style={{ color: '#EF4444' }} />
+                      : <Volume2 size={12} />}
+                  </button>
                 </div>
               )}
               <div className={`px-4 py-3 ${msg.role === 'user'
@@ -312,13 +355,8 @@ export default function ChatPage() {
                   ? { background: 'linear-gradient(135deg, #F59E0B80, #D97706)' }
                   : { background: 'linear-gradient(135deg, #12122A, #1A1A3A)', border: '1px solid rgba(255,184,0,0.3)' }}>
                 {msg.role === 'assistant' ? (
-                  <div className="flex items-start gap-2">
-                    <div className="prose prose-invert prose-sm max-w-none flex-1 text-text-white">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
-                    </div>
-                    <button onClick={() => speak(msg.content)} className="text-text-disabled hover:text-primary mt-1 shrink-0">
-                      <Volume2 size={13} />
-                    </button>
+                  <div className="prose prose-invert prose-sm max-w-none text-text-white">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
                   </div>
                 ) : (
                   <p className="text-sm" style={{ color: '#1A1A1A' }}>{msg.content}</p>
@@ -370,6 +408,33 @@ export default function ChatPage() {
 
         <div ref={bottomRef} />
       </div>
+
+      {/* ── VOICE PLAYBACK BAR — shown when speaking ── */}
+      {speakingMsgId && (
+        <div className="px-4 py-2 flex items-center gap-3 shrink-0"
+          style={{ background: 'rgba(26,26,58,0.95)', borderTop: '1px solid rgba(255,184,0,0.2)' }}>
+          {/* Pulsing dot */}
+          <div className="w-2 h-2 rounded-full bg-primary animate-pulse shrink-0" />
+          <span className="text-text-disabled text-xs flex-1">Speaking…</span>
+          {/* Slow down */}
+          <button onClick={() => changeRate(-0.25)}
+            className="text-text-disabled hover:text-primary p-1">
+            <ChevronDown size={16} />
+          </button>
+          {/* Rate label */}
+          <span className="text-primary text-xs font-bold w-8 text-center">{speechRate.toFixed(1)}x</span>
+          {/* Speed up */}
+          <button onClick={() => changeRate(0.25)}
+            className="text-text-disabled hover:text-primary p-1">
+            <ChevronUp size={16} />
+          </button>
+          {/* Stop */}
+          <button onClick={stopSpeaking}
+            className="p-1" style={{ color: '#EF4444' }}>
+            <Square size={16} />
+          </button>
+        </div>
+      )}
 
       {/* ── INPUT BAR — matches Android gradient border ── */}
       <div className="px-4 py-3 shrink-0">

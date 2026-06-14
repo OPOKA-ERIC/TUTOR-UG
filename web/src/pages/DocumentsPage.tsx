@@ -9,20 +9,23 @@ import { supabase } from '@/lib/supabase'
 import { SUPABASE_URL, SUPABASE_ANON } from '@/lib/supabase'
 import { getSubjectsForLevel } from '@/lib/constants'
 import Logo from '@/components/Logo'
-import type { UploadedDocument, DocumentSection, UploadState } from '@/types'
+import type { UploadedDocument, DocumentSection, ChatSession, UploadState } from '@/types'
 
 export default function DocumentsPage() {
   const { profile } = useAuth()
   const navigate = useNavigate()
   const [documents, setDocuments] = useState<UploadedDocument[]>([])
+  const [learningSessions, setLearningSessions] = useState<ChatSession[]>([])
   const [uploadState, setUploadState] = useState<UploadState>({ status: 'idle' })
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [subject, setSubject] = useState('')
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
+  const [deleteSessionId, setDeleteSessionId] = useState<string | null>(null)
+  const [resumeDoc, setResumeDoc] = useState<UploadedDocument | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
   const subjects = profile ? getSubjectsForLevel(profile.education_level) : []
 
-  useEffect(() => { if (profile) loadDocuments() }, [profile])
+  useEffect(() => { if (profile) { loadDocuments(); loadLearningSessions() } }, [profile])
 
   async function loadDocuments() {
     if (!profile) return
@@ -31,6 +34,17 @@ export default function DocumentsPage() {
       .eq('user_id', profile.user_id)
       .order('uploaded_at', { ascending: false })
     setDocuments((data as UploadedDocument[]) || [])
+  }
+
+  async function loadLearningSessions() {
+    if (!profile) return
+    const { data } = await supabase
+      .from('chat_sessions').select('*')
+      .eq('user_id', profile.user_id)
+      .not('document_id', 'is', null)
+      .order('last_message_at', { ascending: false })
+      .limit(20)
+    setLearningSessions((data as ChatSession[]) || [])
   }
 
   async function handleUpload() {
@@ -85,17 +99,57 @@ export default function DocumentsPage() {
     setDeleteConfirmId(null)
   }
 
+  async function deleteSession(sessionId: string) {
+    await supabase.from('chat_messages').delete().eq('session_id', sessionId)
+    await supabase.from('chat_sessions').delete().eq('session_id', sessionId)
+    setLearningSessions(s => s.filter(x => x.session_id !== sessionId))
+    setDeleteSessionId(null)
+  }
+
   async function openDocument(doc: UploadedDocument) {
     if (doc.status !== 'ready') return
+    setResumeDoc(doc)
+  }
+
+  async function continueDocument(doc: UploadedDocument) {
+    const { data: sections } = await supabase.from('document_sections').select('*').eq('document_id', doc.document_id).order('section_index')
+    // Find the last passed section to resume from
+    const secs = (sections || []) as any[]
+    const lastPassedIdx = secs.reduce((acc, s, i) => s.quiz_passed ? i : acc, -1)
+    const resumeIdx = Math.min(lastPassedIdx + 1, secs.length - 1)
+    sessionStorage.setItem('learning_doc_id', doc.document_id)
+    sessionStorage.setItem('learning_sections', JSON.stringify(secs))
+    sessionStorage.setItem('learning_section_index', String(Math.max(0, resumeIdx)))
+    setResumeDoc(null)
+    navigate('/learn')
+  }
+
+  async function startFresh(doc: UploadedDocument) {
+    // Reset all section progress
+    await supabase.from('document_sections')
+      .update({ quiz_passed: false, best_score: 0, attempt_count: 0 })
+      .eq('document_id', doc.document_id)
     const { data: sections } = await supabase.from('document_sections').select('*').eq('document_id', doc.document_id).order('section_index')
     sessionStorage.setItem('learning_doc_id', doc.document_id)
     sessionStorage.setItem('learning_sections', JSON.stringify(sections || []))
+    sessionStorage.setItem('learning_section_index', '0')
+    setResumeDoc(null)
     navigate('/learn')
   }
 
   function startLearning(docId: string, sections: DocumentSection[]) {
     sessionStorage.setItem('learning_doc_id', docId)
     sessionStorage.setItem('learning_sections', JSON.stringify(sections))
+    sessionStorage.setItem('learning_section_index', '0')
+    navigate('/learn')
+  }
+
+  async function resumeSession(session: ChatSession) {
+    if (!session.document_id) return
+    const { data: sections } = await supabase.from('document_sections').select('*').eq('document_id', session.document_id).order('section_index')
+    sessionStorage.setItem('learning_doc_id', session.document_id)
+    sessionStorage.setItem('learning_sections', JSON.stringify(sections || []))
+    sessionStorage.setItem('learning_section_index', String(session.section_index || 0))
     navigate('/learn')
   }
 
@@ -106,11 +160,11 @@ export default function DocumentsPage() {
   return (
     <div className="flex flex-col h-full bg-gradient-to-b from-surface to-bg relative overflow-hidden">
 
-      {/* Radial glow top-right — matches Android */}
+      {/* Radial glow top-right */}
       <div className="absolute -top-10 -right-10 w-60 h-60 rounded-full pointer-events-none"
         style={{ background: 'radial-gradient(circle, rgba(124,58,237,0.1), transparent)' }} />
 
-      {/* ── TOP BAR — matches Android gradient bar ── */}
+      {/* ── TOP BAR ── */}
       <div className="bg-gradient-to-r from-surface to-surface-var px-2 py-2 flex items-center gap-1 shrink-0">
         <button onClick={() => navigate('/chat')}
           className="w-12 h-12 flex items-center justify-center shrink-0">
@@ -125,18 +179,13 @@ export default function DocumentsPage() {
       {/* ── SCROLLABLE BODY ── */}
       <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
 
-        {/* ── DROP ZONE — matches Android border gradient ── */}
+        {/* ── DROP ZONE ── */}
         <div
           onClick={() => !isUploading && fileRef.current?.click()}
           className="w-full h-44 rounded-2xl bg-surface flex items-center justify-center cursor-pointer transition-all relative overflow-hidden"
           style={{
-            border: '2px solid transparent',
-            backgroundClip: 'padding-box',
-            boxShadow: fileSelected
-              ? '0 0 0 2px #84CC16'
-              : '0 0 0 2px transparent',
-            outline: fileSelected ? 'none' : '2px solid',
-            outlineColor: fileSelected ? 'transparent' : 'rgba(255,184,0,0.5)',
+            border: '2px solid',
+            borderColor: fileSelected ? '#84CC16' : 'rgba(255,184,0,0.5)',
           }}>
           <input ref={fileRef} type="file" accept="*/*" className="hidden"
             onChange={e => setSelectedFile(e.target.files?.[0] || null)} />
@@ -169,7 +218,7 @@ export default function DocumentsPage() {
           </select>
         </div>
 
-        {/* ── AI INFO HINT — matches Android secondary/8 surface ── */}
+        {/* ── AI INFO HINT ── */}
         <div className="w-full rounded-xl flex items-center gap-3 px-4 py-3.5"
           style={{ backgroundColor: 'rgba(124,58,237,0.08)' }}>
           <Sparkles size={20} className="text-secondary shrink-0" />
@@ -185,7 +234,7 @@ export default function DocumentsPage() {
           </div>
         )}
 
-        {/* ── UPLOAD BUTTON — Amber gradient matches Android Amber400→Amber600 ── */}
+        {/* ── UPLOAD BUTTON ── */}
         <button
           onClick={handleUpload}
           disabled={!canUpload}
@@ -201,6 +250,38 @@ export default function DocumentsPage() {
             : <><Sparkles size={20} /> Analyse with AI</>}
         </button>
 
+        {/* ── RESUME / START FRESH DIALOG ── */}
+        {resumeDoc && (
+          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-6">
+            <div className="rounded-2xl p-6 w-full max-w-sm text-center" style={{ background: '#1E1E40' }}>
+              {/* AI badge */}
+              <div className="w-12 h-12 rounded-full flex items-center justify-center font-black text-sm mx-auto mb-4"
+                style={{ background: 'linear-gradient(135deg, #F59E0B, #D97706)', color: '#0A0A1F' }}>AI</div>
+              <p className="text-text-white font-bold text-lg mb-2">Continue Learning?</p>
+              <p className="text-text-disabled text-sm mb-2">
+                You have a previous session for <span className="text-primary font-medium">"{resumeDoc.subject || resumeDoc.file_name}"</span>.
+              </p>
+              <p className="text-text-disabled text-sm mb-5">
+                TutorUG AI suggests continuing where you left off to build on what you already learned.
+                Starting fresh will restart all {resumeDoc.section_count} sections.
+              </p>
+              <div className="flex gap-3">
+                <button onClick={() => setResumeDoc(null)}
+                  className="flex-1 py-2.5 rounded-xl text-sm border text-text-disabled"
+                  style={{ borderColor: 'rgba(255,255,255,0.1)' }}>Cancel</button>
+                <button onClick={() => startFresh(resumeDoc)}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-medium text-text-disabled"
+                  style={{ background: 'rgba(255,255,255,0.06)' }}>Start Fresh</button>
+                <button onClick={() => continueDocument(resumeDoc)}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-bold"
+                  style={{ background: 'linear-gradient(135deg,#F59E0B,#D97706)', color: '#0A0A1F' }}>
+                  ▶ Continue
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* ── YOUR DOCUMENTS ── */}
         {documents.length > 0 && (
           <div>
@@ -215,7 +296,6 @@ export default function DocumentsPage() {
 
                 return (
                   <div key={doc.document_id}>
-                    {/* Delete confirm modal */}
                     {deleteConfirmId === doc.document_id && (
                       <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-6">
                         <div className="bg-surface-card rounded-2xl p-6 w-full max-w-sm">
@@ -250,7 +330,7 @@ export default function DocumentsPage() {
                         <p className="text-text-disabled text-xs truncate">{doc.file_name}</p>
                         {isReady && (
                           <p className="text-primary text-xs mt-0.5">
-                            {doc.section_count} sections • Tap to continue learning
+                            Tap to continue learning
                           </p>
                         )}
                       </div>
@@ -273,10 +353,63 @@ export default function DocumentsPage() {
           </div>
         )}
 
+        {/* ── LEARNING SESSIONS ── */}
+        {learningSessions.length > 0 && (
+          <div>
+            <p className="text-text-disabled text-xs font-bold uppercase tracking-wider px-0.5 mb-2.5">
+              LEARNING SESSIONS
+            </p>
+            <div className="space-y-2">
+              {learningSessions.map(session => (
+                <div key={session.session_id}>
+                  {deleteSessionId === session.session_id && (
+                    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-6">
+                      <div className="bg-surface-card rounded-2xl p-6 w-full max-w-sm">
+                        <p className="text-text-white font-bold text-base mb-2">Delete Session?</p>
+                        <p className="text-text-disabled text-sm mb-5">
+                          This will permanently delete this chat session and all its messages.
+                        </p>
+                        <div className="flex gap-3">
+                          <button onClick={() => setDeleteSessionId(null)}
+                            className="flex-1 btn-secondary py-2 text-sm">Cancel</button>
+                          <button onClick={() => deleteSession(session.session_id)}
+                            className="flex-1 bg-error text-white font-bold py-2 rounded-xl text-sm">Delete</button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div
+                    onClick={() => resumeSession(session)}
+                    className="bg-surface rounded-xl flex items-center gap-3 px-3.5 py-3.5 cursor-pointer border border-primary/20 hover:border-primary/50 transition-all">
+                    <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
+                      style={{ backgroundColor: 'rgba(255,184,0,0.12)' }}>
+                      <MessageSquare size={20} className="text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-text-white font-medium text-sm truncate">
+                        {session.subject || 'Learning Session'}
+                      </p>
+                      {session.message_count > 0 && (
+                        <p className="text-primary text-xs mt-0.5">{session.message_count} messages</p>
+                      )}
+                    </div>
+                    <button
+                      onClick={e => { e.stopPropagation(); setDeleteSessionId(session.session_id) }}
+                      className="w-8 h-8 flex items-center justify-center shrink-0">
+                      <Trash2 size={18} style={{ color: 'rgba(239,68,68,0.7)' }} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="h-4" />
       </div>
 
-      {/* ── LOADING OVERLAY — matches Android black/60 overlay ── */}
+      {/* ── LOADING OVERLAY ── */}
       {isUploading && (
         <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-40">
           <div className="bg-surface rounded-2xl px-8 py-8 flex flex-col items-center gap-4 mx-6">
@@ -293,7 +426,7 @@ export default function DocumentsPage() {
         </div>
       )}
 
-      {/* ── AI RESULTS OVERLAY — matches Android black/85 overlay ── */}
+      {/* ── AI RESULTS OVERLAY ── */}
       {uploadState.status === 'ready' && (
         <div className="absolute inset-0 bg-black/85 flex items-center justify-center z-40 p-6">
           <div className="bg-surface rounded-2xl p-6 w-full max-w-md">
@@ -324,7 +457,6 @@ export default function DocumentsPage() {
               ))}
             </div>
 
-            {/* Start Learning — Amber gradient */}
             <button
               onClick={() => startLearning(uploadState.documentId, uploadState.sections)}
               className="w-full h-12 rounded-2xl font-bold text-base mb-2"
