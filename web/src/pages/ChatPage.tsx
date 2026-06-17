@@ -8,6 +8,7 @@ import {
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { useAuth } from '@/lib/AuthContext'
+import { useSettings } from '@/lib/SettingsContext'
 import { supabase } from '@/lib/supabase'
 import { SUPABASE_URL, SUPABASE_ANON } from '@/lib/supabase'
 import { getSidebarSubjects } from '@/lib/constants'
@@ -26,6 +27,7 @@ function AIAvatar() {
 
 export default function ChatPage() {
   const { profile, logout } = useAuth()
+  const { openSettings } = useSettings()
   const navigate = useNavigate()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [sessions, setSessions] = useState<ChatSession[]>([])
@@ -336,7 +338,7 @@ export default function ChatPage() {
         </button>
 
         {/* Settings icon */}
-        <button onClick={() => navigate('/settings')}
+        <button onClick={openSettings}
           className="w-12 h-12 flex items-center justify-center shrink-0">
           <Settings size={22} className="text-text-disabled" />
         </button>
@@ -666,7 +668,7 @@ export default function ChatPage() {
                 <Mic size={20} style={{ color: '#EF4444' }} />
                 <span className="text-text-disabled text-sm">AI Podcast</span>
               </button>
-              <button onClick={() => { navigate('/settings'); setDrawerOpen(false) }}
+              <button onClick={() => { openSettings(); setDrawerOpen(false) }}
                 className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
                 <Settings size={20} className="text-text-disabled" />
                 <span className="text-text-disabled text-sm">Settings</span>
