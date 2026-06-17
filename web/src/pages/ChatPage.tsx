@@ -167,7 +167,19 @@ export default function ChatPage() {
       }),
     })
 
-    if (!res.ok || !res.body) { setLoading(false); return }
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: 'Unknown error' }))
+      const errMsg = err.error || `Server error ${res.status}`
+      const aiErr: ChatMessage = {
+        message_id: crypto.randomUUID(), session_id: sessionId,
+        user_id: profile.user_id, role: 'assistant', content: `⚠️ ${errMsg}`,
+        token_count: 0, created_at: new Date().toISOString(),
+      }
+      setMessages(m => [...m, aiErr])
+      setLoading(false)
+      return
+    }
+    if (!res.body) { setLoading(false); return }
 
     const reader = res.body.getReader()
     const decoder = new TextDecoder()

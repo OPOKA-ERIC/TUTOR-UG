@@ -53,7 +53,10 @@ export default function PodcastPage() {
           conversationHistory: isFollowUp ? conversationHistory : [],
         }),
       })
-      if (!res.ok) throw new Error(`Server error: ${res.status}`)
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: `Server error ${res.status}` }))
+        throw new Error(err.error || `Server error ${res.status}`)
+      }
       const json = await res.json()
       if (json.error) throw new Error(json.error)
       const newSegments: PodcastSegment[] = json.script || []

@@ -1,106 +1,59 @@
 import Anthropic from "npm:@anthropic-ai/sdk";
 
-const anthropic = new Anthropic({ apiKey: Deno.env.get("ANTHROPIC_KEY") });
-
 const CORS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-function buildSystemPrompt(userProfile: any, districtContext: string, learningMode: boolean, sectionTitle: string): string {
-  const base = `You are TutorUG, an AI tutor for Ugandan students. You are helping ${userProfile.name}, a ${userProfile.educationLevel} student from ${userProfile.district} district${userProfile.school ? " at " + userProfile.school : ""}.
-
-CRITICAL LOCALIZATION RULES:
-- Use ONLY Ugandan context in ALL examples, word problems, and explanations
-- Reference real places, landmarks, and locations from ${userProfile.district}
-- Use local Ugandan names from the district
-- Use UGX (Uganda Shillings) for all money examples
-- Reference local foods, animals, economy, and daily life from the region
-
-${districtContext}
-
-CURRICULUM LEVEL: ${userProfile.educationLevel}
-- Tailor complexity and vocabulary to this education level
-- Follow UNEB curriculum standards
-
-FORMATTING RULES:
-- Use ## for main topic headings
-- Use ### for subtopic headings
-- Use **bold** for key terms, important concepts, definitions, and critical points
-- Use *italic* for subtopic names when mentioned inline within a paragraph
-- Use numbered lists (1. 2. 3.) for steps or sequences
-- Use bullet dashes (- ) for non-sequential lists
-- Separate paragraphs with a blank line
-
-MATH FORMATTING RULES:
-- Write ALL mathematical expressions using [math]...[/math] tags
-- For display equations on their own line, use [math-block]...[/math-block]
-- NEVER use LaTeX syntax like \\frac, \\sqrt, $$, $`;
-
-  if (learningMode && sectionTitle) {
-    return base + `\n\nLEARNING MODE - CRITICAL RULES:
-- You are currently teaching the section: "${sectionTitle}"
-- NEVER introduce yourself or greet the student as if starting a new chat
-- Answer ALL questions directly based on the section content provided`;
-  }
-
-  return base + `\n\nTeaching Style:
-- Clear, patient, encouraging
-- Break complex topics into simple steps
-- Use analogies from Ugandan daily life
-- Ask checking questions to ensure understanding
-
-Always respond in a warm, supportive tone as if you are a caring Ugandan teacher who knows the student's world intimately.`;
-}
-
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
 
   try {
-    const { sessionId, message, userProfile, districtContext, conversationHistory, learningMode, sectionTitle } = await req.json();
+    const apiKey = Deno.env.get("ANTHROPIC_KEY");
+    if (!apiKey) {
+      return new Response(JSON.stringify({ error: "ANTHROPIC_KEY secret not set in Supabase" }), {
+        status: 500, headers: { ...CORS, "Content-Type": "application/json" },
+      });
+    }
 
-    const systemPrompt = buildSystemPrompt(userProfile, districtContext, learningMode === true, sectionTitle || "");
+    const anthropic = new Anthropic({ apiKey });
+    const { message, userProfile, conversationHistory, learningMode, sectionTitle } = await req.json();
 
-    const messages = (conversationHistory || []).map((msg: any) => ({
-      role: msg.role === "assistant" ? "assistant" : "user",
-      content: msg.content,
-    }));
-    messages.push({ role: "user", content: message });
+    const base = `You are TutorUG, an AI tutor for Ugandan students helping ${userProfile.name}, a ${userProfile.educationLevel} student from ${userProfile.district} district.
+Use ONLY Ugandan context, names, places, UGX currency. Follow UNEB curriculum standards.
+Use **bold** for key terms. Use ## for headings. Use numbered lists for steps.`;
 
-    const stream = await anthropic.messages.stream({
+    const system = learningMode && sectionTitle
+      ? base + `\n\nYou are teaching: "${sectionTitle}". Answer directly based on section content.`
+      : base + `\n\nBe clear, patient and encouraging. Use analogies from Ugandan daily life.`;
+
+    const messages = [
+      ...(conversationHistory || []).map((m: any) => ({ role: m.role === "assistant" ? "assistant" : "user", content: m.content })),
+      { role: "user" as const, content: message },
+    ];
+
+    const response = await anthropic.messages.create({
       model: "claude-3-5-haiku-20241022",
       max_tokens: 1024,
-      system: systemPrompt,
+      system,
       messages,
     });
 
-    const encoder = new TextEncoder();
-    const readable = new ReadableStream({
-      async start(controller) {
-        try {
-          for await (const chunk of stream) {
-            if (chunk.type === "content_block_delta" && chunk.delta.type === "text_delta") {
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ token: chunk.delta.text })}\n\n`));
-            }
-          }
-          const finalMessage = await stream.finalMessage();
-          const fullText = finalMessage.content[0].type === "text" ? finalMessage.content[0].text : "";
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true, response: fullText })}\n\n`));
-        } catch (e) {
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: e.message })}\n\n`));
-        } finally {
-          controller.close();
-        }
-      },
-    });
+    const text = response.content[0].type === "text" ? response.content[0].text : "";
 
-    return new Response(readable, {
-      headers: { ...CORS, "Content-Type": "text/event-stream", "Cache-Control": "no-cache", "Connection": "keep-alive" },
+    // Send as SSE so existing frontend parser works
+    const encoder = new TextEncoder();
+    const body = encoder.encode(
+      `data: ${JSON.stringify({ token: text })}\n\n` +
+      `data: ${JSON.stringify({ done: true, response: text })}\n\n`
+    );
+
+    return new Response(body, {
+      headers: { ...CORS, "Content-Type": "text/event-stream", "Cache-Control": "no-cache" },
     });
-  } catch (error) {
+  } catch (error: any) {
     return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...CORS, "Content-Type": "application/json" },
+      status: 500, headers: { ...CORS, "Content-Type": "application/json" },
     });
   }
 });
