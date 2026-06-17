@@ -39,7 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           school: '', combination: '', course: '', profession: '',
           total_messages: 0, total_quizzes: 0, total_documents: 0, streak_days: 0,
         }
-        await supabase.from('users').insert(minimal).catch(() => {})
+        try { await supabase.from('users').insert(minimal) } catch {}
         setProfile(minimal as any)
       }
     }
@@ -66,14 +66,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
+    const timeout = setTimeout(() => setLoading(false), 5000)
+
     supabase.auth.getSession().then(({ data }) => {
+      clearTimeout(timeout)
       if (data.session?.user) {
         ensureProfile(data.session.user)
           .then(() => fetchProfile(data.session.user.id))
           .catch(() => {})
           .finally(() => setLoading(false))
       } else setLoading(false)
-    }).catch(() => setLoading(false))
+    }).catch(() => { clearTimeout(timeout); setLoading(false) })
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
         if (event === 'SIGNED_IN') await ensureProfile(session.user).catch(() => {})
@@ -83,14 +86,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setLoading(false)
       }
     })
-    return () => subscription.unsubscribe()
+    return () => { clearTimeout(timeout); subscription.unsubscribe() }
   }, [])
 
   async function login(email: string, password: string): Promise<string | null> {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) return parseError(error.message)
-    if (data.user) await fetchProfile(data.user.id)
-    return null
+    try {
+      const result = await Promise.race([
+        supabase.auth.signInWithPassword({ email, password }),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('Login timed out. Please check your internet connection.')), 15000)
+        ),
+      ]) as Awaited<ReturnType<typeof supabase.auth.signInWithPassword>>
+      if (result.error) return parseError(result.error.message)
+      // Profile is fetched by onAuthStateChange handler; no need to duplicate here
+      return null
+    } catch (e: unknown) {
+      if (e instanceof Error) return e.message
+      return 'Connection error. Please try again.'
+    }
   }
 
   async function register(email: string, password: string, prof: Partial<UserProfile>): Promise<string | null> {
@@ -112,11 +125,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function signInWithGoogle(): Promise<string | null> {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: window.location.origin },
-    })
-    return error?.message || null
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: window.location.origin },
+      })
+      if (error) return error.message
+      return null
+    } catch (e) {
+      return e instanceof Error ? e.message : 'Failed to sign in with Google'
+    }
   }
 
   async function logout() {
