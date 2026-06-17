@@ -9,6 +9,7 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { useAuth } from '@/lib/AuthContext'
 import { useSettings } from '@/lib/SettingsContext'
+import { useTimetable } from '@/lib/TimetableContext'
 import { supabase } from '@/lib/supabase'
 import { SUPABASE_URL, SUPABASE_ANON } from '@/lib/supabase'
 import { getSidebarSubjects } from '@/lib/constants'
@@ -28,6 +29,7 @@ function AIAvatar() {
 export default function ChatPage() {
   const { profile, logout } = useAuth()
   const { openSettings } = useSettings()
+  const { openTimetable } = useTimetable()
   const navigate = useNavigate()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [sessions, setSessions] = useState<ChatSession[]>([])
@@ -365,7 +367,7 @@ export default function ChatPage() {
         </div>
 
         {/* Timetable icon */}
-        <button onClick={() => navigate('/timetable')}
+        <button onClick={openTimetable}
           className="w-12 h-12 flex items-center justify-center shrink-0">
           <Calendar size={22} className="text-text-disabled" />
         </button>
@@ -642,7 +644,7 @@ export default function ChatPage() {
                 <Settings size={20} className="text-text-disabled" />
                 <span className="text-text-disabled text-sm">Settings</span>
               </button>
-              <button onClick={() => { navigate('/timetable'); setDrawerOpen(false) }}
+              <button onClick={() => { openTimetable(); setDrawerOpen(false) }}
                 className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
                 <Calendar size={20} style={{ color: '#F59E0B' }} />
                 <span className="text-text-disabled text-sm">Study Timetable</span>

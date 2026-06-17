@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 import { useAuth } from '@/lib/AuthContext'
 import { useTheme } from '@/lib/ThemeContext'
+import { useTimetable } from '@/lib/TimetableContext'
 import { supabase } from '@/lib/supabase'
 import { SUPABASE_URL } from '@/lib/supabase'
 import { EDUCATION_LEVELS } from '@/lib/constants'
@@ -172,6 +173,7 @@ export default function SettingsModal({ onClose }: { onClose?: () => void }) {
 
   const [showLogout, setShowLogout] = useState(false)
   const [activeSection, setActiveSection] = useState('profile')
+  const { openTimetable } = useTimetable()
 
   const SECTIONS = [
     { id: 'profile', icon: Camera, label: 'Profile', color: '#F59E0B' },
@@ -734,7 +736,7 @@ export default function SettingsModal({ onClose }: { onClose?: () => void }) {
                       <p className="text-text-white text-sm font-bold">Progress</p>
                       <p className="text-text-disabled text-[10px] mt-0.5">Stats & achievements</p>
                     </button>
-                    <button onClick={() => navigate('/timetable')}
+                    <button onClick={openTimetable}
                       className="p-3 rounded-lg text-left transition-all hover:bg-white/[0.03]"
                       style={{ background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.1)' }}>
                       <Calendar size={18} style={{ color: '#F59E0B' }} className="mb-1" />

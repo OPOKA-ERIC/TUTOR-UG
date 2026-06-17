@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import { MessageSquare, FileText, Calendar, BarChart2, Settings, Video, Users, Mic } from 'lucide-react'
 import { useSettings } from '@/lib/SettingsContext'
+import { useTimetable } from '@/lib/TimetableContext'
 
 const NAV = [
   { to: '/chat',      icon: MessageSquare, label: 'Chat' },
@@ -8,12 +9,12 @@ const NAV = [
   { to: '/rooms',     icon: Users,         label: 'Rooms' },
   { to: '/podcast',   icon: Mic,           label: 'Podcast' },
   { to: '/documents', icon: FileText,      label: 'Docs' },
-  { to: '/timetable', icon: Calendar,      label: 'Timetable' },
   { to: '/progress',  icon: BarChart2,     label: 'Progress' },
 ]
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { openSettings } = useSettings()
+  const { openTimetable } = useTimetable()
 
   return (
     <div className="flex flex-col h-screen bg-bg overflow-hidden">
@@ -39,6 +40,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             )}
           </NavLink>
         ))}
+        <button onClick={openTimetable}
+          className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-colors min-w-0 text-text-disabled hover:text-text-light">
+          <Calendar size={22} />
+          <span className="text-xs font-medium">Timetable</span>
+        </button>
         <button onClick={openSettings}
           className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-colors min-w-0 text-text-disabled hover:text-text-light">
           <Settings size={22} />

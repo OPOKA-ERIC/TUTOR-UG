@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from '@/lib/AuthContext'
 import { useSettings } from '@/lib/SettingsContext'
+import { useTimetable } from '@/lib/TimetableContext'
 import LoginPage from '@/pages/LoginPage'
 import RegisterPage from '@/pages/RegisterPage'
 import ForgotPasswordPage from '@/pages/ForgotPasswordPage'
@@ -8,7 +9,7 @@ import ChatPage from '@/pages/ChatPage'
 import DocumentsPage from '@/pages/DocumentsPage'
 import LearningPage from '@/pages/LearningPage'
 import QuizPage from '@/pages/QuizPage'
-import TimetablePage from '@/pages/TimetablePage'
+import TimetableModal from '@/pages/TimetablePage'
 import ProgressPage from '@/pages/ProgressPage'
 import SettingsModal from '@/pages/SettingsPage'
 import SplashPage from '@/pages/SplashPage'
@@ -29,6 +30,7 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 export default function App() {
   const { profile, loading } = useAuth()
   const { open, closeSettings } = useSettings()
+  const { open: timetableOpen, closeTimetable } = useTimetable()
 
   if (loading) return (
     <div className="min-h-screen bg-bg flex items-center justify-center">
@@ -47,7 +49,6 @@ export default function App() {
       <Route path="/documents" element={<PrivateRoute><DocumentsPage /></PrivateRoute>} />
       <Route path="/learn" element={<PrivateRoute><LearningPage /></PrivateRoute>} />
       <Route path="/quiz" element={<PrivateRoute><QuizPage /></PrivateRoute>} />
-      <Route path="/timetable" element={<PrivateRoute><TimetablePage /></PrivateRoute>} />
       <Route path="/progress" element={<PrivateRoute><ProgressPage /></PrivateRoute>} />
       <Route path="/meetings" element={<PrivateRoute><MeetingsPage /></PrivateRoute>} />
       <Route path="/rooms" element={<PrivateRoute><StudyRoomsPage /></PrivateRoute>} />
@@ -55,6 +56,7 @@ export default function App() {
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
       {open && <SettingsModal onClose={closeSettings} />}
+      {timetableOpen && <TimetableModal onClose={closeTimetable} />}
     </>
   )
 }

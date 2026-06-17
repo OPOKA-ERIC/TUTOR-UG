@@ -11,7 +11,7 @@ import type { TimetableEntry } from '@/types'
 const FULL_DAY_NAMES = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
 const COLORS = ['#FFB800','#7C3AED','#84CC16','#EF4444','#3B82F6','#F97316','#EC4899','#00BCD4','#8BC34A','#F06292']
 
-export default function TimetablePage() {
+export default function TimetableModal({ onClose }: { onClose?: () => void }) {
   const { profile } = useAuth()
   const navigate = useNavigate()
   const [entries, setEntries] = useState<TimetableEntry[]>([])
@@ -74,7 +74,14 @@ export default function TimetablePage() {
   const dayEntries = entries.filter(e => e.day_of_week === selectedDay + 1)
 
   return (
-    <div className="flex flex-col h-full bg-gradient-to-b from-surface to-bg relative overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(8px)' }}
+      onClick={e => { if (e.target === e.currentTarget) onClose?.() }}>
+      <div className="w-full max-w-2xl h-[85vh] rounded-2xl overflow-hidden flex flex-col bg-gradient-to-b from-surface to-bg relative"
+        style={{
+          border: '1px solid rgba(255,255,255,0.08)',
+          boxShadow: '0 25px 50px rgba(0,0,0,0.5)',
+        }}>
 
       {/* Decorative glow */}
       <div className="absolute -top-8 -right-8 w-56 h-56 rounded-full pointer-events-none"
@@ -82,7 +89,7 @@ export default function TimetablePage() {
 
       {/* ── TOP BAR ── */}
       <div className="bg-gradient-to-r from-surface to-surface-var px-2 py-2 flex items-center gap-1 shrink-0">
-        <button onClick={() => navigate('/chat')}
+        <button onClick={onClose}
           className="w-12 h-12 flex items-center justify-center shrink-0">
           <div className="w-9 h-9 bg-surface-input rounded-full flex items-center justify-center">
             <ArrowLeft size={18} className="text-text-white" />
@@ -284,6 +291,7 @@ export default function TimetablePage() {
           </div>
         </div>
       )}
+    </div>
     </div>
   )
 }
