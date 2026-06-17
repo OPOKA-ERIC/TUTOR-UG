@@ -60,6 +60,9 @@ fun TutorUGNavigation(settingsViewModel: SettingsViewModel, intent: android.cont
     val documentViewModel: DocumentViewModel = viewModel()
     val quizViewModel: QuizViewModel = viewModel()
     val timetableViewModel: TimetableViewModel = viewModel()
+    val meetingViewModel: MeetingViewModel = viewModel()
+    val studyRoomViewModel: StudyRoomViewModel = viewModel()
+    val podcastViewModel: PodcastViewModel = viewModel()
     val context = androidx.compose.ui.platform.LocalContext.current
 
     // Handle deep link from password reset email
@@ -301,6 +304,9 @@ fun TutorUGNavigation(settingsViewModel: SettingsViewModel, intent: android.cont
                     },
                     onSettingsClick = { navController.navigate("settings") },
                     onTimetableClick = { navController.navigate("timetable") },
+                    onMeetingsClick = { navController.navigate("meetings") },
+                    onStudyRoomsClick = { navController.navigate("studyrooms") },
+                    onPodcastClick = { navController.navigate("podcast") },
                     onLogout = {
                         chatViewModel.clearAllData()
                         authViewModel.logout()
@@ -677,6 +683,40 @@ fun TutorUGNavigation(settingsViewModel: SettingsViewModel, intent: android.cont
                     userProfile = profile,
                     quizResults = quizResults,
                     isLoading   = quizState is QuizState.Loading,
+                    onBackClick = { navController.popBackStack() }
+                )
+            }
+        }
+
+        composable("meetings") {
+            val profile = (authState as? AuthState.Authenticated)?.profile
+            if (profile != null) {
+                MeetingsScreen(
+                    userProfile = profile,
+                    viewModel = meetingViewModel,
+                    onBackClick = { navController.popBackStack() }
+                )
+            }
+        }
+
+        composable("studyrooms") {
+            val profile = (authState as? AuthState.Authenticated)?.profile
+            if (profile != null) {
+                StudyRoomsScreen(
+                    userProfile = profile,
+                    viewModel = studyRoomViewModel,
+                    onBackClick = { navController.popBackStack() }
+                )
+            }
+        }
+
+        composable("podcast") {
+            val profile = (authState as? AuthState.Authenticated)?.profile
+            if (profile != null) {
+                PodcastScreen(
+                    userProfile = profile,
+                    viewModel = podcastViewModel,
+                    voiceManager = chatViewModel.voiceManager,
                     onBackClick = { navController.popBackStack() }
                 )
             }

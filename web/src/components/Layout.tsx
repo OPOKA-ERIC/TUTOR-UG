@@ -1,9 +1,12 @@
 import { NavLink, useLocation } from 'react-router-dom'
-import { MessageSquare, FileText, Calendar, BarChart2, Settings } from 'lucide-react'
+import { MessageSquare, FileText, Calendar, BarChart2, Settings, Video, Users, Mic } from 'lucide-react'
 
 const NAV = [
   { to: '/chat',      icon: MessageSquare, label: 'Chat' },
-  { to: '/documents', icon: FileText,      label: 'Documents' },
+  { to: '/meetings',  icon: Video,         label: 'Meetings' },
+  { to: '/rooms',     icon: Users,         label: 'Rooms' },
+  { to: '/podcast',   icon: Mic,           label: 'Podcast' },
+  { to: '/documents', icon: FileText,      label: 'Docs' },
   { to: '/timetable', icon: Calendar,      label: 'Timetable' },
   { to: '/progress',  icon: BarChart2,     label: 'Progress' },
   { to: '/settings',  icon: Settings,      label: 'Settings' },

@@ -7,7 +7,6 @@ import { SUPABASE_URL, SUPABASE_ANON } from '@/lib/supabase'
 import Logo from '@/components/Logo'
 import type { QuizQuestion, DocumentSection, QuizResult } from '@/types'
 
-// Gradient button — matches Android GradientButton composable exactly
 function GradientButton({
   text, gradient, textColor, onClick, disabled = false
 }: {
@@ -44,25 +43,28 @@ export default function QuizPage() {
   const [totalSections, setTotalSections] = useState(1)
   const [docId, setDocId] = useState('')
   const [quizResults, setQuizResults] = useState<QuizResult[]>([])
-  // answers map: questionIndex → answerIndex
   const [answers, setAnswers] = useState<Record<number, number>>({})
+  // Keep full sections list so "Continue" can navigate correctly
+  const [allSections, setAllSections] = useState<DocumentSection[]>([])
 
   useEffect(() => {
     const s = sessionStorage.getItem('quiz_section')
     const idx = sessionStorage.getItem('quiz_section_index')
     const total = sessionStorage.getItem('quiz_total_sections')
     const dId = sessionStorage.getItem('quiz_doc_id')
+    const storedSections = sessionStorage.getItem('learning_sections')
     if (!s) { navigate('/documents'); return }
     const sec = JSON.parse(s) as DocumentSection
     setSection(sec)
     setSectionIndex(Number(idx) || 0)
     setTotalSections(Number(total) || 1)
     setDocId(dId || '')
+    if (storedSections) setAllSections(JSON.parse(storedSections) as DocumentSection[])
     generateQuiz(sec)
     if (profile) loadQuizResults()
   }, [])
 
-  // Reset local state when fresh questions arrive — matches Android LaunchedEffect(questions)
+  // Reset per-question state when fresh questions arrive
   useEffect(() => {
     setCurrentQ(0)
     setSelectedAnswer(null)
@@ -157,14 +159,15 @@ export default function QuizPage() {
 
   function handleNextSection() {
     const nextIdx = sectionIndex + 1
-    const storedSections = sessionStorage.getItem('learning_sections')
-    if (!storedSections) { navigate('/documents'); return }
-    const sections = JSON.parse(storedSections) as DocumentSection[]
-    if (nextIdx < sections.length) {
-      sessionStorage.setItem('quiz_section', JSON.stringify(sections[nextIdx]))
+    if (nextIdx < allSections.length) {
+      const nextSection = allSections[nextIdx]
+      // Update sessionStorage so LearningPage picks up the right section
+      sessionStorage.setItem('learning_section_index', String(nextIdx))
+      sessionStorage.setItem('quiz_section', JSON.stringify(nextSection))
       sessionStorage.setItem('quiz_section_index', String(nextIdx))
       navigate('/learn')
     } else {
+      // All sections done — go back to documents
       navigate('/documents')
     }
   }
@@ -184,7 +187,7 @@ export default function QuizPage() {
   return (
     <div className="flex flex-col h-full bg-gradient-to-b from-surface to-bg relative overflow-hidden">
 
-      {/* Radial glow bottom-left — matches Android */}
+      {/* Radial glow bottom-left */}
       <div className="absolute bottom-40 -left-16 w-56 h-56 rounded-full pointer-events-none"
         style={{ background: 'radial-gradient(circle, rgba(109,40,217,0.1), transparent)' }} />
 
@@ -207,7 +210,7 @@ export default function QuizPage() {
         </div>
       </div>
 
-      {/* Section progress dots — matches Android */}
+      {/* Section progress dots */}
       <div className="flex items-center justify-center gap-2 px-5 py-3">
         {Array.from({ length: totalSections }).map((_, i) => {
           const done = i < sectionIndex
@@ -233,11 +236,10 @@ export default function QuizPage() {
           </div>
         )}
 
-        {/* ── RESULTS — matches Android exactly ── */}
+        {/* ── RESULTS ── */}
         {!loading && showResults && (
           <div className="flex flex-col items-center py-4 space-y-4">
 
-            {/* Radial glow icon — matches Android Box with radialGradient */}
             <div className="w-36 h-36 rounded-full flex items-center justify-center"
               style={{
                 background: passed
@@ -249,15 +251,12 @@ export default function QuizPage() {
                 : <RefreshCw size={72} style={{ color: '#EF4444' }} />}
             </div>
 
-            {/* Title */}
             <p className="text-3xl font-bold" style={{ color: passed ? '#84CC16' : '#EF4444' }}>
               {passed ? 'Great Work! 🎉' : 'Keep Going! 💪'}
             </p>
 
-            {/* Score */}
             <p className="text-6xl font-black text-primary">{score}%</p>
 
-            {/* Reason card — matches Android Surface */}
             <div className="w-full rounded-xl p-4"
               style={{ backgroundColor: passed ? 'rgba(132,204,22,0.08)' : 'rgba(239,68,68,0.08)' }}>
               <p className="text-sm text-center" style={{ color: passed ? '#84CC16' : '#EF4444' }}>
@@ -272,13 +271,11 @@ export default function QuizPage() {
               </p>
             </div>
 
-            {/* Buttons — matches Android exactly */}
             <div className="w-full space-y-3">
               {passed ? (
                 <>
-                  {/* PASS: Continue → Redo → Re-explain */}
                   <GradientButton
-                    text="Continue to Next Section →"
+                    text={sectionIndex + 1 < totalSections ? 'Continue to Next Section →' : 'Finish — Back to Documents'}
                     gradient="linear-gradient(135deg, #84CC16, #65A30D)"
                     textColor="#0A0A1F"
                     onClick={handleNextSection}
@@ -298,7 +295,6 @@ export default function QuizPage() {
                 </>
               ) : (
                 <>
-                  {/* FAIL: Redo → Re-explain */}
                   <GradientButton
                     text="Redo Quiz"
                     gradient="linear-gradient(135deg, #F59E0B, #D97706)"
@@ -315,7 +311,6 @@ export default function QuizPage() {
               )}
             </div>
 
-            {/* Quiz history — matches Android RECENT RESULTS */}
             {quizResults.length > 0 && (
               <div className="w-full">
                 <p className="text-text-disabled text-xs font-bold uppercase tracking-wider mb-2.5">
@@ -344,11 +339,10 @@ export default function QuizPage() {
           </div>
         )}
 
-        {/* ── QUESTION — matches Android exactly ── */}
+        {/* ── QUESTION ── */}
         {!loading && !showResults && currentQuestion && (
           <div className="space-y-5 py-2">
 
-            {/* Question card — matches Android Surface */}
             <div className="bg-surface rounded-2xl p-5">
               <p className="text-primary text-xs font-bold mb-2">
                 Question {currentQ + 1}
@@ -358,13 +352,11 @@ export default function QuizPage() {
               </p>
             </div>
 
-            {/* Options — matches Android Surface with border */}
             <div className="space-y-2.5">
               {currentQuestion.options.map((option, index) => {
                 const isSelected = selectedAnswer === index
                 const isCorrect = index === currentQuestion.correctIndex
 
-                // Colors matching Android exactly
                 const bgColor = isAnswered && isCorrect
                   ? 'rgba(132,204,22,0.15)'
                   : isAnswered && isSelected && !isCorrect
@@ -387,7 +379,6 @@ export default function QuizPage() {
                     onClick={() => !isAnswered && setSelectedAnswer(index)}
                     className="w-full rounded-xl px-4 py-4 flex items-center gap-3 transition-all cursor-pointer"
                     style={{ backgroundColor: bgColor, border: `1.5px solid ${borderColor}` }}>
-                    {/* A/B/C/D circle — matches Android */}
                     <div className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold shrink-0"
                       style={{ backgroundColor: `${borderColor}33`, color: borderColor }}>
                       {isAnswered && isCorrect
@@ -400,7 +391,7 @@ export default function QuizPage() {
               })}
             </div>
 
-            {/* Submit Answer button — shown when answer selected but not yet submitted */}
+            {/* Submit — shown when answer selected but not yet submitted */}
             {selectedAnswer !== null && !isAnswered && (
               <GradientButton
                 text="Submit Answer"
@@ -413,7 +404,6 @@ export default function QuizPage() {
             {/* Explanation + Next/Finish — shown after submitting */}
             {isAnswered && (
               <div className="space-y-4">
-                {/* Explanation card — matches Android secondary/8 surface */}
                 <div className="rounded-xl p-4" style={{ backgroundColor: 'rgba(124,58,237,0.08)' }}>
                   <p className="text-secondary text-sm font-bold mb-1.5">Explanation</p>
                   <p className="text-text-light text-sm leading-relaxed">
@@ -421,7 +411,6 @@ export default function QuizPage() {
                   </p>
                 </div>
 
-                {/* Next Question or Finish Quiz */}
                 {currentQ < questions.length - 1 ? (
                   <GradientButton
                     text="Next Question →"

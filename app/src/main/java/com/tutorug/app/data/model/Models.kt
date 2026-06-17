@@ -177,3 +177,56 @@ data class DistrictData(
     val economy: List<String> = emptyList(),
     val animals: List<String> = emptyList()
 )
+
+// ── meetings ──────────────────────────────────────────────────────────────────
+data class Meeting(
+    @SerializedName("meeting_id")    val meetingId: String = "",
+    @SerializedName("host_id")       val hostId: String = "",
+    @SerializedName("title")         val title: String = "",
+    @SerializedName("subject")       val subject: String = "",
+    @SerializedName("description")   val description: String = "",
+    @SerializedName("room_url")      val roomUrl: String = "",
+    @SerializedName("room_token")    val roomToken: String = "",
+    @SerializedName("scheduled_at")  val scheduledAt: String = "",
+    @SerializedName("duration_mins") val durationMins: Int = 60,
+    @SerializedName("status")        val status: String = "scheduled",
+    @SerializedName("created_at")    val createdAt: String = ""
+)
+
+// ── study_rooms ───────────────────────────────────────────────────────────────
+data class StudyRoom(
+    @SerializedName("room_id")        val roomId: String = "",
+    @SerializedName("subject")        val subject: String = "",
+    @SerializedName("education_level") val educationLevel: String = "",
+    @SerializedName("description")    val description: String = "",
+    @SerializedName("member_count")   val memberCount: Int = 0,
+    @SerializedName("created_at")     val createdAt: String = ""
+)
+
+data class RoomMessage(
+    @SerializedName("message_id")  val messageId: String = "",
+    @SerializedName("room_id")     val roomId: String = "",
+    @SerializedName("user_id")     val userId: String = "",
+    @SerializedName("user_name")   val userName: String = "",
+    @SerializedName("user_avatar") val userAvatar: String = "",
+    @SerializedName("content")     val content: String = "",
+    @SerializedName("flagged")     val flagged: Boolean = false,
+    @SerializedName("created_at")  val createdAt: String = ""
+)
+
+// ── podcast ───────────────────────────────────────────────────────────────────
+data class PodcastSegment(
+    @SerializedName("speaker") val speaker: String = "HOST", // HOST | STUDENT
+    @SerializedName("text")    val text: String = ""
+)
+
+data class PodcastSession(
+    @SerializedName("podcast_id")     val podcastId: String = "",
+    @SerializedName("user_id")        val userId: String = "",
+    @SerializedName("topic")          val topic: String = "",
+    @SerializedName("subject")        val subject: String = "",
+    @SerializedName("education_level") val educationLevel: String = "",
+    @SerializedName("script")         val script: List<PodcastSegment> = emptyList(),
+    @SerializedName("duration_secs")  val durationSecs: Int = 0,
+    @SerializedName("created_at")     val createdAt: String = ""
+)

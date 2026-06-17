@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   Menu, Send, Mic, Plus, Trash2, Loader2,
   Settings, Calendar, LogOut, Volume2, Paperclip,
-  Square, ChevronUp, ChevronDown
+  Square, ChevronUp, ChevronDown, Video, Users
 } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -172,11 +172,16 @@ export default function ChatPage() {
     const reader = res.body.getReader()
     const decoder = new TextDecoder()
     let full = ''
+    let buffer = ''
 
     while (true) {
       const { done, value } = await reader.read()
       if (done) break
-      for (const line of decoder.decode(value).split('\n').filter(l => l.startsWith('data: '))) {
+      buffer += decoder.decode(value, { stream: true })
+      const lines = buffer.split('\n')
+      buffer = lines.pop() ?? ''
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue
         try {
           const data = JSON.parse(line.slice(6))
           if (data.token) { full += data.token; setStreamingText(t => t + data.token) }
@@ -610,6 +615,21 @@ export default function ChatPage() {
 
             {/* ── BOTTOM BUTTONS — Settings, Timetable, Logout ── */}
             <div className="px-4 pb-6 pt-2 border-t border-outline space-y-1">
+              <button onClick={() => { navigate('/meetings'); setDrawerOpen(false) }}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
+                <Video size={20} style={{ color: '#F59E0B' }} />
+                <span className="text-text-disabled text-sm">Meetings</span>
+              </button>
+              <button onClick={() => { navigate('/rooms'); setDrawerOpen(false) }}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
+                <Users size={20} style={{ color: '#7C3AED' }} />
+                <span className="text-text-disabled text-sm">Study Rooms</span>
+              </button>
+              <button onClick={() => { navigate('/podcast'); setDrawerOpen(false) }}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
+                <Mic size={20} style={{ color: '#EF4444' }} />
+                <span className="text-text-disabled text-sm">AI Podcast</span>
+              </button>
               <button onClick={() => { navigate('/settings'); setDrawerOpen(false) }}
                 className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
                 <Settings size={20} className="text-text-disabled" />

@@ -11,6 +11,9 @@ import TimetablePage from '@/pages/TimetablePage'
 import ProgressPage from '@/pages/ProgressPage'
 import SettingsPage from '@/pages/SettingsPage'
 import SplashPage from '@/pages/SplashPage'
+import MeetingsPage from '@/pages/MeetingsPage'
+import StudyRoomsPage from '@/pages/StudyRoomsPage'
+import PodcastPage from '@/pages/PodcastPage'
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { profile, loading } = useAuth()
@@ -32,7 +35,6 @@ export default function App() {
   )
 
   return (
-    <div className="h-full flex flex-col">
     <Routes>
       <Route path="/" element={<SplashPage />} />
       <Route path="/login" element={profile ? <Navigate to="/chat" replace /> : <LoginPage />} />
@@ -45,8 +47,10 @@ export default function App() {
       <Route path="/timetable" element={<PrivateRoute><TimetablePage /></PrivateRoute>} />
       <Route path="/progress" element={<PrivateRoute><ProgressPage /></PrivateRoute>} />
       <Route path="/settings" element={<PrivateRoute><SettingsPage /></PrivateRoute>} />
+      <Route path="/meetings" element={<PrivateRoute><MeetingsPage /></PrivateRoute>} />
+      <Route path="/rooms" element={<PrivateRoute><StudyRoomsPage /></PrivateRoute>} />
+      <Route path="/podcast" element={<PrivateRoute><PodcastPage /></PrivateRoute>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
-    </div>
   )
 }

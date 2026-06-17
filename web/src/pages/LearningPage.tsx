@@ -8,7 +8,6 @@ import { SUPABASE_URL, SUPABASE_ANON } from '@/lib/supabase'
 import Logo from '@/components/Logo'
 import type { DocumentSection, ChatMessage } from '@/types'
 
-// AI avatar — matches Android Amber400→Violet600 gradient circle with "AI" text
 function AIAvatar() {
   return (
     <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 font-black text-xs text-white"
@@ -18,7 +17,6 @@ function AIAvatar() {
   )
 }
 
-// Thinking dots — matches Android animated dots
 function ThinkingDots() {
   return (
     <div className="flex items-end gap-2 py-2">
@@ -50,9 +48,13 @@ export default function LearningPage() {
   useEffect(() => {
     const storedSections = sessionStorage.getItem('learning_sections')
     const storedDocId = sessionStorage.getItem('learning_doc_id')
+    const storedIndex = sessionStorage.getItem('learning_section_index')
     if (!storedSections || !storedDocId) { navigate('/documents'); return }
     setSections(JSON.parse(storedSections))
     setDocId(storedDocId)
+    setSectionIndex(Number(storedIndex) || 0)
+    // Clear messages when entering a new section
+    setMessages([])
   }, [])
 
   useEffect(() => {
@@ -148,7 +150,7 @@ export default function LearningPage() {
   return (
     <div className="flex flex-col h-full bg-gradient-to-b from-surface to-bg">
 
-      {/* ── TOP BAR — matches Android ── */}
+      {/* ── TOP BAR ── */}
       <div className="bg-gradient-to-r from-surface to-surface-var px-1 py-2 flex items-center gap-1 shrink-0">
         <button onClick={() => navigate('/documents')}
           className="w-12 h-12 flex items-center justify-center shrink-0">
@@ -159,9 +161,9 @@ export default function LearningPage() {
           <p className="text-text-white font-bold text-sm truncate">{currentSection.title}</p>
           <p className="text-text-disabled text-xs">Section {sectionIndex + 1} of {sections.length}</p>
         </div>
-        {/* Section progress dots — matches Android */}
+        {/* Section progress dots */}
         <div className="flex items-center gap-1 pr-2 shrink-0">
-          {sections.map((s, i) => (
+          {sections.map((_, i) => (
             <div key={i} className="rounded-full transition-all"
               style={{
                 width: i === sectionIndex ? 10 : 7,
@@ -175,18 +177,16 @@ export default function LearningPage() {
       {/* ── MESSAGES ── */}
       <div className="flex-1 overflow-y-auto px-4 py-3 space-y-2.5">
 
-        {/* Section intro card — always shown as first item, matches Android SectionIntroCard */}
+        {/* Section intro card */}
         <div className="flex items-end gap-2">
           <AIAvatar />
           <div className="flex-1 min-w-0">
-            {/* TutorUG AI label + sparkle badge */}
             <div className="flex items-center gap-1.5 mb-1 ml-0.5">
               <span className="text-primary text-xs font-bold">TutorUG AI</span>
               <span className="text-primary text-xs px-1 py-0.5 rounded"
                 style={{ backgroundColor: 'rgba(255,184,0,0.15)' }}>✦</span>
             </div>
-            {/* Bubble with gradient border — matches Android */}
-            <div className="rounded-tl-sm rounded-tr-2xl rounded-br-2xl rounded-bl-2xl px-4 py-3 max-w-xs md:max-w-md"
+            <div className="rounded-tl-sm rounded-tr-2xl rounded-br-2xl rounded-bl-2xl px-4 py-3 max-w-xs md:max-w-2xl"
               style={{
                 background: 'linear-gradient(135deg, #12122A, #1A1A3A)',
                 border: '1px solid',
@@ -195,7 +195,7 @@ export default function LearningPage() {
               <p className="text-primary text-sm font-bold mb-2">Let's study: {currentSection.title}</p>
               <div className="prose prose-invert prose-sm max-w-none text-text-light">
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {currentSection.content.slice(0, 600) + (currentSection.content.length > 600 ? '...' : '')}
+                  {currentSection.content}
                 </ReactMarkdown>
               </div>
               <p className="text-text-disabled text-xs mt-2">
@@ -210,7 +210,7 @@ export default function LearningPage() {
           <div key={msg.message_id}
             className={`flex items-end gap-2 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
             {msg.role === 'assistant' && <AIAvatar />}
-            <div className={`max-w-xs md:max-w-md ${msg.role === 'assistant' ? '' : ''}`}>
+            <div className={`max-w-xs md:max-w-2xl ${msg.role === 'assistant' ? '' : ''}`}>
               {msg.role === 'assistant' && (
                 <div className="flex items-center gap-1.5 mb-1 ml-0.5">
                   <span className="text-primary text-xs font-bold">TutorUG AI</span>
@@ -240,10 +240,10 @@ export default function LearningPage() {
           </div>
         ))}
 
-        {/* Thinking dots — matches Android animated dots */}
+        {/* Thinking dots */}
         {loading && !streamingText && <ThinkingDots />}
 
-        {/* Streaming bubble — matches Android streaming with cursor */}
+        {/* Streaming bubble */}
         {streamingText && (
           <div className="flex items-end gap-2">
             <AIAvatar />
@@ -253,7 +253,7 @@ export default function LearningPage() {
                 <span className="text-primary text-xs px-1 py-0.5 rounded"
                   style={{ backgroundColor: 'rgba(255,184,0,0.15)' }}>✦</span>
               </div>
-              <div className="rounded-tl-sm rounded-tr-2xl rounded-br-2xl rounded-bl-2xl px-4 py-3 max-w-xs md:max-w-md"
+              <div className="rounded-tl-sm rounded-tr-2xl rounded-br-2xl rounded-bl-2xl px-4 py-3 max-w-xs md:max-w-2xl"
                 style={{
                   background: 'linear-gradient(135deg, #12122A, #1A1A3A)',
                   border: '1px solid rgba(255,184,0,0.5)',
@@ -267,7 +267,7 @@ export default function LearningPage() {
           </div>
         )}
 
-        {/* Quiz button — only shown after AI has responded, matches Android */}
+        {/* Quiz button — only after AI has responded */}
         {aiHasExplained && !loading && !streamingText && (
           <div className="rounded-2xl px-4 py-4 text-center"
             style={{ backgroundColor: 'rgba(255,184,0,0.06)' }}>
@@ -286,7 +286,7 @@ export default function LearningPage() {
         <div ref={bottomRef} />
       </div>
 
-      {/* ── INPUT BAR — matches Android gradient border input ── */}
+      {/* ── INPUT BAR ── */}
       <div className="px-4 py-3 shrink-0">
         <div className="flex items-center gap-2 px-2 py-2 rounded-full"
           style={{
@@ -294,7 +294,6 @@ export default function LearningPage() {
             border: '1.5px solid',
             borderColor: 'rgba(255,184,0,0.7)',
           }}>
-          {/* Mic button — Amber circle matches Android */}
           <button
             onClick={startVoice}
             className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-all"
@@ -316,7 +315,6 @@ export default function LearningPage() {
             className="flex-1 bg-transparent text-text-white placeholder-text-disabled resize-none outline-none text-sm max-h-24"
           />
 
-          {/* Send button — Violet gradient matches Android */}
           <button
             onClick={() => sendMessage()}
             disabled={!input.trim() || loading}

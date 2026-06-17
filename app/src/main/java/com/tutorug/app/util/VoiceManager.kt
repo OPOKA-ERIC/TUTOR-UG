@@ -89,6 +89,17 @@ class VoiceManager(private val context: Context) {
         isPaused = false
     }
 
+    fun speak(text: String, onDone: () -> Unit) {
+        if (!isTTSReady) { onDone(); return }
+        val params = android.os.Bundle()
+        tts?.setOnUtteranceProgressListener(object : android.speech.tts.UtteranceProgressListener() {
+            override fun onStart(utteranceId: String?) { isSpeaking = true; isPaused = false }
+            override fun onDone(utteranceId: String?) { isSpeaking = false; onDone() }
+            override fun onError(utteranceId: String?) { isSpeaking = false; onDone() }
+        })
+        tts?.speak(text, TextToSpeech.QUEUE_FLUSH, params, "podcast_utterance")
+    }
+
     fun pauseSpeaking() {
         if (!isSpeaking || isPaused) return
         tts?.stop()          // Android TTS has no real pause — stop and mark paused

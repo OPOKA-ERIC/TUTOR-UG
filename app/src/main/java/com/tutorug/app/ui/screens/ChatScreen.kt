@@ -63,6 +63,9 @@ fun ChatScreen(
     onNewChat: () -> Unit = {},
     onSettingsClick: () -> Unit = {},
     onTimetableClick: () -> Unit = {},
+    onMeetingsClick: () -> Unit = {},
+    onStudyRoomsClick: () -> Unit = {},
+    onPodcastClick: () -> Unit = {},
     onLogout: () -> Unit = {},
     onDeleteSession: (String) -> Unit = {},
     onSpeakMessage: (String, String) -> Unit = { _, _ -> },
@@ -689,6 +692,27 @@ fun ChatScreen(
                     Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
                         HorizontalDivider(color = AppColors.divider)
                         Spacer(modifier = Modifier.height(8.dp))
+                        Row(modifier = Modifier.fillMaxWidth()
+                            .clickable { onMeetingsClick(); drawerOpen = false }.padding(10.dp),
+                            verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.VideoCall, null, tint = Amber500)
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text("Meetings", color = AppColors.textMuted, fontSize = 14.sp)
+                        }
+                        Row(modifier = Modifier.fillMaxWidth()
+                            .clickable { onStudyRoomsClick(); drawerOpen = false }.padding(10.dp),
+                            verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Forum, null, tint = Violet500)
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text("Study Rooms", color = AppColors.textMuted, fontSize = 14.sp)
+                        }
+                        Row(modifier = Modifier.fillMaxWidth()
+                            .clickable { onPodcastClick(); drawerOpen = false }.padding(10.dp),
+                            verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Mic, null, tint = error.copy(alpha = 0.85f))
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text("AI Podcast", color = AppColors.textMuted, fontSize = 14.sp)
+                        }
                         Row(modifier = Modifier.fillMaxWidth()
                             .clickable { onSettingsClick(); drawerOpen = false }.padding(10.dp),
                             verticalAlignment = Alignment.CenterVertically) {

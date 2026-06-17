@@ -163,3 +163,65 @@ export type UploadState =
   | { status: 'processing'; documentId: string }
   | { status: 'ready'; documentId: string; sections: DocumentSection[] }
   | { status: 'error'; message: string }
+
+// ── MEETINGS ──────────────────────────────────────────────────────────────────
+export interface Meeting {
+  meeting_id: string
+  host_id: string
+  title: string
+  subject: string
+  description: string
+  room_url: string
+  room_token: string
+  scheduled_at: string
+  duration_mins: number
+  status: 'scheduled' | 'live' | 'ended'
+  created_at: string
+  host_name?: string   // joined from users
+}
+
+export interface MeetingParticipant {
+  id: string
+  meeting_id: string
+  user_id: string
+  join_token: string
+  joined_at: string
+}
+
+// ── STUDY ROOMS ───────────────────────────────────────────────────────────────
+export interface StudyRoom {
+  room_id: string
+  subject: string
+  education_level: string
+  description: string
+  member_count: number
+  created_at: string
+}
+
+export interface RoomMessage {
+  message_id: string
+  room_id: string
+  user_id: string
+  user_name: string
+  user_avatar: string
+  content: string
+  flagged: boolean
+  created_at: string
+}
+
+// ── PODCAST ───────────────────────────────────────────────────────────────────
+export interface PodcastSegment {
+  speaker: 'HOST' | 'STUDENT'
+  text: string
+}
+
+export interface PodcastSession {
+  podcast_id: string
+  user_id: string
+  topic: string
+  subject: string
+  education_level: string
+  script: PodcastSegment[]
+  duration_secs: number
+  created_at: string
+}
