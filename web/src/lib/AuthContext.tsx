@@ -7,6 +7,7 @@ interface AuthCtx {
   loading: boolean
   login: (email: string, password: string) => Promise<string | null>
   register: (email: string, password: string, profile: Partial<UserProfile>) => Promise<string | null>
+  signInWithGoogle: () => Promise<string | null>
   logout: () => Promise<void>
   refreshProfile: () => Promise<void>
 }
@@ -26,14 +27,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (data) setProfile(data as UserProfile)
   }
 
+  async function ensureProfile(user: import('@supabase/supabase-js').User) {
+    const { data: existing } = await supabase
+      .from('users')
+      .select('user_id')
+      .eq('user_id', user.id)
+      .single()
+    if (existing) return
+    const meta = user.user_metadata
+    const { error: profileError } = await supabase.from('users').insert({
+      user_id: user.id,
+      email: user.email || '',
+      name: meta?.full_name || meta?.name || user.email?.split('@')[0] || 'Student',
+      avatar_url: meta?.avatar_url || '',
+      district: '', region: '', education_level: '',
+      school: '', combination: '', course: '', profession: '',
+      total_messages: 0, total_quizzes: 0,
+      total_documents: 0, streak_days: 0,
+    })
+    if (!profileError) {
+      await supabase.from('user_settings').insert({
+        user_id: user.id, voice_enabled: true, auto_read_enabled: false,
+        quiz_sound_enabled: true, notifications_enabled: true,
+        study_reminders_enabled: true, quiz_difficulty: 'adaptive',
+        app_theme: 'DEEP_SPACE', language: 'en',
+        updated_at: new Date().toISOString(),
+      })
+    }
+  }
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session?.user) fetchProfile(data.session.user.id).finally(() => setLoading(false))
-      else setLoading(false)
+      if (data.session?.user) {
+        ensureProfile(data.session.user).then(() => fetchProfile(data.session.user.id).finally(() => setLoading(false)))
+      } else setLoading(false)
     })
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) fetchProfile(session.user.id)
-      else setProfile(null)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        if (event === 'SIGNED_IN') await ensureProfile(session.user)
+        await fetchProfile(session.user.id)
+      } else setProfile(null)
     })
     return () => subscription.unsubscribe()
   }, [])
@@ -70,6 +103,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return null
   }
 
+  async function signInWithGoogle(): Promise<string | null> {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.origin },
+    })
+    return error?.message || null
+  }
+
   async function logout() {
     await supabase.auth.signOut()
     setProfile(null)
@@ -88,7 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ profile, loading, login, register, logout, refreshProfile }}>
+    <AuthContext.Provider value={{ profile, loading, login, register, signInWithGoogle, logout, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   )

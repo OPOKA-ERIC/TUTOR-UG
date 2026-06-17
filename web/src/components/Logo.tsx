@@ -1,10 +1,12 @@
 export default function Logo({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
-  const s = size === 'sm' ? 'text-lg' : size === 'lg' ? 'text-3xl' : 'text-xl'
+  const dims = size === 'sm' ? 80 : size === 'lg' ? 44 : 36
   return (
-    <span className={`font-black ${s} tracking-tight`}>
-      <span className="text-primary">Tutor</span>
-      <span className="text-text-white">UG</span>
-      <span className="text-primary ml-1">🇺🇬</span>
-    </span>
+    <img
+      src="/assets/logo.jpg"
+      alt="TutorUG"
+      width={dims}
+      height={dims}
+      className="object-contain rounded-lg"
+    />
   )
 }
