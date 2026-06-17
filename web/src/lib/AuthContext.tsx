@@ -24,7 +24,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .select('*')
       .eq('user_id', userId)
       .single()
-    if (data) setProfile(data as UserProfile)
+    if (data) {
+      setProfile(data as UserProfile)
+    } else {
+      // No profile row yet — create a minimal one so the app doesn't get stuck
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const minimal = {
+          user_id: userId,
+          email: user.email || '',
+          name: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'Student',
+          avatar_url: user.user_metadata?.avatar_url || '',
+          district: '', region: '', education_level: '',
+          school: '', combination: '', course: '', profession: '',
+          total_messages: 0, total_quizzes: 0, total_documents: 0, streak_days: 0,
+        }
+        await supabase.from('users').insert(minimal).catch(() => {})
+        setProfile(minimal as any)
+      }
+    }
   }
 
   async function ensureProfile(user: import('@supabase/supabase-js').User) {
