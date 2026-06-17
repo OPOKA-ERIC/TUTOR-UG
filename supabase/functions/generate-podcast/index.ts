@@ -49,7 +49,7 @@ PODCAST RULES:
       : [{ role: 'user' as const, content: `Generate a podcast episode about: "${topic}"` }]
 
     const response = await anthropic.messages.create({
-      model: 'claude-opus-4-5',
+      model: 'claude-haiku-4-5',
       max_tokens: 2048,
       system: systemPrompt,
       messages,
