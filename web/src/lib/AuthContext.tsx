@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .single()
     if (existing) return
     const meta = user.user_metadata
-    const { error: profileError } = await supabase.from('users').insert({
+    await supabase.from('users').insert({
       user_id: user.id,
       email: user.email || '',
       name: meta?.full_name || meta?.name || user.email?.split('@')[0] || 'Student',
@@ -45,28 +45,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       total_messages: 0, total_quizzes: 0,
       total_documents: 0, streak_days: 0,
     })
-    if (!profileError) {
-      await supabase.from('user_settings').insert({
-        user_id: user.id, voice_enabled: true, auto_read_enabled: false,
-        quiz_sound_enabled: true, notifications_enabled: true,
-        study_reminders_enabled: true, quiz_difficulty: 'adaptive',
-        app_theme: 'DEEP_SPACE', language: 'en',
-        updated_at: new Date().toISOString(),
-      })
-    }
   }
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       if (data.session?.user) {
-        ensureProfile(data.session.user).then(() => fetchProfile(data.session.user.id).finally(() => setLoading(false)))
+        ensureProfile(data.session.user)
+          .then(() => fetchProfile(data.session.user.id))
+          .catch(() => {})
+          .finally(() => setLoading(false))
       } else setLoading(false)
     }).catch(() => setLoading(false))
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
-        if (event === 'SIGNED_IN') await ensureProfile(session.user)
-        await fetchProfile(session.user.id)
-      } else setProfile(null)
+        if (event === 'SIGNED_IN') await ensureProfile(session.user).catch(() => {})
+        await fetchProfile(session.user.id).catch(() => {})
+      } else {
+        setProfile(null)
+        setLoading(false)
+      }
     })
     return () => subscription.unsubscribe()
   }, [])
@@ -93,13 +90,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       total_documents: 0, streak_days: 0,
     })
     if (profileError) return profileError.message
-    await supabase.from('user_settings').insert({
-      user_id: userId, voice_enabled: true, auto_read_enabled: false,
-      quiz_sound_enabled: true, notifications_enabled: true,
-      study_reminders_enabled: true, quiz_difficulty: 'adaptive',
-      app_theme: 'DEEP_SPACE', language: 'en',
-      updated_at: new Date().toISOString(),
-    })
     return null
   }
 
