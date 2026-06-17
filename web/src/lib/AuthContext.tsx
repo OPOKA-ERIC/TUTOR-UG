@@ -61,7 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (data.session?.user) {
         ensureProfile(data.session.user).then(() => fetchProfile(data.session.user.id).finally(() => setLoading(false)))
       } else setLoading(false)
-    })
+    }).catch(() => setLoading(false))
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
         if (event === 'SIGNED_IN') await ensureProfile(session.user)

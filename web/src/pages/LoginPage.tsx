@@ -17,10 +17,15 @@ export default function LoginPage() {
     e.preventDefault()
     setError('')
     setLoading(true)
-    const err = await login(email.trim(), password)
-    setLoading(false)
-    if (err) setError(err)
-    else navigate('/chat')
+    try {
+      const err = await login(email.trim(), password)
+      if (err) setError(err)
+      else navigate('/chat')
+    } catch {
+      setError('Connection error. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const canLogin = !loading && email.trim() !== '' && password !== ''
