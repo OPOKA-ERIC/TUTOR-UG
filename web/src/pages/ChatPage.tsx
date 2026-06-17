@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom'
 import {
   Menu, Send, Mic, Plus, Trash2, Loader2,
   Settings, Calendar, LogOut, Volume2, Paperclip,
-  Square, ChevronUp, ChevronDown, Video, Users,
-  PanelLeftClose, PanelLeftOpen, X
+  Square, ChevronUp, ChevronDown, Video, Users
 } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { useAuth } from '@/lib/AuthContext'
+import { useSettings } from '@/lib/SettingsContext'
 import { supabase } from '@/lib/supabase'
 import { SUPABASE_URL, SUPABASE_ANON } from '@/lib/supabase'
 import { getSidebarSubjects } from '@/lib/constants'
@@ -27,9 +27,9 @@ function AIAvatar() {
 
 export default function ChatPage() {
   const { profile, logout } = useAuth()
+  const { openSettings } = useSettings()
   const navigate = useNavigate()
-  const [sidebarOpen, setSidebarOpen] = useState(true)
-  const [mobileOpen, setMobileOpen] = useState(false)
+  const [drawerOpen, setDrawerOpen] = useState(false)
   const [sessions, setSessions] = useState<ChatSession[]>([])
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null)
   const [currentSubject, setCurrentSubject] = useState('')
@@ -90,7 +90,7 @@ export default function ChatPage() {
       .eq('session_id', session.session_id)
       .order('created_at', { ascending: true })
     setMessages((data as ChatMessage[]) || [])
-    setMobileOpen(false)
+    setDrawerOpen(false)
   }
 
   async function confirmDeleteSession(sessionId: string) {
@@ -103,7 +103,7 @@ export default function ChatPage() {
 
   async function startSubjectChat(subject: string) {
     if (!profile) return
-    setMobileOpen(false)
+    setDrawerOpen(false)
     setLoading(true)
     setMessages([])
     setCurrentSubject(subject)
@@ -124,7 +124,7 @@ export default function ChatPage() {
     setCurrentSessionId(null)
     setMessages([])
     setCurrentSubject('')
-    setMobileOpen(false)
+    setDrawerOpen(false)
   }
 
   async function sendMessage() {
@@ -301,8 +301,6 @@ export default function ChatPage() {
 
   if (!profile) return null
 
-  const isMobile = () => window.innerWidth < 768
-
   function renderInputBar() {
     return (
       <div className="flex items-center gap-2 px-2 py-2 rounded-full"
@@ -322,7 +320,8 @@ export default function ChatPage() {
               e.target.value = ''
             }} />
         </label>
-        <textarea value={input} onChange={e => setInput(e.target.value)}
+        <textarea
+          value={input} onChange={e => setInput(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage() } }}
           placeholder="Ask a question..." rows={1}
           className="flex-1 bg-transparent text-text-white placeholder-text-disabled resize-none outline-none text-sm max-h-24" />
@@ -336,165 +335,177 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex h-full bg-gradient-to-b from-surface to-bg relative overflow-hidden">
+    <div className="flex flex-col h-full bg-gradient-to-b from-surface to-bg relative overflow-hidden">
 
-      {/* ── DESKTOP SIDEBAR (inline, does not cover chat) ── */}
-      <aside className={`${sidebarOpen ? 'w-72' : 'w-0'} transition-all duration-300 overflow-hidden shrink-0 hidden md:flex flex-col border-r border-outline`}>
-        <div className="w-72 h-full bg-surface flex flex-col shrink-0">
+      {/* ── TOP BAR — matches Android exactly ── */}
+      <div className="bg-gradient-to-r from-surface to-surface-var px-1 py-2 flex items-center gap-1 shrink-0 z-10">
 
-          {/* Minimize button */}
-          <div className="flex items-center justify-end px-3 pt-2">
-            <button onClick={() => setSidebarOpen(false)}
-              className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors">
-              <PanelLeftClose size={18} className="text-text-disabled" />
-            </button>
-          </div>
+        {/* Menu icon — opens drawer */}
+        <button onClick={() => setDrawerOpen(true)}
+          className="w-12 h-12 flex items-center justify-center shrink-0">
+          <Menu size={24} className="text-text-white" />
+        </button>
 
-          {/* ── PROFILE CARD ── */}
-          <div className="bg-gradient-to-r from-surface to-surface-var px-4 pb-4">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-14 h-14 rounded-full flex items-center justify-center font-bold text-2xl overflow-hidden shrink-0"
-                style={{ background: 'linear-gradient(135deg, #F59E0B, #D97706)', color: '#0A0A1F' }}>
-                {profile.avatar_url
-                  ? <img src={profile.avatar_url} className="w-full h-full object-cover" alt="" />
-                  : profile.name.charAt(0).toUpperCase()}
-              </div>
-              <div className="min-w-0">
-                <p className="text-text-white font-bold text-base truncate">{profile.name || 'Student'}</p>
-                <p className="text-text-disabled text-xs truncate">{profile.email}</p>
-              </div>
-            </div>
-            <div className="h-px bg-white/10 mb-2" />
-            {profile.education_level === 'University' && (
-              <><DrawerRow label="Course" value={profile.course || '—'} />{profile.school && <DrawerRow label="University" value={profile.school} />}</>
-            )}
-            {profile.education_level === 'Professional' && (
-              <DrawerRow label="Profession" value={profile.profession || '—'} />
-            )}
-            {['S5', 'S6'].includes(profile.education_level) && (
-              <><DrawerRow label="Combination" value={profile.combination || '—'} />{profile.school && <DrawerRow label="School" value={profile.school} />}</>
-            )}
-            {!['University', 'Professional', 'S5', 'S6'].includes(profile.education_level) && profile.school && (
-              <DrawerRow label="School" value={profile.school} />
-            )}
-          </div>
+        {/* Avatar circle — Amber gradient with initial */}
+        <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 font-bold text-base overflow-hidden"
+          style={{ background: 'linear-gradient(135deg, #F59E0B, #D97706)', color: '#0A0A1F' }}>
+          {profile.avatar_url
+            ? <img src={profile.avatar_url} className="w-full h-full object-cover" alt="" />
+            : (profile.name.charAt(0).toUpperCase() || 'U')}
+        </div>
 
-          {/* ── SCROLLABLE CONTENT ── */}
-          <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
-            <button onClick={handleNewChat}
-              className="w-full h-11 rounded-xl flex items-center justify-center gap-2 font-bold text-sm"
-              style={{ background: 'linear-gradient(135deg, #F59E0B, #D97706)', color: '#0A0A1F' }}>
-              <Plus size={18} /> New Chat
-            </button>
+        {/* Name + context label */}
+        <div className="flex-1 min-w-0 ml-2">
+          <p className="text-text-white font-bold text-sm truncate leading-tight">
+            {profile.name || 'Student'}
+          </p>
+          <p className="text-text-disabled text-xs truncate leading-tight">
+            {contextLabel}{profile.district ? ` • ${profile.district}` : ''}
+          </p>
+        </div>
 
-            {/* Navigation */}
-            <div className="space-y-1">
-              <button onClick={() => { navigate('/meetings'); setMobileOpen(false) }}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
-                <Video size={20} style={{ color: '#F59E0B' }} /><span className="text-text-disabled text-sm">Meetings</span>
-              </button>
-              <button onClick={() => { navigate('/rooms'); setMobileOpen(false) }}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
-                <Users size={20} style={{ color: '#7C3AED' }} /><span className="text-text-disabled text-sm">Study Rooms</span>
-              </button>
-              <button onClick={() => { navigate('/podcast'); setMobileOpen(false) }}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
-                <Mic size={20} style={{ color: '#EF4444' }} /><span className="text-text-disabled text-sm">AI Podcast</span>
-              </button>
-              <button onClick={() => { navigate('/timetable'); setMobileOpen(false) }}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
-                <Calendar size={20} style={{ color: '#F59E0B' }} /><span className="text-text-disabled text-sm">Study Timetable</span>
-              </button>
-              <button onClick={() => { navigate('/settings'); setMobileOpen(false) }}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
-                <Settings size={20} className="text-text-disabled" /><span className="text-text-disabled text-sm">Settings</span>
-              </button>
-            </div>
+        {/* Timetable icon */}
+        <button onClick={() => navigate('/timetable')}
+          className="w-12 h-12 flex items-center justify-center shrink-0">
+          <Calendar size={22} className="text-text-disabled" />
+        </button>
 
-            {subjects.length > 0 && (
-              <div>
-                <p className="text-text-disabled text-xs font-bold uppercase tracking-wider mb-2">Subjects</p>
-                <div className="space-y-1 max-h-44 overflow-y-auto">
-                  {subjects.map(s => (
-                    <button key={s} onClick={() => startSubjectChat(s)}
-                      className="w-full text-left px-3 py-2 rounded-xl text-sm transition-colors"
-                      style={{
-                        backgroundColor: currentSubject === s ? 'rgba(255,184,0,0.15)' : '#1A1A3A',
-                        color: currentSubject === s ? '#FFB800' : '#C0C0D8',
-                        fontWeight: currentSubject === s ? 600 : 400,
-                      }}>
-                      {s}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+        {/* Settings icon */}
+        <button onClick={openSettings}
+          className="w-12 h-12 flex items-center justify-center shrink-0">
+          <Settings size={22} className="text-text-disabled" />
+        </button>
+      </div>
 
-            <div>
-              <p className="text-text-disabled text-xs font-bold uppercase tracking-wider mb-2">Chat History</p>
-              {sessions.length === 0 ? (
-                <p className="text-text-disabled text-xs py-2">No chat history yet.</p>
-              ) : (
-                <div className="space-y-1 max-h-52 overflow-y-auto">
-                  {sessions.map(s => (
-                    <div key={s.session_id}>
-                      {deleteConfirmId === s.session_id && (
-                        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-6">
-                          <div className="bg-surface-var rounded-2xl p-5 w-full max-w-xs">
-                            <p className="text-text-white font-bold mb-1">Delete Chat?</p>
-                            <p className="text-text-disabled text-sm mb-4">This will permanently delete this chat and all its messages.</p>
-                            <div className="flex gap-3">
-                              <button onClick={() => setDeleteConfirmId(null)} className="flex-1 btn-secondary py-2 text-sm">Cancel</button>
-                              <button onClick={() => confirmDeleteSession(s.session_id)} className="flex-1 bg-error text-white font-bold py-2 rounded-xl text-sm">Delete</button>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      <div onClick={() => selectSession(s)}
-                        className="flex items-center gap-2 px-3 py-2 rounded-xl cursor-pointer group transition-colors"
-                        style={{ backgroundColor: currentSessionId === s.session_id ? 'rgba(255,184,0,0.1)' : '#1A1A3A' }}>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-primary text-xs font-medium truncate">{s.subject || 'Chat'}</p>
-                          {s.message_count > 0 && (
-                            <span className="text-xs px-1.5 py-0.5 rounded-full"
-                              style={{ backgroundColor: 'rgba(255,184,0,0.15)', color: '#FFB800' }}>
-                              {s.message_count}
-                            </span>
-                          )}
-                        </div>
-                        <button onClick={e => { e.stopPropagation(); setDeleteConfirmId(s.session_id) }}
-                          className="opacity-0 group-hover:opacity-100 transition-opacity p-1">
-                          <Trash2 size={13} className="text-error" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+      {/* ── EMPTY STATE (centered greeting + input, Claude.ai style) ── */}
+      {messages.length === 0 && !loading && !streamingText ? (
+        <div className="flex-1 flex flex-col items-center justify-center px-4 pb-8">
+          <div className="w-full max-w-2xl mx-auto flex flex-col items-center gap-5">
+            <div className="text-center">
+              <p className="text-5xl mb-3">👋</p>
+              <p className="text-primary text-xl font-bold">Hello {profile.name || 'there'}!</p>
+              {profile.education_level === 'University' && (
+                <><p className="text-text-disabled text-sm">Course: {profile.course || 'Not set'}</p>{profile.school && <p className="text-text-disabled text-sm">University: {profile.school}</p>}</>
               )}
+              {profile.education_level === 'Professional' && (
+                <p className="text-text-disabled text-sm">Profession: {profile.profession || 'Not set'}</p>
+              )}
+              {['S5', 'S6'].includes(profile.education_level) && (
+                <p className="text-text-disabled text-sm">Combination: {profile.combination || 'Not set'}</p>
+              )}
+              {!['University', 'Professional'].includes(profile.education_level) && (
+                <p className="text-text-disabled text-sm">Level: {profile.education_level}{profile.school ? ` • ${profile.school}` : ''}</p>
+              )}
+              <p className="text-text-disabled text-sm">District: {profile.district || 'Not set'}</p>
+              <p className="text-primary font-semibold text-lg mt-3">What's on your mind today?</p>
             </div>
-
-            {/* Logout */}
-            <button onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-error/10 transition-colors">
-              <LogOut size={20} className="text-error" /><span className="text-error text-sm">Logout</span>
-            </button>
+            <div className="w-full">
+              {renderInputBar()}
+            </div>
           </div>
         </div>
-      </aside>
-
-      {/* ── MOBILE OVERLAY SIDEBAR ── */}
-      {mobileOpen && (
-        <>
-          <div className="fixed inset-0 bg-black/65 z-40 md:hidden" onClick={() => setMobileOpen(false)} />
-          <div className="fixed top-0 left-0 h-full w-72 bg-surface z-50 flex flex-col shadow-2xl md:hidden">
-            <div className="flex items-center justify-end px-3 pt-2">
-              <button onClick={() => setMobileOpen(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors">
-                <X size={18} className="text-text-disabled" />
-              </button>
+      ) : (
+        <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+          {messages.map(msg => (
+            <div key={msg.message_id}
+              className={`flex items-end gap-2 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+              {msg.role === 'assistant' && <AIAvatar />}
+              <div className="max-w-[78%]">
+                {msg.role === 'assistant' && (
+                  <div className="flex items-center gap-1.5 mb-1 ml-0.5">
+                    <span className="text-primary text-xs font-bold">TutorUG AI</span>
+                    <span className="text-xs px-1 rounded" style={{ backgroundColor: 'rgba(255,184,0,0.15)', color: '#FFB800' }}>✦</span>
+                    <button onClick={() => speakMessage(msg.message_id, msg.content)}
+                      className="ml-auto text-text-disabled hover:text-primary transition-colors">
+                      {speakingMsgId === msg.message_id ? <Square size={12} style={{ color: '#EF4444' }} /> : <Volume2 size={12} />}
+                    </button>
+                  </div>
+                )}
+                <div className={`px-4 py-3 ${msg.role === 'user' ? 'rounded-2xl rounded-br-sm text-ink text-sm font-medium' : 'rounded-tl-sm rounded-tr-2xl rounded-br-2xl rounded-bl-2xl'}`}
+                  style={msg.role === 'user'
+                    ? { background: 'linear-gradient(135deg, #F59E0B80, #D97706)' }
+                    : { background: 'linear-gradient(135deg, #12122A, #1A1A3A)', border: '1px solid rgba(255,184,0,0.3)' }}>
+                  {msg.role === 'assistant' ? (
+                    <div className="prose prose-invert prose-sm max-w-none text-text-white">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
+                    </div>
+                  ) : (
+                    <p className="text-sm" style={{ color: '#1A1A1A' }}>{msg.content}</p>
+                  )}
+                </div>
+              </div>
+              {msg.role === 'user' && (
+                <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 font-black text-xs"
+                  style={{ background: 'linear-gradient(135deg, #F59E0B, #D97706)', color: '#1A1A1A' }}>Me</div>
+              )}
             </div>
-            <div className="bg-gradient-to-r from-surface to-surface-var px-4 pb-4">
+          ))}
+          {loading && !streamingText && (
+            <div className="flex items-end gap-2">
+              <AIAvatar />
+              <div className="px-4 py-3 rounded-tl-sm rounded-tr-2xl rounded-br-2xl rounded-bl-2xl flex items-center gap-1"
+                style={{ background: 'linear-gradient(135deg, #12122A, #1A1A3A)', border: '1px solid rgba(255,184,0,0.3)' }}>
+                {[0, 1, 2].map(i => (
+                  <div key={i} className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: `${i * 150}ms` }} />
+                ))}
+              </div>
+            </div>
+          )}
+          {streamingText && (
+            <div className="flex items-end gap-2">
+              <AIAvatar />
+              <div className="max-w-[78%]">
+                <div className="flex items-center gap-1.5 mb-1 ml-0.5">
+                  <span className="text-primary text-xs font-bold">TutorUG AI</span>
+                  <span className="text-xs px-1 rounded" style={{ backgroundColor: 'rgba(255,184,0,0.15)', color: '#FFB800' }}>✦</span>
+                </div>
+                <div className="px-4 py-3 rounded-tl-sm rounded-tr-2xl rounded-br-2xl rounded-bl-2xl"
+                  style={{ background: 'linear-gradient(135deg, #12122A, #1A1A3A)', border: '1px solid rgba(255,184,0,0.5)' }}>
+                  <div className="prose prose-invert prose-sm max-w-none text-text-white">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{streamingText}</ReactMarkdown>
+                  </div>
+                  <span className="inline-block w-2 h-4 bg-primary animate-pulse ml-0.5 align-middle" />
+                </div>
+              </div>
+            </div>
+          )}
+          <div ref={bottomRef} />
+        </div>
+      )}
+
+      {/* ── VOICE PLAYBACK BAR — shown when speaking ── */}
+      {speakingMsgId && (
+        <div className="px-4 py-2 flex items-center gap-3 shrink-0"
+          style={{ background: 'rgba(26,26,58,0.95)', borderTop: '1px solid rgba(255,184,0,0.2)' }}>
+          <div className="w-2 h-2 rounded-full bg-primary animate-pulse shrink-0" />
+          <span className="text-text-disabled text-xs flex-1">Speaking…</span>
+          <button onClick={() => changeRate(-0.25)} className="text-text-disabled hover:text-primary p-1"><ChevronDown size={16} /></button>
+          <span className="text-primary text-xs font-bold w-8 text-center">{speechRate.toFixed(1)}x</span>
+          <button onClick={() => changeRate(0.25)} className="text-text-disabled hover:text-primary p-1"><ChevronUp size={16} /></button>
+          <button onClick={stopSpeaking} className="p-1" style={{ color: '#EF4444' }}><Square size={16} /></button>
+        </div>
+      )}
+
+      {/* ── INPUT BAR (bottom, for conversation state) ── */}
+      {(messages.length > 0 || loading || streamingText) && (
+        <div className="px-4 py-3 shrink-0">
+          {renderInputBar()}
+        </div>
+      )}
+
+      {/* ── DRAWER OVERLAY ── */}
+      {drawerOpen && (
+        <>
+          {/* Black overlay — matches Android black/65 */}
+          <div className="fixed inset-0 bg-black/65 z-40" onClick={() => setDrawerOpen(false)} />
+
+          {/* Drawer panel — 290px wide, matches Android */}
+          <div className="fixed top-0 left-0 h-full w-72 bg-surface z-50 flex flex-col shadow-2xl">
+
+            {/* ── PROFILE CARD — matches Android drawer header ── */}
+            <div className="bg-gradient-to-r from-surface to-surface-var px-4 pt-10 pb-4">
               <div className="flex items-center gap-3 mb-3">
+                {/* Avatar */}
                 <div className="w-14 h-14 rounded-full flex items-center justify-center font-bold text-2xl overflow-hidden shrink-0"
                   style={{ background: 'linear-gradient(135deg, #F59E0B, #D97706)', color: '#0A0A1F' }}>
                   {profile.avatar_url
@@ -506,51 +517,43 @@ export default function ChatPage() {
                   <p className="text-text-disabled text-xs truncate">{profile.email}</p>
                 </div>
               </div>
+
+              {/* Divider */}
               <div className="h-px bg-white/10 mb-2" />
+
+              {/* Education details — matches Android DrawerProfileRow */}
               {profile.education_level === 'University' && (
-                <><DrawerRow label="Course" value={profile.course || '—'} />{profile.school && <DrawerRow label="University" value={profile.school} />}</>
+                <>
+                  <DrawerRow label="Course" value={profile.course || '—'} />
+                  {profile.school && <DrawerRow label="University" value={profile.school} />}
+                </>
               )}
               {profile.education_level === 'Professional' && (
                 <DrawerRow label="Profession" value={profile.profession || '—'} />
               )}
               {['S5', 'S6'].includes(profile.education_level) && (
-                <><DrawerRow label="Combination" value={profile.combination || '—'} />{profile.school && <DrawerRow label="School" value={profile.school} />}</>
+                <>
+                  <DrawerRow label="Combination" value={profile.combination || '—'} />
+                  {profile.school && <DrawerRow label="School" value={profile.school} />}
+                </>
               )}
               {!['University', 'Professional', 'S5', 'S6'].includes(profile.education_level) && profile.school && (
                 <DrawerRow label="School" value={profile.school} />
               )}
             </div>
+
+            {/* ── SCROLLABLE MIDDLE — New Chat + Subjects + History ── */}
             <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
-              <button onClick={handleNewChat}
+
+              {/* New Chat button — Yellow/Amber gradient matches Android */}
+              <button
+                onClick={handleNewChat}
                 className="w-full h-11 rounded-xl flex items-center justify-center gap-2 font-bold text-sm"
                 style={{ background: 'linear-gradient(135deg, #F59E0B, #D97706)', color: '#0A0A1F' }}>
                 <Plus size={18} /> New Chat
               </button>
 
-              {/* Navigation */}
-              <div className="space-y-1">
-                <button onClick={() => { navigate('/meetings'); setMobileOpen(false) }}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
-                  <Video size={20} style={{ color: '#F59E0B' }} /><span className="text-text-disabled text-sm">Meetings</span>
-                </button>
-                <button onClick={() => { navigate('/rooms'); setMobileOpen(false) }}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
-                  <Users size={20} style={{ color: '#7C3AED' }} /><span className="text-text-disabled text-sm">Study Rooms</span>
-                </button>
-                <button onClick={() => { navigate('/podcast'); setMobileOpen(false) }}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
-                  <Mic size={20} style={{ color: '#EF4444' }} /><span className="text-text-disabled text-sm">AI Podcast</span>
-                </button>
-                <button onClick={() => { navigate('/timetable'); setMobileOpen(false) }}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
-                  <Calendar size={20} style={{ color: '#F59E0B' }} /><span className="text-text-disabled text-sm">Study Timetable</span>
-                </button>
-                <button onClick={() => { navigate('/settings'); setMobileOpen(false) }}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
-                  <Settings size={20} className="text-text-disabled" /><span className="text-text-disabled text-sm">Settings</span>
-                </button>
-              </div>
-
+              {/* Subjects — shown for non-University/Professional */}
               {subjects.length > 0 && (
                 <div>
                   <p className="text-text-disabled text-xs font-bold uppercase tracking-wider mb-2">Subjects</p>
@@ -570,6 +573,7 @@ export default function ChatPage() {
                 </div>
               )}
 
+              {/* Chat History */}
               <div>
                 <p className="text-text-disabled text-xs font-bold uppercase tracking-wider mb-2">Chat History</p>
                 {sessions.length === 0 ? (
@@ -578,6 +582,7 @@ export default function ChatPage() {
                   <div className="space-y-1 max-h-52 overflow-y-auto">
                     {sessions.map(s => (
                       <div key={s.session_id}>
+                        {/* Delete confirm */}
                         {deleteConfirmId === s.session_id && (
                           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-6">
                             <div className="bg-surface-var rounded-2xl p-5 w-full max-w-xs">
@@ -590,6 +595,7 @@ export default function ChatPage() {
                             </div>
                           </div>
                         )}
+
                         <div onClick={() => selectSession(s)}
                           className="flex items-center gap-2 px-3 py-2 rounded-xl cursor-pointer group transition-colors"
                           style={{ backgroundColor: currentSessionId === s.session_id ? 'rgba(255,184,0,0.1)' : '#1A1A3A' }}>
@@ -612,165 +618,44 @@ export default function ChatPage() {
                   </div>
                 )}
               </div>
+            </div>
 
-              {/* Logout */}
+            {/* ── BOTTOM BUTTONS — Settings, Timetable, Logout ── */}
+            <div className="px-4 pb-6 pt-2 border-t border-outline space-y-1">
+              <button onClick={() => { navigate('/meetings'); setDrawerOpen(false) }}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
+                <Video size={20} style={{ color: '#F59E0B' }} />
+                <span className="text-text-disabled text-sm">Meetings</span>
+              </button>
+              <button onClick={() => { navigate('/rooms'); setDrawerOpen(false) }}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
+                <Users size={20} style={{ color: '#7C3AED' }} />
+                <span className="text-text-disabled text-sm">Study Rooms</span>
+              </button>
+              <button onClick={() => { navigate('/podcast'); setDrawerOpen(false) }}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
+                <Mic size={20} style={{ color: '#EF4444' }} />
+                <span className="text-text-disabled text-sm">AI Podcast</span>
+              </button>
+              <button onClick={() => { openSettings(); setDrawerOpen(false) }}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
+                <Settings size={20} className="text-text-disabled" />
+                <span className="text-text-disabled text-sm">Settings</span>
+              </button>
+              <button onClick={() => { navigate('/timetable'); setDrawerOpen(false) }}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
+                <Calendar size={20} style={{ color: '#F59E0B' }} />
+                <span className="text-text-disabled text-sm">Study Timetable</span>
+              </button>
               <button onClick={handleLogout}
                 className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-error/10 transition-colors">
-                <LogOut size={20} className="text-error" /><span className="text-error text-sm">Logout</span>
+                <LogOut size={20} className="text-error" />
+                <span className="text-error text-sm">Logout</span>
               </button>
             </div>
           </div>
         </>
       )}
-
-      {/* ── MAIN CHAT AREA ── */}
-      <div className="flex-1 flex flex-col min-w-0">
-
-        {/* ── TOP BAR ── */}
-        <div className="bg-gradient-to-r from-surface to-surface-var px-1 py-2 flex items-center gap-1 shrink-0 z-10">
-
-          {/* Menu icon — toggles sidebar on desktop, opens overlay on mobile */}
-          <button onClick={() => { if (isMobile()) setMobileOpen(true); else setSidebarOpen(!sidebarOpen) }}
-            className="w-12 h-12 flex items-center justify-center shrink-0">
-            {sidebarOpen && !isMobile() ? <PanelLeftOpen size={24} className="text-text-white" /> : <Menu size={24} className="text-text-white" />}
-          </button>
-
-          {/* Avatar circle */}
-          <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 font-bold text-base overflow-hidden"
-            style={{ background: 'linear-gradient(135deg, #F59E0B, #D97706)', color: '#0A0A1F' }}>
-            {profile.avatar_url
-              ? <img src={profile.avatar_url} className="w-full h-full object-cover" alt="" />
-              : (profile.name.charAt(0).toUpperCase() || 'U')}
-          </div>
-
-          {/* Name + context label */}
-          <div className="flex-1 min-w-0 ml-2">
-            <p className="text-text-white font-bold text-sm truncate leading-tight">
-              {profile.name || 'Student'}
-            </p>
-            <p className="text-text-disabled text-xs truncate leading-tight">
-              {contextLabel}{profile.district ? ` • ${profile.district}` : ''}
-            </p>
-          </div>
-        </div>
-
-        {/* ── EMPTY STATE (centered greeting + input, Claude.ai style) ── */}
-        {messages.length === 0 && !loading && !streamingText ? (
-          <div className="flex-1 flex flex-col items-center justify-center px-4 pb-8">
-            <div className="w-full max-w-2xl mx-auto flex flex-col items-center gap-5">
-              <div className="text-center">
-                <p className="text-5xl mb-3">👋</p>
-                <p className="text-primary text-xl font-bold">Hello {profile.name || 'there'}!</p>
-                {profile.education_level === 'University' && (
-                  <><p className="text-text-disabled text-sm">Course: {profile.course || 'Not set'}</p>{profile.school && <p className="text-text-disabled text-sm">University: {profile.school}</p>}</>
-                )}
-                {profile.education_level === 'Professional' && (
-                  <p className="text-text-disabled text-sm">Profession: {profile.profession || 'Not set'}</p>
-                )}
-                {['S5', 'S6'].includes(profile.education_level) && (
-                  <p className="text-text-disabled text-sm">Combination: {profile.combination || 'Not set'}</p>
-                )}
-                {!['University', 'Professional'].includes(profile.education_level) && (
-                  <p className="text-text-disabled text-sm">Level: {profile.education_level}{profile.school ? ` • ${profile.school}` : ''}</p>
-                )}
-                <p className="text-text-disabled text-sm">District: {profile.district || 'Not set'}</p>
-                <p className="text-primary font-semibold text-lg mt-3">What's on your mind today?</p>
-              </div>
-              <div className="w-full">
-                {renderInputBar()}
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
-            {messages.map(msg => (
-              <div key={msg.message_id}
-                className={`flex items-end gap-2 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                {msg.role === 'assistant' && <AIAvatar />}
-                <div className="max-w-[78%]">
-                  {msg.role === 'assistant' && (
-                    <div className="flex items-center gap-1.5 mb-1 ml-0.5">
-                      <span className="text-primary text-xs font-bold">TutorUG AI</span>
-                      <span className="text-xs px-1 rounded" style={{ backgroundColor: 'rgba(255,184,0,0.15)', color: '#FFB800' }}>✦</span>
-                      <button onClick={() => speakMessage(msg.message_id, msg.content)}
-                        className="ml-auto text-text-disabled hover:text-primary transition-colors">
-                        {speakingMsgId === msg.message_id ? <Square size={12} style={{ color: '#EF4444' }} /> : <Volume2 size={12} />}
-                      </button>
-                    </div>
-                  )}
-                  <div className={`px-4 py-3 ${msg.role === 'user' ? 'rounded-2xl rounded-br-sm text-ink text-sm font-medium' : 'rounded-tl-sm rounded-tr-2xl rounded-br-2xl rounded-bl-2xl'}`}
-                    style={msg.role === 'user'
-                      ? { background: 'linear-gradient(135deg, #F59E0B80, #D97706)' }
-                      : { background: 'linear-gradient(135deg, #12122A, #1A1A3A)', border: '1px solid rgba(255,184,0,0.3)' }}>
-                    {msg.role === 'assistant' ? (
-                      <div className="prose prose-invert prose-sm max-w-none text-text-white">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
-                      </div>
-                    ) : (
-                      <p className="text-sm" style={{ color: '#1A1A1A' }}>{msg.content}</p>
-                    )}
-                  </div>
-                </div>
-                {msg.role === 'user' && (
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 font-black text-xs"
-                    style={{ background: 'linear-gradient(135deg, #F59E0B, #D97706)', color: '#1A1A1A' }}>Me</div>
-                )}
-              </div>
-            ))}
-            {loading && !streamingText && (
-              <div className="flex items-end gap-2">
-                <AIAvatar />
-                <div className="px-4 py-3 rounded-tl-sm rounded-tr-2xl rounded-br-2xl rounded-bl-2xl flex items-center gap-1"
-                  style={{ background: 'linear-gradient(135deg, #12122A, #1A1A3A)', border: '1px solid rgba(255,184,0,0.3)' }}>
-                  {[0, 1, 2].map(i => (
-                    <div key={i} className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: `${i * 150}ms` }} />
-                  ))}
-                </div>
-              </div>
-            )}
-            {streamingText && (
-              <div className="flex items-end gap-2">
-                <AIAvatar />
-                <div className="max-w-[78%]">
-                  <div className="flex items-center gap-1.5 mb-1 ml-0.5">
-                    <span className="text-primary text-xs font-bold">TutorUG AI</span>
-                    <span className="text-xs px-1 rounded" style={{ backgroundColor: 'rgba(255,184,0,0.15)', color: '#FFB800' }}>✦</span>
-                  </div>
-                  <div className="px-4 py-3 rounded-tl-sm rounded-tr-2xl rounded-br-2xl rounded-bl-2xl"
-                    style={{ background: 'linear-gradient(135deg, #12122A, #1A1A3A)', border: '1px solid rgba(255,184,0,0.5)' }}>
-                    <div className="prose prose-invert prose-sm max-w-none text-text-white">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{streamingText}</ReactMarkdown>
-                    </div>
-                    <span className="inline-block w-2 h-4 bg-primary animate-pulse ml-0.5 align-middle" />
-                  </div>
-                </div>
-              </div>
-            )}
-            <div ref={bottomRef} />
-          </div>
-        )}
-
-        {/* ── VOICE PLAYBACK BAR ── */}
-        {speakingMsgId && (
-          <div className="px-4 py-2 flex items-center gap-3 shrink-0"
-            style={{ background: 'rgba(26,26,58,0.95)', borderTop: '1px solid rgba(255,184,0,0.2)' }}>
-            <div className="w-2 h-2 rounded-full bg-primary animate-pulse shrink-0" />
-            <span className="text-text-disabled text-xs flex-1">Speaking…</span>
-            <button onClick={() => changeRate(-0.25)} className="text-text-disabled hover:text-primary p-1"><ChevronDown size={16} /></button>
-            <span className="text-primary text-xs font-bold w-8 text-center">{speechRate.toFixed(1)}x</span>
-            <button onClick={() => changeRate(0.25)} className="text-text-disabled hover:text-primary p-1"><ChevronUp size={16} /></button>
-            <button onClick={stopSpeaking} className="p-1" style={{ color: '#EF4444' }}><Square size={16} /></button>
-          </div>
-        )}
-
-        {/* ── INPUT BAR (bottom, for conversation state) ── */}
-        {(messages.length > 0 || loading || streamingText) && (
-          <div className="px-4 py-3 shrink-0">
-            {renderInputBar()}
-          </div>
-        )}
-
-      </div>
     </div>
   )
 }

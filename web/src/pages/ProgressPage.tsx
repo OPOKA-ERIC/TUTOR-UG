@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react'
 import { ArrowLeft, BarChart2, Trophy, Target, BookOpen, Loader2, CheckCircle, RefreshCw } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/lib/AuthContext'
+import { useSettings } from '@/lib/SettingsContext'
 import { supabase } from '@/lib/supabase'
 import Logo from '@/components/Logo'
 import type { QuizResult } from '@/types'
 
 export default function ProgressPage() {
   const { profile } = useAuth()
+  const { openSettings } = useSettings()
   const navigate = useNavigate()
   const [results, setResults] = useState<QuizResult[]>([])
   const [loading, setLoading] = useState(true)
@@ -43,7 +45,7 @@ export default function ProgressPage() {
 
       {/* ── TOP BAR ── */}
       <div className="bg-gradient-to-r from-surface to-surface-var px-2 py-2 flex items-center gap-1 shrink-0">
-        <button onClick={() => navigate('/settings')}
+        <button onClick={openSettings}
           className="w-12 h-12 flex items-center justify-center shrink-0">
           <div className="w-9 h-9 bg-surface-input rounded-full flex items-center justify-center">
             <ArrowLeft size={18} className="text-text-white" />
