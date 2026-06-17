@@ -33,7 +33,7 @@ Use **bold** for key terms. Use ## for headings. Use numbered lists for steps.`;
     ];
 
     const response = await anthropic.messages.create({
-      model: "claude-3-haiku-20240307",
+      model: "claude-opus-4-5",
       max_tokens: 1024,
       system,
       messages,
