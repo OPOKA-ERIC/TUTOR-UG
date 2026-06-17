@@ -66,14 +66,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
+    const timeout = setTimeout(() => setLoading(false), 5000)
+
     supabase.auth.getSession().then(({ data }) => {
+      clearTimeout(timeout)
       if (data.session?.user) {
         ensureProfile(data.session.user)
           .then(() => fetchProfile(data.session.user.id))
           .catch(() => {})
           .finally(() => setLoading(false))
       } else setLoading(false)
-    }).catch(() => setLoading(false))
+    }).catch(() => { clearTimeout(timeout); setLoading(false) })
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
         if (event === 'SIGNED_IN') await ensureProfile(session.user).catch(() => {})
@@ -83,7 +86,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setLoading(false)
       }
     })
-    return () => subscription.unsubscribe()
+    return () => { clearTimeout(timeout); subscription.unsubscribe() }
   }, [])
 
   async function login(email: string, password: string): Promise<string | null> {
@@ -112,11 +115,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function signInWithGoogle(): Promise<string | null> {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: window.location.origin },
-    })
-    return error?.message || null
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: window.location.origin },
+      })
+      if (error) return error.message
+      return null
+    } catch (e) {
+      return e instanceof Error ? e.message : 'Failed to sign in with Google'
+    }
   }
 
   async function logout() {

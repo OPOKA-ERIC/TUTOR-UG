@@ -40,6 +40,7 @@ export default function ChatPage() {
   const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null)
   const [speechRate, setSpeechRate] = useState(1.0)
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null)
+  const abortRef = useRef<AbortController | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
   const subjects = profile ? getSidebarSubjects(profile) : []
 
@@ -53,6 +54,7 @@ export default function ChatPage() {
 
   useEffect(() => { if (profile) loadHistory() }, [profile])
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages, streamingText])
+  useEffect(() => { return () => abortRef.current?.abort() }, [])
 
   async function loadHistory() {
     if (!profile) return
@@ -152,54 +154,76 @@ export default function ChatPage() {
 
   async function sendToAI(message: string, sessionId: string, history: ChatMessage[], hideUserMsg = false) {
     if (!profile) return
+
+    abortRef.current?.abort()
+    const controller = new AbortController()
+    abortRef.current = controller
+
     setLoading(true)
     setStreamingText('')
 
-    const res = await fetch(`${SUPABASE_URL}/functions/v1/send-chat-message`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` },
-      body: JSON.stringify({
-        sessionId, message,
-        userProfile: { name: profile.name, district: profile.district, educationLevel: profile.education_level, school: profile.school, course: profile.course, profession: profile.profession, combination: profile.combination },
-        districtContext: `Student: ${profile.name}, District: ${profile.district}, Level: ${profile.education_level}`,
-        conversationHistory: history.map(m => ({ role: m.role, content: m.content })),
-        learningMode: false, sectionTitle: '',
-      }),
-    })
+    let full = ''
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({ error: 'Unknown error' }))
-      const errMsg = err.error || `Server error ${res.status}`
+    try {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/send-chat-message`, {
+        method: 'POST',
+        signal: controller.signal,
+        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` },
+        body: JSON.stringify({
+          sessionId, message,
+          userProfile: { name: profile.name, district: profile.district, educationLevel: profile.education_level, school: profile.school, course: profile.course, profession: profile.profession, combination: profile.combination },
+          districtContext: `Student: ${profile.name}, District: ${profile.district}, Level: ${profile.education_level}`,
+          conversationHistory: history.map(m => ({ role: m.role, content: m.content })),
+          learningMode: false, sectionTitle: '',
+        }),
+      })
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: 'Unknown error' }))
+        const errMsg = err.error || `Server error ${res.status}`
+        const aiErr: ChatMessage = {
+          message_id: crypto.randomUUID(), session_id: sessionId,
+          user_id: profile.user_id, role: 'assistant', content: `⚠️ ${errMsg}`,
+          token_count: 0, created_at: new Date().toISOString(),
+        }
+        setMessages(m => [...m, aiErr])
+        setLoading(false)
+        return
+      }
+      if (!res.body) { setLoading(false); return }
+
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split('\n')
+        buffer = lines.pop() ?? ''
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue
+          try {
+            const data = JSON.parse(line.slice(6))
+            if (data.token) { full += data.token; setStreamingText(t => t + data.token) }
+            if (data.done) full = data.response || full
+          } catch {}
+        }
+      }
+
+      // Only proceed if this request is still the active one
+      if (controller.signal.aborted) return
+    } catch (err: unknown) {
+      if (err instanceof DOMException && err.name === 'AbortError') return
       const aiErr: ChatMessage = {
         message_id: crypto.randomUUID(), session_id: sessionId,
-        user_id: profile.user_id, role: 'assistant', content: `⚠️ ${errMsg}`,
+        user_id: profile.user_id, role: 'assistant', content: '⚠️ Connection error. Please try again.',
         token_count: 0, created_at: new Date().toISOString(),
       }
       setMessages(m => [...m, aiErr])
       setLoading(false)
       return
-    }
-    if (!res.body) { setLoading(false); return }
-
-    const reader = res.body.getReader()
-    const decoder = new TextDecoder()
-    let full = ''
-    let buffer = ''
-
-    while (true) {
-      const { done, value } = await reader.read()
-      if (done) break
-      buffer += decoder.decode(value, { stream: true })
-      const lines = buffer.split('\n')
-      buffer = lines.pop() ?? ''
-      for (const line of lines) {
-        if (!line.startsWith('data: ')) continue
-        try {
-          const data = JSON.parse(line.slice(6))
-          if (data.token) { full += data.token; setStreamingText(t => t + data.token) }
-          if (data.done) full = data.response || full
-        } catch {}
-      }
     }
 
     setStreamingText('')
