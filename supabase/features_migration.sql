@@ -35,6 +35,10 @@ end $$;
 create index if not exists meetings_status_idx on meetings(status);
 create index if not exists meetings_scheduled_idx on meetings(scheduled_at);
 
+-- Enable Realtime for live meeting status updates
+alter publication supabase_realtime add table meetings;
+alter publication supabase_realtime add table meeting_participants;
+
 -- ── MEETING PARTICIPANTS ──────────────────────────────────────────────────────
 create table if not exists meeting_participants (
   id           text primary key default gen_random_uuid()::text,
