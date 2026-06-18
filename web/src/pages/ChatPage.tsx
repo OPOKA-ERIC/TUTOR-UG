@@ -342,8 +342,8 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex h-full bg-gradient-to-b from-surface to-bg relative overflow-hidden items-center">
-      <div className="max-w-3xl mx-auto w-full h-full flex">
+    <div className="flex h-full bg-gradient-to-b from-surface to-bg relative overflow-hidden">
+      <div className="w-full h-full flex">
 
       {/* ── DESKTOP SIDEBAR (inline, does not cover chat) ── */}
       <aside className={`${sidebarOpen ? 'w-72' : 'w-16'} transition-all duration-300 shrink-0 hidden md:flex flex-col border-r border-outline`}>
