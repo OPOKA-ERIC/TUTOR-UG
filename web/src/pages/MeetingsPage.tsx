@@ -112,7 +112,8 @@ export default function MeetingsPage() {
 
 
   return (
-    <div className="flex flex-col h-full bg-gradient-to-b from-surface to-bg overflow-hidden">
+    <div className="flex flex-col h-full bg-gradient-to-b from-surface to-bg overflow-hidden items-center">
+      <div className="max-w-3xl mx-auto w-full flex flex-col h-full">
 
       {/* TOP BAR */}
       <div className="bg-gradient-to-r from-surface to-surface-var px-2 py-2 flex items-center gap-2 shrink-0">
@@ -230,6 +231,7 @@ export default function MeetingsPage() {
           </div>
         )}
       </div>
+    </div>
     </div>
   )
 }

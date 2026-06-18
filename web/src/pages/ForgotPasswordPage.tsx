@@ -70,7 +70,8 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-surface to-bg relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-surface to-bg relative overflow-hidden flex flex-col items-center">
+      <div className="max-w-3xl mx-auto w-full flex flex-col h-full">
 
       {/* Top bar */}
       <div className="bg-gradient-to-r from-surface to-surface-var px-2 py-2 flex items-center gap-1">
@@ -212,6 +213,7 @@ export default function ForgotPasswordPage() {
           </div>
         )}
       </div>
+    </div>
     </div>
   )
 }

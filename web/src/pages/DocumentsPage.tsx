@@ -158,7 +158,8 @@ export default function DocumentsPage() {
   const canUpload = !isUploading && fileSelected && subject !== ''
 
   return (
-    <div className="flex flex-col h-full bg-gradient-to-b from-surface to-bg relative overflow-hidden">
+    <div className="flex flex-col h-full bg-gradient-to-b from-surface to-bg relative overflow-hidden items-center">
+      <div className="max-w-3xl mx-auto w-full flex flex-col h-full">
 
       {/* Radial glow top-right */}
       <div className="absolute -top-10 -right-10 w-60 h-60 rounded-full pointer-events-none"
@@ -472,6 +473,7 @@ export default function DocumentsPage() {
           </div>
         </div>
       )}
+    </div>
     </div>
   )
 }

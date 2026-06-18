@@ -15,12 +15,14 @@ export default function SplashPage() {
 
   return (
     <div className="min-h-screen bg-bg flex flex-col items-center justify-center gap-6">
+      <div className="max-w-3xl mx-auto w-full flex flex-col items-center gap-6">
       <div className="relative">
         <div className="absolute inset-0 bg-primary/20 rounded-full blur-3xl scale-150" />
         <Logo size="lg" />
       </div>
       <p className="text-text-disabled text-sm animate-pulse-slow">Uganda's Smart Learning Companion</p>
       <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mt-4" />
+    </div>
     </div>
   )
 }

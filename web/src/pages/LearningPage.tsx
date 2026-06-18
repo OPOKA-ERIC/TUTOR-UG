@@ -148,7 +148,8 @@ export default function LearningPage() {
   )
 
   return (
-    <div className="flex flex-col h-full bg-gradient-to-b from-surface to-bg">
+    <div className="flex flex-col h-full bg-gradient-to-b from-surface to-bg items-center">
+      <div className="max-w-3xl mx-auto w-full flex flex-col h-full">
 
       {/* ── TOP BAR ── */}
       <div className="bg-gradient-to-r from-surface to-surface-var px-1 py-2 flex items-center gap-1 shrink-0">
@@ -328,6 +329,7 @@ export default function LearningPage() {
           </button>
         </div>
       </div>
+    </div>
     </div>
   )
 }

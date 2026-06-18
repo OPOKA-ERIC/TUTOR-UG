@@ -4,7 +4,7 @@ import {
   Menu, Send, Mic, Plus, Trash2, Loader2,
   Settings, Calendar, LogOut, Volume2, Paperclip,
   Square, ChevronUp, ChevronDown, Video, Users,
-  PanelLeftClose, PanelLeftOpen, X
+  PanelLeftClose, PanelLeftOpen, X, BookOpen, MessageSquare
 } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -42,6 +42,7 @@ export default function ChatPage() {
   const [loading, setLoading] = useState(false)
   const [streamingText, setStreamingText] = useState('')
   const [listening, setListening] = useState(false)
+  const [subjectsOpen, setSubjectsOpen] = useState(false)
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
   const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null)
   const [speechRate, setSpeechRate] = useState(1.0)
@@ -341,154 +342,226 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex h-full bg-gradient-to-b from-surface to-bg relative overflow-hidden">
+    <div className="flex h-full bg-gradient-to-b from-surface to-bg relative overflow-hidden items-center">
+      <div className="max-w-3xl mx-auto w-full h-full flex">
 
       {/* ── DESKTOP SIDEBAR (inline, does not cover chat) ── */}
-      <aside className={`${sidebarOpen ? 'w-72' : 'w-0'} transition-all duration-300 overflow-hidden shrink-0 hidden md:flex flex-col border-r border-outline`}>
-        <div className="w-72 h-full bg-surface flex flex-col shrink-0">
+      <aside className={`${sidebarOpen ? 'w-72' : 'w-16'} transition-all duration-300 shrink-0 hidden md:flex flex-col border-r border-outline`}>
+        {sidebarOpen ? (
+          <div className="w-72 h-full bg-surface flex flex-col shrink-0">
 
-          {/* Minimize button */}
-          <div className="flex items-center justify-end px-3 pt-2">
-            <button onClick={() => setSidebarOpen(false)}
-              className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors">
-              <PanelLeftClose size={18} className="text-text-disabled" />
-            </button>
-          </div>
-
-          {/* ── PROFILE CARD ── */}
-          <div className="bg-gradient-to-r from-surface to-surface-var px-4 pb-4">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-14 h-14 rounded-full flex items-center justify-center font-bold text-2xl overflow-hidden shrink-0"
-                style={{ background: 'linear-gradient(135deg, #F59E0B, #D97706)', color: '#0A0A1F' }}>
-                {profile.avatar_url
-                  ? <img src={profile.avatar_url} className="w-full h-full object-cover" alt="" />
-                  : profile.name.charAt(0).toUpperCase()}
-              </div>
-              <div className="min-w-0">
-                <p className="text-text-white font-bold text-base truncate">{profile.name || 'Student'}</p>
-                <p className="text-text-disabled text-xs truncate">{profile.email}</p>
-              </div>
-            </div>
-            <div className="h-px bg-white/10 mb-2" />
-            {profile.education_level === 'University' && (
-              <><DrawerRow label="Course" value={profile.course || '—'} />{profile.school && <DrawerRow label="University" value={profile.school} />}</>
-            )}
-            {profile.education_level === 'Professional' && (
-              <DrawerRow label="Profession" value={profile.profession || '—'} />
-            )}
-            {['S5', 'S6'].includes(profile.education_level) && (
-              <><DrawerRow label="Combination" value={profile.combination || '—'} />{profile.school && <DrawerRow label="School" value={profile.school} />}</>
-            )}
-            {!['University', 'Professional', 'S5', 'S6'].includes(profile.education_level) && profile.school && (
-              <DrawerRow label="School" value={profile.school} />
-            )}
-          </div>
-
-          {/* ── SCROLLABLE CONTENT ── */}
-          <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
-
-            {/* New Chat button */}
-            <button onClick={handleNewChat}
-              className="w-full h-11 rounded-xl flex items-center justify-center gap-2 font-bold text-sm"
-              style={{ background: 'linear-gradient(135deg, #F59E0B, #D97706)', color: '#0A0A1F' }}>
-              <Plus size={18} /> New Chat
-            </button>
-
-            {/* Navigation */}
-            <div className="space-y-1">
-              <button onClick={() => { navigate('/meetings'); setMobileOpen(false) }}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
-                <Video size={20} style={{ color: '#F59E0B' }} /><span className="text-text-disabled text-sm">Meetings</span>
-              </button>
-              <button onClick={() => { navigate('/rooms'); setMobileOpen(false) }}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
-                <Users size={20} style={{ color: '#7C3AED' }} /><span className="text-text-disabled text-sm">Study Rooms</span>
-              </button>
-              <button onClick={() => { navigate('/podcast'); setMobileOpen(false) }}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
-                <Mic size={20} style={{ color: '#EF4444' }} /><span className="text-text-disabled text-sm">AI Podcast</span>
-              </button>
-              <button onClick={() => { openTimetable(); setMobileOpen(false) }}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
-                <Calendar size={20} style={{ color: '#F59E0B' }} /><span className="text-text-disabled text-sm">Study Timetable</span>
-              </button>
-              <button onClick={() => { openSettings(); setMobileOpen(false) }}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
-                <Settings size={20} className="text-text-disabled" /><span className="text-text-disabled text-sm">Settings</span>
+            {/* Minimize button */}
+            <div className="flex items-center justify-end px-3 pt-2">
+              <button onClick={() => setSidebarOpen(false)}
+                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors">
+                <PanelLeftClose size={18} className="text-text-disabled" />
               </button>
             </div>
 
-            {/* Subjects */}
-            {subjects.length > 0 && (
-              <div>
-                <p className="text-text-disabled text-xs font-bold uppercase tracking-wider mb-2">Subjects</p>
-                <div className="space-y-1 max-h-44 overflow-y-auto">
-                  {subjects.map(s => (
-                    <button key={s} onClick={() => startSubjectChat(s)}
-                      className="w-full text-left px-3 py-2 rounded-xl text-sm transition-colors"
-                      style={{
-                        backgroundColor: currentSubject === s ? 'rgba(255,184,0,0.15)' : '#1A1A3A',
-                        color: currentSubject === s ? '#FFB800' : '#C0C0D8',
-                        fontWeight: currentSubject === s ? 600 : 400,
-                      }}>
-                      {s}
-                    </button>
-                  ))}
+            {/* ── PROFILE CARD ── */}
+            <div className="bg-gradient-to-r from-surface to-surface-var px-4 pb-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-14 h-14 rounded-full flex items-center justify-center font-bold text-2xl overflow-hidden shrink-0"
+                  style={{ background: 'linear-gradient(135deg, #F59E0B, #D97706)', color: '#0A0A1F' }}>
+                  {profile.avatar_url
+                    ? <img src={profile.avatar_url} className="w-full h-full object-cover" alt="" />
+                    : profile.name.charAt(0).toUpperCase()}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-text-white font-bold text-base truncate">{profile.name || 'Student'}</p>
+                  <p className="text-text-disabled text-xs truncate">{profile.email}</p>
                 </div>
               </div>
-            )}
-
-            {/* Chat History */}
-            <div>
-              <p className="text-text-disabled text-xs font-bold uppercase tracking-wider mb-2">Chat History</p>
-              {sessions.length === 0 ? (
-                <p className="text-text-disabled text-xs py-2">No chat history yet.</p>
-              ) : (
-                <div className="space-y-1 max-h-52 overflow-y-auto">
-                  {sessions.map(s => (
-                    <div key={s.session_id}>
-                      {deleteConfirmId === s.session_id && (
-                        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-6">
-                          <div className="bg-surface-var rounded-2xl p-5 w-full max-w-xs">
-                            <p className="text-text-white font-bold mb-1">Delete Chat?</p>
-                            <p className="text-text-disabled text-sm mb-4">This will permanently delete this chat and all its messages.</p>
-                            <div className="flex gap-3">
-                              <button onClick={() => setDeleteConfirmId(null)} className="flex-1 btn-secondary py-2 text-sm">Cancel</button>
-                              <button onClick={() => confirmDeleteSession(s.session_id)} className="flex-1 bg-error text-white font-bold py-2 rounded-xl text-sm">Delete</button>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      <div onClick={() => selectSession(s)}
-                        className="flex items-center gap-2 px-3 py-2 rounded-xl cursor-pointer group transition-colors"
-                        style={{ backgroundColor: currentSessionId === s.session_id ? 'rgba(255,184,0,0.1)' : '#1A1A3A' }}>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-primary text-xs font-medium truncate">{s.subject || 'Chat'}</p>
-                          {s.message_count > 0 && (
-                            <span className="text-xs px-1.5 py-0.5 rounded-full"
-                              style={{ backgroundColor: 'rgba(255,184,0,0.15)', color: '#FFB800' }}>
-                              {s.message_count}
-                            </span>
-                          )}
-                        </div>
-                        <button onClick={e => { e.stopPropagation(); setDeleteConfirmId(s.session_id) }}
-                          className="opacity-0 group-hover:opacity-100 transition-opacity p-1">
-                          <Trash2 size={13} className="text-error" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+              <div className="h-px bg-white/10 mb-2" />
+              {profile.education_level === 'University' && (
+                <><DrawerRow label="Course" value={profile.course || '—'} />{profile.school && <DrawerRow label="University" value={profile.school} />}</>
+              )}
+              {profile.education_level === 'Professional' && (
+                <DrawerRow label="Profession" value={profile.profession || '—'} />
+              )}
+              {['S5', 'S6'].includes(profile.education_level) && (
+                <><DrawerRow label="Combination" value={profile.combination || '—'} />{profile.school && <DrawerRow label="School" value={profile.school} />}</>
+              )}
+              {!['University', 'Professional', 'S5', 'S6'].includes(profile.education_level) && profile.school && (
+                <DrawerRow label="School" value={profile.school} />
               )}
             </div>
 
-            {/* Logout */}
-            <button onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-error/10 transition-colors">
-              <LogOut size={20} className="text-error" /><span className="text-error text-sm">Logout</span>
+            {/* ── SCROLLABLE CONTENT ── */}
+            <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
+
+              {/* New Chat button */}
+              <button onClick={handleNewChat}
+                className="w-full h-11 rounded-xl flex items-center justify-center gap-2 font-bold text-sm"
+                style={{ background: 'linear-gradient(135deg, #F59E0B, #D97706)', color: '#0A0A1F' }}>
+                <Plus size={18} /> New Chat
+              </button>
+
+              {/* Subjects - dropdown button */}
+              {subjects.length > 0 && (
+                <div>
+                  <button onClick={() => setSubjectsOpen(!subjectsOpen)}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
+                    <BookOpen size={20} style={{ color: '#10B981' }} />
+                    <span className="text-text-disabled text-sm">Subjects</span>
+                    <ChevronDown size={16} className={`ml-auto text-text-disabled transition-transform ${subjectsOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  {subjectsOpen && (
+                    <div className="ml-8 mt-1 space-y-1 max-h-44 overflow-y-auto">
+                      {subjects.map(s => (
+                        <button key={s} onClick={() => startSubjectChat(s)}
+                          className="w-full text-left px-3 py-2 rounded-xl text-sm transition-colors"
+                          style={{
+                            backgroundColor: currentSubject === s ? 'rgba(255,184,0,0.15)' : '#1A1A3A',
+                            color: currentSubject === s ? '#FFB800' : '#C0C0D8',
+                            fontWeight: currentSubject === s ? 600 : 400,
+                          }}>
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Navigation */}
+              <div className="space-y-1">
+                <button onClick={() => { navigate('/meetings'); setMobileOpen(false) }}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
+                  <Video size={20} style={{ color: '#F59E0B' }} /><span className="text-text-disabled text-sm">Meetings</span>
+                </button>
+                <button onClick={() => { navigate('/rooms'); setMobileOpen(false) }}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
+                  <Users size={20} style={{ color: '#7C3AED' }} /><span className="text-text-disabled text-sm">Study Rooms</span>
+                </button>
+                <button onClick={() => { navigate('/podcast'); setMobileOpen(false) }}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
+                  <Mic size={20} style={{ color: '#EF4444' }} /><span className="text-text-disabled text-sm">AI Podcast</span>
+                </button>
+                <button onClick={() => { openTimetable(); setMobileOpen(false) }}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
+                  <Calendar size={20} style={{ color: '#F59E0B' }} /><span className="text-text-disabled text-sm">Study Timetable</span>
+                </button>
+                <button onClick={() => { openSettings(); setMobileOpen(false) }}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
+                  <Settings size={20} className="text-text-disabled" /><span className="text-text-disabled text-sm">Settings</span>
+                </button>
+              </div>
+
+              {/* Chat History */}
+              <div>
+                <p className="text-text-disabled text-xs font-bold uppercase tracking-wider mb-2">Chat History</p>
+                {sessions.length === 0 ? (
+                  <p className="text-text-disabled text-xs py-2">No chat history yet.</p>
+                ) : (
+                  <div className="space-y-1 max-h-52 overflow-y-auto">
+                    {sessions.map(s => (
+                      <div key={s.session_id}>
+                        {deleteConfirmId === s.session_id && (
+                          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-6">
+                            <div className="bg-surface-var rounded-2xl p-5 w-full max-w-xs">
+                              <p className="text-text-white font-bold mb-1">Delete Chat?</p>
+                              <p className="text-text-disabled text-sm mb-4">This will permanently delete this chat and all its messages.</p>
+                              <div className="flex gap-3">
+                                <button onClick={() => setDeleteConfirmId(null)} className="flex-1 btn-secondary py-2 text-sm">Cancel</button>
+                                <button onClick={() => confirmDeleteSession(s.session_id)} className="flex-1 bg-error text-white font-bold py-2 rounded-xl text-sm">Delete</button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                        <div onClick={() => selectSession(s)}
+                          className="flex items-center gap-2 px-3 py-2 rounded-xl cursor-pointer group transition-colors"
+                          style={{ backgroundColor: currentSessionId === s.session_id ? 'rgba(255,184,0,0.1)' : '#1A1A3A' }}>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-primary text-xs font-medium truncate">{s.subject || 'Chat'}</p>
+                            {s.message_count > 0 && (
+                              <span className="text-xs px-1.5 py-0.5 rounded-full"
+                                style={{ backgroundColor: 'rgba(255,184,0,0.15)', color: '#FFB800' }}>
+                                {s.message_count}
+                              </span>
+                            )}
+                          </div>
+                          <button onClick={e => { e.stopPropagation(); setDeleteConfirmId(s.session_id) }}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity p-1">
+                            <Trash2 size={13} className="text-error" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Logout */}
+              <button onClick={handleLogout}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-error/10 transition-colors">
+                <LogOut size={20} className="text-error" /><span className="text-error text-sm">Logout</span>
+              </button>
+            </div>
+          </div>
+        ) : (
+          /* ── COLLAPSED ICON BAR ── */
+          <div className="w-16 h-full bg-surface flex flex-col items-center py-3 gap-5 shrink-0">
+            <button onClick={() => setSidebarOpen(true)}
+              className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
+              title="Expand sidebar">
+              <PanelLeftOpen size={20} className="text-text-disabled" />
+            </button>
+
+            <button onClick={() => setSidebarOpen(true)}
+              className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm overflow-hidden shrink-0"
+              style={{ background: 'linear-gradient(135deg, #F59E0B, #D97706)', color: '#0A0A1F' }}
+              title="Profile">
+              {profile.avatar_url
+                ? <img src={profile.avatar_url} className="w-full h-full object-cover" alt="" />
+                : profile.name.charAt(0).toUpperCase()}
+            </button>
+
+            <div className="w-8 h-px bg-white/10" />
+
+            <button onClick={handleNewChat}
+              className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
+              title="New Chat">
+              <Plus size={20} style={{ color: '#F59E0B' }} />
+            </button>
+
+            <button onClick={() => { navigate('/meetings') }}
+              className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
+              title="Meetings">
+              <Video size={20} style={{ color: '#F59E0B' }} />
+            </button>
+
+            <button onClick={() => { navigate('/rooms') }}
+              className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
+              title="Study Rooms">
+              <Users size={20} style={{ color: '#7C3AED' }} />
+            </button>
+
+            <button onClick={() => { navigate('/podcast') }}
+              className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
+              title="AI Podcast">
+              <Mic size={20} style={{ color: '#EF4444' }} />
+            </button>
+
+            <button onClick={() => { openTimetable() }}
+              className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
+              title="Study Timetable">
+              <Calendar size={20} style={{ color: '#F59E0B' }} />
+            </button>
+
+            <button onClick={() => { openSettings() }}
+              className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
+              title="Settings">
+              <Settings size={20} className="text-text-disabled" />
+            </button>
+
+            <button onClick={() => setSidebarOpen(true)}
+              className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
+              title="Chat History">
+              <MessageSquare size={20} className="text-text-disabled" />
             </button>
           </div>
-        </div>
+        )}
       </aside>
 
       {/* ── MAIN CHAT AREA ── */}
@@ -496,24 +569,12 @@ export default function ChatPage() {
 
         {/* ── TOP BAR ── */}
         <div className="bg-gradient-to-r from-surface to-surface-var px-1 py-2 flex items-center gap-1 shrink-0 z-10">
-          <button onClick={() => { if (isMobile()) setMobileOpen(true); else setSidebarOpen(!sidebarOpen) }}
-            className="w-12 h-12 flex items-center justify-center shrink-0">
-            {sidebarOpen && !isMobile() ? <PanelLeftOpen size={24} className="text-text-white" /> : <Menu size={24} className="text-text-white" />}
-          </button>
-          <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 font-bold text-base overflow-hidden"
-            style={{ background: 'linear-gradient(135deg, #F59E0B, #D97706)', color: '#0A0A1F' }}>
-            {profile.avatar_url
-              ? <img src={profile.avatar_url} className="w-full h-full object-cover" alt="" />
-              : (profile.name.charAt(0).toUpperCase() || 'U')}
-          </div>
-          <div className="flex-1 min-w-0 ml-2">
-            <p className="text-text-white font-bold text-sm truncate leading-tight">
-              {profile.name || 'Student'}
-            </p>
-            <p className="text-text-disabled text-xs truncate leading-tight">
-              {contextLabel}{profile.district ? ` • ${profile.district}` : ''}
-            </p>
-          </div>
+          {isMobile() && (
+            <button onClick={() => setMobileOpen(true)}
+              className="w-12 h-12 flex items-center justify-center shrink-0">
+              <Menu size={24} className="text-text-white" />
+            </button>
+          )}
         </div>
 
         {/* ── EMPTY STATE or MESSAGES ── */}
@@ -677,6 +738,31 @@ export default function ChatPage() {
                 style={{ background: 'linear-gradient(135deg, #F59E0B, #D97706)', color: '#0A0A1F' }}>
                 <Plus size={18} /> New Chat
               </button>
+              {subjects.length > 0 && (
+                <div>
+                  <button onClick={() => setSubjectsOpen(!subjectsOpen)}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
+                    <BookOpen size={20} style={{ color: '#10B981' }} />
+                    <span className="text-text-disabled text-sm">Subjects</span>
+                    <ChevronDown size={16} className={`ml-auto text-text-disabled transition-transform ${subjectsOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  {subjectsOpen && (
+                    <div className="ml-8 mt-1 space-y-1 max-h-44 overflow-y-auto">
+                      {subjects.map(s => (
+                        <button key={s} onClick={() => startSubjectChat(s)}
+                          className="w-full text-left px-3 py-2 rounded-xl text-sm transition-colors"
+                          style={{
+                            backgroundColor: currentSubject === s ? 'rgba(255,184,0,0.15)' : '#1A1A3A',
+                            color: currentSubject === s ? '#FFB800' : '#C0C0D8',
+                            fontWeight: currentSubject === s ? 600 : 400,
+                          }}>
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
               <div className="space-y-1">
                 <button onClick={() => { navigate('/meetings'); setMobileOpen(false) }}
                   className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
@@ -699,24 +785,6 @@ export default function ChatPage() {
                   <Settings size={20} className="text-text-disabled" /><span className="text-text-disabled text-sm">Settings</span>
                 </button>
               </div>
-              {subjects.length > 0 && (
-                <div>
-                  <p className="text-text-disabled text-xs font-bold uppercase tracking-wider mb-2">Subjects</p>
-                  <div className="space-y-1 max-h-44 overflow-y-auto">
-                    {subjects.map(s => (
-                      <button key={s} onClick={() => startSubjectChat(s)}
-                        className="w-full text-left px-3 py-2 rounded-xl text-sm transition-colors"
-                        style={{
-                          backgroundColor: currentSubject === s ? 'rgba(255,184,0,0.15)' : '#1A1A3A',
-                          color: currentSubject === s ? '#FFB800' : '#C0C0D8',
-                          fontWeight: currentSubject === s ? 600 : 400,
-                        }}>
-                        {s}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
               <div>
                 <p className="text-text-disabled text-xs font-bold uppercase tracking-wider mb-2">Chat History</p>
                 {sessions.length === 0 ? (
@@ -768,6 +836,7 @@ export default function ChatPage() {
           </div>
         </>
       )}
+    </div>
     </div>
   )
 }

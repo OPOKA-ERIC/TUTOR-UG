@@ -91,7 +91,8 @@ export default function StudyRoomsPage() {
   // ── CHAT VIEW ──────────────────────────────────────────────────────────────
   if (activeRoom) {
     return (
-      <div className="flex flex-col h-full bg-bg">
+      <div className="flex flex-col h-full bg-bg items-center">
+        <div className="max-w-3xl mx-auto w-full flex flex-col h-full">
         <div className="flex items-center gap-3 px-4 py-3 shrink-0" style={{ background: '#12122A', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
           <button onClick={() => { setActiveRoom(null); setMessages([]) }}
             className="w-8 h-8 bg-surface-input rounded-full flex items-center justify-center">
@@ -161,12 +162,14 @@ export default function StudyRoomsPage() {
           </div>
         </div>
       </div>
+      </div>
     )
   }
 
   // ── ROOM LIST ──────────────────────────────────────────────────────────────
   return (
-    <div className="flex flex-col h-full bg-gradient-to-b from-surface to-bg overflow-hidden">
+    <div className="flex flex-col h-full bg-gradient-to-b from-surface to-bg overflow-hidden items-center">
+      <div className="max-w-3xl mx-auto w-full flex flex-col h-full">
       <div className="bg-gradient-to-r from-surface to-surface-var px-2 py-2 flex items-center gap-2 shrink-0">
         <button onClick={() => navigate('/chat')} className="w-10 h-10 flex items-center justify-center shrink-0">
           <div className="w-8 h-8 bg-surface-input rounded-full flex items-center justify-center">
@@ -199,6 +202,7 @@ export default function StudyRoomsPage() {
           </button>
         ))}
       </div>
+    </div>
     </div>
   )
 }

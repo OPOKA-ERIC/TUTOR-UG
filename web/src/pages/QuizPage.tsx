@@ -185,7 +185,8 @@ export default function QuizPage() {
   const isAnswered = answeredQuestions.has(currentQ)
 
   return (
-    <div className="flex flex-col h-full bg-gradient-to-b from-surface to-bg relative overflow-hidden">
+    <div className="flex flex-col h-full bg-gradient-to-b from-surface to-bg relative overflow-hidden items-center">
+      <div className="max-w-3xl mx-auto w-full flex flex-col h-full">
 
       {/* Radial glow bottom-left */}
       <div className="absolute bottom-40 -left-16 w-56 h-56 rounded-full pointer-events-none"
@@ -433,6 +434,7 @@ export default function QuizPage() {
           </div>
         )}
       </div>
+    </div>
     </div>
   )
 }

@@ -32,13 +32,14 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-surface to-bg flex items-center justify-center p-6 relative overflow-hidden">
+      <div className="max-w-3xl mx-auto w-full">
       {/* Decorative glows */}
       <div className="absolute -top-20 -left-20 w-72 h-72 rounded-full pointer-events-none"
         style={{ background: 'radial-gradient(circle, rgba(255,184,0,0.1), transparent)' }} />
       <div className="absolute -bottom-16 -right-16 w-56 h-56 rounded-full pointer-events-none"
         style={{ background: 'radial-gradient(circle, rgba(124,58,237,0.1), transparent)' }} />
 
-      <div className="w-full max-w-md relative">
+      <div className="w-full max-w-md mx-auto relative">
         {/* Logo */}
         <div className="flex flex-col items-center mb-4">
           <div className="w-20 h-20 rounded-2xl flex items-center justify-center mb-5"
@@ -137,6 +138,7 @@ export default function LoginPage() {
           </div>
         </div>
       )}
+    </div>
     </div>
   )
 }
