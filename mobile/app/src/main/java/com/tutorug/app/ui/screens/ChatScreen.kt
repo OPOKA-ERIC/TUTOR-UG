@@ -567,7 +567,6 @@ fun ChatScreen(
                                                     fontSize = 12.sp,
                                                     fontWeight = if (isActive) FontWeight.SemiBold else FontWeight.Normal)
                                             }
-                                        }
                                     }
                                 }
                             } else {
