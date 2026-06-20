@@ -547,14 +547,13 @@ fun ChatScreen(
                                 modifier = Modifier.padding(bottom = 6.dp))
 
                             if (isOLevel) {
-                                Box(
+                                Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .heightIn(max = 180.dp)
                                         .background(surfaceVar, RoundedCornerShape(10.dp))
+                                        .padding(4.dp)
                                 ) {
-                                    Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(4.dp)) {
-                                        sidebarSubjects.forEach { subject ->
+                                    sidebarSubjects.forEach { subject ->
                                             val isActive = subject == currentSubject
                                             Surface(
                                                 modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)
@@ -572,7 +571,7 @@ fun ChatScreen(
                                     }
                                 }
                             } else {
-                                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                                Column {
                                     sidebarSubjects.forEach { subject ->
                                         val isActive = subject == currentSubject
                                         Surface(
@@ -650,12 +649,7 @@ fun ChatScreen(
                                 modifier = Modifier.padding(vertical = 6.dp)
                             )
                         } else {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .verticalScroll(rememberScrollState())
-                            ) {
-                                chatHistory.forEach { session ->
+                            chatHistory.forEach { session ->
                                     val title = session.subject.ifBlank {
                                         when {
                                             userProfile.educationLevel == "University" -> userProfile.course.ifBlank { "Chat" }
@@ -725,7 +719,6 @@ fun ChatScreen(
                                             }
                                         }
                                     }
-                                }
                             }
                         }
                     }

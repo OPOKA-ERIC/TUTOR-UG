@@ -1,7 +1,9 @@
 package com.tutorug.app.ui.screens
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -205,7 +207,7 @@ fun LoginScreen(
             ) {
                 Box(
                     modifier = Modifier.fillMaxSize().background(
-                        surfaceVar.copy(alpha = 0.5f), RoundedCornerShape(14.dp)
+                        onSurfaceVar.copy(alpha = 0.5f), RoundedCornerShape(14.dp)
                     ).border(1.5.dp, outline.copy(alpha = 0.3f), RoundedCornerShape(14.dp)),
                     contentAlignment = Alignment.Center
                 ) {

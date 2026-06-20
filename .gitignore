@@ -17,3 +17,10 @@ node_modules/
 .env.*
 
 .DS_Store
+
+# Build & IDE
+.gradle/
+.idea/
+local.properties
+build/
+*.iml
