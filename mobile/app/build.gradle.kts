@@ -55,5 +55,6 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)
+    implementation("androidx.browser:browser:1.8.0")
     debugImplementation("androidx.compose.ui:ui-tooling")
 }

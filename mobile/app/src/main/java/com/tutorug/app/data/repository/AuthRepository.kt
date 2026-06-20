@@ -1,5 +1,6 @@
 package com.tutorug.app.data.repository
 
+import android.net.Uri
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.tutorug.app.data.model.UserProfile
@@ -283,5 +284,52 @@ class AuthRepository {
             val map = gson.fromJson<Map<String, Any>>(decoded, object : TypeToken<Map<String, Any>>() {}.type)
             map["sub"] as? String
         } catch (e: Exception) { null }
+    }
+
+    fun getGoogleOAuthUrl(): String {
+        return "${base}auth/v1/authorize?provider=google&redirect_to=tutorug%3A%2F%2Fcallback&response_type=token"
+    }
+
+    suspend fun handleOAuthCallback(callbackUri: Uri): Result<UserProfile> = withContext(Dispatchers.IO) {
+        try {
+            val fragment = callbackUri.encodedFragment ?: throw Exception("No token in callback")
+            val params = fragment.split("&").associate {
+                val parts = it.split("=", limit = 2)
+                parts[0] to Uri.decode(parts.getOrElse(1) { "" })
+            }
+            val accessToken = params["access_token"] ?: throw Exception("No access token in callback")
+            val refreshToken = params["refresh_token"] ?: ""
+
+            val payload = accessToken.split(".")[1]
+            val decoded = String(android.util.Base64.decode(payload, android.util.Base64.URL_SAFE))
+            val tokenMap = gson.fromJson<Map<String, Any>>(decoded, object : TypeToken<Map<String, Any>>() {}.type)
+            val userId = tokenMap["sub"] as? String ?: throw Exception("Could not extract user ID from token")
+
+            SupabaseClient.persistSession(accessToken, refreshToken, userId)
+
+            // Try to get the user's email from the Supabase user endpoint
+            var email = ""
+            try {
+                val userReq = Request.Builder()
+                    .url("$base/auth/v1/user")
+                    .header("Authorization", "Bearer $accessToken")
+                    .get().build()
+                val userResp = http.newCall(userReq).execute()
+                val userBody = userResp.body?.string() ?: ""
+                if (userResp.isSuccessful) {
+                    val userMap = gson.fromJson<Map<String, Any>>(userBody, object : TypeToken<Map<String, Any>>() {}.type)
+                    email = userMap["email"] as? String ?: ""
+                }
+            } catch (_: Exception) {}
+
+            val profileResult = getUserProfile(userId)
+            if (profileResult.isSuccess) {
+                Result.success(profileResult.getOrNull()!!)
+            } else {
+                Result.success(UserProfile(userId = userId, email = email))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 }

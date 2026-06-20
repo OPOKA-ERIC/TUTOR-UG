@@ -1,22 +1,3 @@
-# Android
-.gradle/
-.idea/
-*.iml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
-local.properties
-google-services.json
-
-# Android build outputs (large files)
-app/build/
-**/build/
-*.apk
-*.aab
-*.ap_
-
 # Firebase / Functions
 /functions/node_modules/
 /functions/.env
@@ -26,14 +7,13 @@ app/build/
 supabase.exe
 supabase/.temp/
 
-# Web
-web/node_modules/
-web/dist/
-web/.env
-web/.env.local
+# Node
+node_modules/
 
 # Keys & secrets
 *.keystore
 *.jks
 .env
 .env.*
+
+.DS_Store

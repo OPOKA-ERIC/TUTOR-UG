@@ -16,8 +16,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -190,6 +194,30 @@ fun LoginScreen(
             }
             Spacer(modifier = Modifier.height(24.dp))
 
+            val context = LocalContext.current
+            Button(
+                onClick = { viewModel.signInWithGoogle(context) },
+                modifier = Modifier.fillMaxWidth().height(52.dp),
+                shape = RoundedCornerShape(14.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                contentPadding = PaddingValues(0.dp),
+                enabled = authState !is AuthState.Loading
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxSize().background(
+                        surfaceVar.copy(alpha = 0.5f), RoundedCornerShape(14.dp)
+                    ).border(1.5.dp, outline.copy(alpha = 0.3f), RoundedCornerShape(14.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        GoogleLogo(size = 18.dp)
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Text("Continue with Google", fontSize = 14.sp,
+                            fontWeight = FontWeight.SemiBold, color = AppColors.textPrimary)
+                    }
+                }
+            }
+
             OutlinedButton(
                 onClick = onRegisterClick,
                 modifier = Modifier.fillMaxWidth().height(52.dp),
@@ -217,5 +245,29 @@ fun LoginScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun GoogleLogo(size: Dp) {
+    Canvas(modifier = Modifier.size(size)) {
+        val blue   = Color(0xFF4285F4)
+        val red    = Color(0xFFEA4335)
+        val yellow = Color(0xFFFBBC05)
+        val green  = Color(0xFF34A853)
+
+        val strokeW = size.toPx() * 0.18f
+        val half = size.toPx() / 2f
+        val r = half - strokeW
+        val arcSize = androidx.compose.ui.geometry.Size(r * 2, r * 2)
+
+        drawArc(blue, startAngle = 270f, sweepAngle = 90f, useCenter = false,
+            style = Stroke(width = strokeW), topLeft = Offset(half - r, half - r), size = arcSize)
+        drawArc(red, startAngle = 0f, sweepAngle = 90f, useCenter = false,
+            style = Stroke(width = strokeW), topLeft = Offset(half - r, half - r), size = arcSize)
+        drawArc(yellow, startAngle = 90f, sweepAngle = 90f, useCenter = false,
+            style = Stroke(width = strokeW), topLeft = Offset(half - r, half - r), size = arcSize)
+        drawArc(green, startAngle = 180f, sweepAngle = 90f, useCenter = false,
+            style = Stroke(width = strokeW), topLeft = Offset(half - r, half - r), size = arcSize)
     }
 }

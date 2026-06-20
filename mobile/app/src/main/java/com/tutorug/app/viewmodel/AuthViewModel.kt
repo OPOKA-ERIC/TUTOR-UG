@@ -1,6 +1,10 @@
 package com.tutorug.app.viewmodel
 
 import android.app.Application
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.tutorug.app.data.local.DistrictDatabase
@@ -173,6 +177,38 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
     fun clearError() {
         if (_authState.value is AuthState.Error) _authState.value = AuthState.Idle
+    }
+
+    fun signInWithGoogle(context: Context) {
+        val oauthUrl = authRepository.getGoogleOAuthUrl()
+        try {
+            CustomTabsIntent.Builder().build().launchUrl(context, Uri.parse(oauthUrl))
+        } catch (_: Exception) {
+            // Fallback to regular browser if Custom Tabs not available
+            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(oauthUrl)))
+        }
+    }
+
+    fun handleOAuthCallback(uri: Uri) {
+        viewModelScope.launch {
+            if (_authState.value is AuthState.Loading) return@launch
+            _authState.value = AuthState.Loading
+            authRepository.handleOAuthCallback(uri).onSuccess { profile ->
+                authRepository.getUserProfile(profile.userId).onSuccess { freshProfile ->
+                    _authState.value = AuthState.Authenticated(freshProfile)
+                }.onFailure {
+                    _authState.value = AuthState.Authenticated(profile)
+                }
+            }.onFailure { e ->
+                _authState.value = AuthState.Error(
+                    when {
+                        e.message?.contains("network", ignoreCase = true) == true -> "No internet connection. Please check your network."
+                        e.message?.contains("token", ignoreCase = true) == true -> "Google sign-in failed. Please try again."
+                        else -> e.message ?: "Google sign-in failed. Please try again."
+                    }
+                )
+            }
+        }
     }
 }
 

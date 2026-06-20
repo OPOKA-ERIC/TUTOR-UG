@@ -1,0 +1,23 @@
+# Android
+.gradle/
+.idea/
+*.iml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+google-services.json
+
+# Android build outputs (large files)
+**/build/
+*.apk
+*.aab
+*.ap_
+
+# Keys & secrets
+*.keystore
+*.jks
+.env
+.env.*

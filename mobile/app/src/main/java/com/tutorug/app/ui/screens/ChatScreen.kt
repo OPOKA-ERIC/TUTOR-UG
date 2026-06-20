@@ -517,7 +517,8 @@ fun ChatScreen(
                         }
                     }
 
-                    Column(modifier = Modifier.weight(1f).padding(horizontal = 16.dp, vertical = 12.dp)) {
+                    // Scrollable main content
+                    Column(modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 12.dp)) {
                         Button(
                             onClick = { onNewChat(); drawerOpen = false },
                             modifier = Modifier.fillMaxWidth(),
@@ -546,7 +547,6 @@ fun ChatScreen(
                                 modifier = Modifier.padding(bottom = 6.dp))
 
                             if (isOLevel) {
-                                // O-Level: compact fixed height scrollable box
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -572,7 +572,6 @@ fun ChatScreen(
                                     }
                                 }
                             } else {
-                                // P1-P7 and S5-S6: normal scroll
                                 Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                                     sidebarSubjects.forEach { subject ->
                                         val isActive = subject == currentSubject
@@ -590,11 +589,56 @@ fun ChatScreen(
                                     }
                                 }
                             }
-
                             Spacer(modifier = Modifier.height(16.dp))
                         }
 
-                        // ── CHAT HISTORY (all levels) ─────────────────────────
+                        // ── NAVIGATION ─────────────────────────────────────────
+                        HorizontalDivider(color = AppColors.divider)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text("NAVIGATION", fontSize = 11.sp, color = onSurfaceVar, fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(bottom = 4.dp))
+
+                        Row(modifier = Modifier.fillMaxWidth()
+                            .clickable { onMeetingsClick(); drawerOpen = false }.padding(10.dp),
+                            verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.VideoCall, null, tint = Amber500)
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text("Meetings", color = AppColors.textMuted, fontSize = 14.sp)
+                        }
+                        Row(modifier = Modifier.fillMaxWidth()
+                            .clickable { onStudyRoomsClick(); drawerOpen = false }.padding(10.dp),
+                            verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Forum, null, tint = Violet500)
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text("Study Rooms", color = AppColors.textMuted, fontSize = 14.sp)
+                        }
+                        Row(modifier = Modifier.fillMaxWidth()
+                            .clickable { onPodcastClick(); drawerOpen = false }.padding(10.dp),
+                            verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Mic, null, tint = error.copy(alpha = 0.85f))
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text("AI Podcast", color = AppColors.textMuted, fontSize = 14.sp)
+                        }
+                        Row(modifier = Modifier.fillMaxWidth()
+                            .clickable { onTimetableClick(); drawerOpen = false }.padding(10.dp),
+                            verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.CalendarMonth, null, tint = Amber500)
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text("Study Timetable", color = AppColors.textMuted, fontSize = 14.sp)
+                        }
+                        Row(modifier = Modifier.fillMaxWidth()
+                            .clickable { onSettingsClick(); drawerOpen = false }.padding(10.dp),
+                            verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Settings, null, tint = onSurfaceVar)
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text("Settings", color = AppColors.textMuted, fontSize = 14.sp)
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // ── CHAT HISTORY (last) ────────────────────────────────
+                        HorizontalDivider(color = AppColors.divider)
+                        Spacer(modifier = Modifier.height(8.dp))
                         Text("CHAT HISTORY", fontSize = 11.sp, color = onSurfaceVar, fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(bottom = 6.dp))
 
@@ -606,12 +650,9 @@ fun ChatScreen(
                                 modifier = Modifier.padding(vertical = 6.dp)
                             )
                         } else {
-                            // All levels: history in a scrollable box
-                            val historyMaxHeight = if (isOLevel) 160.dp else 200.dp
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .heightIn(max = historyMaxHeight)
                                     .verticalScroll(rememberScrollState())
                             ) {
                                 chatHistory.forEach { session ->
@@ -689,44 +730,9 @@ fun ChatScreen(
                         }
                     }
 
+                    // Logout at bottom
                     Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
                         HorizontalDivider(color = AppColors.divider)
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row(modifier = Modifier.fillMaxWidth()
-                            .clickable { onMeetingsClick(); drawerOpen = false }.padding(10.dp),
-                            verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.VideoCall, null, tint = Amber500)
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text("Meetings", color = AppColors.textMuted, fontSize = 14.sp)
-                        }
-                        Row(modifier = Modifier.fillMaxWidth()
-                            .clickable { onStudyRoomsClick(); drawerOpen = false }.padding(10.dp),
-                            verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Forum, null, tint = Violet500)
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text("Study Rooms", color = AppColors.textMuted, fontSize = 14.sp)
-                        }
-                        Row(modifier = Modifier.fillMaxWidth()
-                            .clickable { onPodcastClick(); drawerOpen = false }.padding(10.dp),
-                            verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Mic, null, tint = error.copy(alpha = 0.85f))
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text("AI Podcast", color = AppColors.textMuted, fontSize = 14.sp)
-                        }
-                        Row(modifier = Modifier.fillMaxWidth()
-                            .clickable { onSettingsClick(); drawerOpen = false }.padding(10.dp),
-                            verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Settings, null, tint = onSurfaceVar)
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text("Settings", color = AppColors.textMuted, fontSize = 14.sp)
-                        }
-                        Row(modifier = Modifier.fillMaxWidth()
-                            .clickable { onTimetableClick(); drawerOpen = false }.padding(10.dp),
-                            verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.CalendarMonth, null, tint = Amber500)
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text("Study Timetable", color = AppColors.textMuted, fontSize = 14.sp)
-                        }
                         Row(modifier = Modifier.fillMaxWidth().clickable { onLogout() }.padding(10.dp),
                             verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Default.ExitToApp, null, tint = error)

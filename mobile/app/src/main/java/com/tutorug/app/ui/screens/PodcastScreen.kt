@@ -1,6 +1,5 @@
 package com.tutorug.app.ui.screens
 
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -12,6 +11,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -100,7 +101,7 @@ fun PodcastScreen(
             IconButton(onClick = { stopAll(); onBackClick() }, modifier = Modifier.size(48.dp)) {
                 Box(modifier = Modifier.size(36.dp).background(AppColors.surfaceInput, CircleShape),
                     contentAlignment = Alignment.Center) {
-                    Icon(Icons.Default.ArrowBack, null, tint = AppColors.textPrimary, modifier = Modifier.size(18.dp))
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = AppColors.textPrimary, modifier = Modifier.size(18.dp))
                 }
             }
             Box(modifier = Modifier.size(34.dp)
@@ -211,9 +212,9 @@ fun PodcastScreen(
                 items(script.size) { idx ->
                     val seg = script[idx]
                     PodcastSegmentBubble(
-                        seg = seg, idx = idx, userName = userProfile.name,
+                        seg = seg, userName = userProfile.name,
                         isPlaying = speakingIdx == idx,
-                        primary = primary, surface = surface, onSurfaceVar = onSurfaceVar,
+                        primary = primary, surface = surface, surfaceVar = surfaceVar, onSurfaceVar = onSurfaceVar,
                         onSpeak = { speakSegment(idx, seg.text) }
                     )
                 }
@@ -268,8 +269,8 @@ fun PodcastScreen(
 
 @Composable
 private fun PodcastSegmentBubble(
-    seg: PodcastSegment, idx: Int, userName: String,
-    isPlaying: Boolean, primary: Color, surface: Color, onSurfaceVar: Color,
+    seg: PodcastSegment, userName: String,
+    isPlaying: Boolean, primary: Color, surface: Color, surfaceVar: Color, onSurfaceVar: Color,
     onSpeak: () -> Unit
 ) {
     val isHost = seg.speaker == "HOST"
@@ -314,7 +315,7 @@ private fun PodcastSegmentBubble(
                     modifier = Modifier.clickable { onSpeak() }) {
                     Row(modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp),
                         verticalAlignment = Alignment.CenterVertically) {
-                        Icon(if (isPlaying) Icons.Default.StopCircle else Icons.Default.VolumeUp,
+                        Icon(if (isPlaying) Icons.Default.StopCircle else Icons.AutoMirrored.Filled.VolumeUp,
                             null,
                             tint = if (isPlaying) AppColors.error else onSurfaceVar,
                             modifier = Modifier.size(12.dp))

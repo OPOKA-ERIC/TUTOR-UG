@@ -1,6 +1,7 @@
 package com.tutorug.app
 
 import android.app.Activity
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.speech.RecognizerIntent
@@ -23,37 +24,41 @@ import com.tutorug.app.ui.screens.*
 import com.tutorug.app.ui.theme.TutorUGTheme
 import com.tutorug.app.viewmodel.*
 class MainActivity : ComponentActivity() {
+    private val _oauthCallback = mutableStateOf<Uri?>(null)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1001)
         }
+        _oauthCallback.value = intent?.data?.takeIf { it.scheme == "tutorug" && it.host == "callback" }
         setContent {
-            TutorUGRoot(intent)
+            TutorUGRoot(intent, _oauthCallback)
         }
     }
 
     override fun onNewIntent(intent: android.content.Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
+        _oauthCallback.value = intent?.data?.takeIf { it.scheme == "tutorug" && it.host == "callback" }
     }
 }
 
 @Composable
-fun TutorUGRoot(intent: android.content.Intent? = null) {
+fun TutorUGRoot(intent: android.content.Intent? = null, oauthCallback: MutableState<Uri?> = mutableStateOf(null)) {
     val settingsViewModel: SettingsViewModel = viewModel()
     val appTheme by settingsViewModel.appTheme.collectAsState()
 
     TutorUGTheme(appTheme = appTheme) {
         Surface(modifier = Modifier.fillMaxSize()) {
-            TutorUGNavigation(settingsViewModel, intent)
+            TutorUGNavigation(settingsViewModel, intent, oauthCallback)
         }
     }
 }
 
 @Composable
-fun TutorUGNavigation(settingsViewModel: SettingsViewModel, intent: android.content.Intent? = null) {
+fun TutorUGNavigation(settingsViewModel: SettingsViewModel, intent: android.content.Intent? = null, oauthCallback: MutableState<Uri?> = mutableStateOf(null)) {
     val navController = rememberNavController()
     val authViewModel: AuthViewModel = viewModel()
     val chatViewModel: ChatViewModel = viewModel()
@@ -71,6 +76,13 @@ fun TutorUGNavigation(settingsViewModel: SettingsViewModel, intent: android.cont
         if (data?.scheme == "tutorug" && data.host == "reset-password") {
             // Legacy deep link — no longer used, OTP flow handles reset
         }
+    }
+
+    // Handle OAuth callback from Google sign-in
+    LaunchedEffect(oauthCallback.value) {
+        val uri = oauthCallback.value ?: return@LaunchedEffect
+        authViewModel.handleOAuthCallback(uri)
+        oauthCallback.value = null
     }
 
     val authState by authViewModel.authState.collectAsState()
