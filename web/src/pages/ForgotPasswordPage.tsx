@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Loader2, Mail, Lock, KeyRound } from 'lucide-react'
-import { SUPABASE_URL, SUPABASE_ANON } from '@/lib/supabase'
+import { apiUrl } from '@/lib/api'
+import { SUPABASE_ANON } from '@/lib/supabase'
 import Logo from '@/components/Logo'
 
 type Step = 'email' | 'otp' | 'newpwd' | 'done'
@@ -19,7 +20,7 @@ export default function ForgotPasswordPage() {
 
   async function sendOtp() {
     setError(''); setLoading(true)
-    const res = await fetch(`${SUPABASE_URL}/functions/v1/send-otp`, {
+    const res = await fetch(apiUrl('send-otp'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` },
       body: JSON.stringify({ email: email.trim() }),
@@ -32,7 +33,7 @@ export default function ForgotPasswordPage() {
 
   async function resendOtp() {
     setResendMsg(''); setError(''); setResending(true)
-    const res = await fetch(`${SUPABASE_URL}/functions/v1/send-otp`, {
+    const res = await fetch(apiUrl('send-otp'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` },
       body: JSON.stringify({ email: email.trim() }),
@@ -44,7 +45,7 @@ export default function ForgotPasswordPage() {
 
   async function verifyOtp() {
     setError(''); setLoading(true)
-    const res = await fetch(`${SUPABASE_URL}/functions/v1/verify-otp`, {
+    const res = await fetch(apiUrl('verify-otp'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` },
       body: JSON.stringify({ email: email.trim(), otp_code: otp.trim() }),
@@ -58,7 +59,7 @@ export default function ForgotPasswordPage() {
   async function resetPassword() {
     if (newPwd.length < 6) { setError('Password must be at least 6 characters'); return }
     setError(''); setLoading(true)
-    const res = await fetch(`${SUPABASE_URL}/functions/v1/reset-password`, {
+    const res = await fetch(apiUrl('reset-password'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` },
       body: JSON.stringify({ email: email.trim(), new_password: newPwd }),

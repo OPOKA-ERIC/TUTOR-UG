@@ -7,7 +7,8 @@ import {
 } from 'lucide-react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
-import { SUPABASE_URL, SUPABASE_ANON } from '@/lib/supabase'
+import { apiUrl } from '@/lib/api'
+import { SUPABASE_ANON } from '@/lib/supabase'
 import Logo from '@/components/Logo'
 import type { Meeting, MeetingParticipant } from '@/types'
 
@@ -159,7 +160,7 @@ export default function MeetingsPage() {
       const meetingId = crypto.randomUUID()
       const session = await supabase.auth.getSession()
       const token = session.data.session?.access_token || SUPABASE_ANON
-      const res = await fetch(`${SUPABASE_URL}/functions/v1/create-meeting`, {
+      const res = await fetch(apiUrl('create-meeting'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({
@@ -207,7 +208,7 @@ export default function MeetingsPage() {
     if (!roomUrl || roomUrl.includes('tutorug.daily.co')) {
       const session = await supabase.auth.getSession()
       const token = session.data.session?.access_token || SUPABASE_ANON
-      const res = await fetch(`${SUPABASE_URL}/functions/v1/create-meeting`, {
+      const res = await fetch(apiUrl('create-meeting'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ meetingId: meeting.meeting_id, hostId: meeting.host_id, title: meeting.title, subject: meeting.subject, scheduledAt: meeting.scheduled_at, durationMins: meeting.duration_mins }),
@@ -694,7 +695,7 @@ function MeetingCard({
             className="w-11 h-11 rounded-2xl flex items-center justify-center transition-all active:scale-90 shrink-0"
             style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
             title="Copy meeting details">
-            {navigator.share ? <Share2 size={16} className="text-text-disabled" /> : <Copy size={16} className="text-text-disabled" />}
+            {typeof navigator.share === 'function' ? <Share2 size={16} className="text-text-disabled" /> : <Copy size={16} className="text-text-disabled" />}
           </button>
           <button onClick={() => onJoin(meeting)}
             className="flex-1 h-11 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98]"

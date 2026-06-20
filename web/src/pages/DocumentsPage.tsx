@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
+import { apiUrl } from '@/lib/api'
 import { SUPABASE_URL, SUPABASE_ANON } from '@/lib/supabase'
 import { getSubjectsForLevel } from '@/lib/constants'
 import Logo from '@/components/Logo'
@@ -72,7 +73,7 @@ export default function DocumentsPage() {
 
     const session = await supabase.auth.getSession()
     const token = session.data.session?.access_token || SUPABASE_ANON
-    fetch(`${SUPABASE_URL}/functions/v1/process-document`, {
+    fetch(apiUrl('process-document'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({ documentId, storageURL: storageUrl, fileName: selectedFile.name, userId: profile.user_id, subject, extractedText: '' }),

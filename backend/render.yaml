@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: tutorug-api
+    env: node
+    region: frankfurt
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: ANTHROPIC_KEY
+        sync: false
+      - key: SUPABASE_URL
+        value: https://jsjhgwficdrgzwbwzkhm.supabase.co
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: FROM_EMAIL
+        value: noreply@tutorug.com
+      - key: DAILY_API_KEY
+        sync: false

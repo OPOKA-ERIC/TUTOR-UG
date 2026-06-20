@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Mic, MicOff, Play, Pause, Plus, Loader2, Volume2, Square } from 'lucide-react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
-import { SUPABASE_URL, SUPABASE_ANON } from '@/lib/supabase'
+import { apiUrl } from '@/lib/api'
+import { SUPABASE_ANON } from '@/lib/supabase'
 import type { PodcastSegment, PodcastSession } from '@/types'
 
 export default function PodcastPage() {
@@ -43,7 +44,7 @@ export default function PodcastPage() {
     try {
       const session = await supabase.auth.getSession()
       const token = session.data.session?.access_token || SUPABASE_ANON
-      const res = await fetch(`${SUPABASE_URL}/functions/v1/generate-podcast`, {
+      const res = await fetch(apiUrl('generate-podcast'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({

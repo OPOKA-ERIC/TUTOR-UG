@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Loader2, Trophy, RefreshCw, CheckCircle } from 'lucide-react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
-import { SUPABASE_URL, SUPABASE_ANON } from '@/lib/supabase'
+import { apiUrl } from '@/lib/api'
+import { SUPABASE_ANON } from '@/lib/supabase'
 import Logo from '@/components/Logo'
 import type { QuizQuestion, DocumentSection, QuizResult } from '@/types'
 
@@ -88,7 +89,7 @@ export default function QuizPage() {
     setShowResults(false)
     setScore(0)
 
-    const res = await fetch(`${SUPABASE_URL}/functions/v1/generate-quiz`, {
+    const res = await fetch(apiUrl('generate-quiz'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` },
       body: JSON.stringify({

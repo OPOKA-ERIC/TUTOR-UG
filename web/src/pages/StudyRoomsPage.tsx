@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Send, Users, BookOpen, Loader2, ShieldAlert } from 'lucide-react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
-import { SUPABASE_URL, SUPABASE_ANON } from '@/lib/supabase'
+import { apiUrl } from '@/lib/api'
+import { SUPABASE_ANON } from '@/lib/supabase'
 import type { StudyRoom, RoomMessage } from '@/types'
 
 export default function StudyRoomsPage() {
@@ -58,7 +59,7 @@ export default function StudyRoomsPage() {
     // Moderate first
     const session = await supabase.auth.getSession()
     const token = session.data.session?.access_token || SUPABASE_ANON
-    const modRes = await fetch(`${SUPABASE_URL}/functions/v1/moderate-message`, {
+    const modRes = await fetch(apiUrl('moderate-message'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({ message: text, subject: activeRoom.subject, userName: profile.name }),

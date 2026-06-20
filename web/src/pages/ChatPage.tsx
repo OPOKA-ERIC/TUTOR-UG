@@ -12,7 +12,8 @@ import { useAuth } from '@/lib/AuthContext'
 import { useSettings } from '@/lib/SettingsContext'
 import { useTimetable } from '@/lib/TimetableContext'
 import { supabase } from '@/lib/supabase'
-import { SUPABASE_URL, SUPABASE_ANON } from '@/lib/supabase'
+import { apiUrl } from '@/lib/api'
+import { SUPABASE_ANON } from '@/lib/supabase'
 import { getSidebarSubjects } from '@/lib/constants'
 import Logo from '@/components/Logo'
 import type { ChatSession, ChatMessage } from '@/types'
@@ -172,7 +173,7 @@ export default function ChatPage() {
     let full = ''
 
     try {
-      const res = await fetch(`${SUPABASE_URL}/functions/v1/send-chat-message`, {
+      const res = await fetch(apiUrl('send-chat-message'), {
         method: 'POST',
         signal: controller.signal,
         headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` },
