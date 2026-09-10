@@ -1,19 +1,32 @@
-import Anthropic from 'npm:@anthropic-ai/sdk'
+import Anthropic from "npm:@anthropic-ai/sdk";
+import {
+  ApiError, corsHeaders, handlePreflight, requireUser, json,
+  isNonEmptyString, isPlainObject, isArrayOrEmpty,
+} from "../_shared/security.ts";
 
-const anthropic = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_KEY') })
-
-const CORS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+const anthropic = new Anthropic({ apiKey: Deno.env.get("ANTHROPIC_KEY") });
 
 Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
+  const preflight = handlePreflight(req);
+  if (preflight) return preflight;
+
+  const CORS = corsHeaders(req);
 
   try {
-    const { topic, userProfile, districtContext, conversationHistory } = await req.json()
+    requireUser(req);
 
-    const isFollowUp = conversationHistory && conversationHistory.length > 0
+    const body = await req.json();
+    const { topic, userProfile, districtContext, conversationHistory } = body;
+
+    if (!isNonEmptyString(topic, 2000)) throw new ApiError(400, "Topic is required.");
+    if (!isPlainObject(userProfile) || !isNonEmptyString(userProfile.name, 120)) {
+      throw new ApiError(400, "A valid user profile is required.");
+    }
+    if (conversationHistory !== undefined && !isArrayOrEmpty(conversationHistory, 200)) {
+      throw new ApiError(400, "Conversation history is invalid.");
+    }
+
+    const isFollowUp = conversationHistory && conversationHistory.length > 0;
 
     const systemPrompt = `You are producing a TutorUG Learning Podcast for ${userProfile.name}, a ${userProfile.educationLevel} student from ${userProfile.district} district in Uganda.
 
@@ -39,38 +52,38 @@ PODCAST RULES:
 - Make it conversational and engaging, not a lecture
 - Include at least one real-world Ugandan example
 - End with HOST summarizing key points and encouraging the student
-- Each segment should be 2-4 sentences max (for natural TTS playback)`
+- Each segment should be 2-4 sentences max (for natural TTS playback)`;
 
     const messages = isFollowUp
       ? [
-          ...conversationHistory,
-          { role: 'user' as const, content: `The student has a follow-up question. Continue the podcast with 4-6 more exchanges covering this: "${topic}"` },
+          ...conversationHistory.slice(0, 200),
+          { role: "user", content: `The student has a follow-up question. Continue the podcast with 4-6 more exchanges covering this: "${String(topic).slice(0, 2000)}"` },
         ]
-      : [{ role: 'user' as const, content: `Generate a podcast episode about: "${topic}"` }]
+      : [{ role: "user", content: `Generate a podcast episode about: "${String(topic).slice(0, 2000)}"` }];
 
     const response = await anthropic.messages.create({
-      model: 'claude-haiku-4-5',
+      model: "claude-haiku-4-5",
       max_tokens: 2048,
       system: systemPrompt,
       messages,
-    })
+    });
 
-    let script
-    const raw = response.content[0].type === 'text' ? response.content[0].text : '[]'
+    let script;
+    const raw = response.content[0].type === "text" ? response.content[0].text : "[]";
     try {
-      script = JSON.parse(raw)
+      script = JSON.parse(raw);
     } catch {
-      const match = raw.match(/\[[\s\S]*\]/)
-      script = match ? JSON.parse(match[0]) : []
+      const match = raw.match(/\[[\s\S]*\]/);
+      script = match ? JSON.parse(match[0]) : [];
     }
 
-    return new Response(JSON.stringify({ script }), {
-      headers: { ...CORS, 'Content-Type': 'application/json' },
-    })
-  } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...CORS, 'Content-Type': 'application/json' },
-    })
+    if (!Array.isArray(script) || script.length > 50) {
+      throw new ApiError(500, "Invalid podcast script from AI.");
+    }
+
+    return json({ script }, 200, CORS);
+  } catch (error: any) {
+    const status = error instanceof ApiError ? error.status : 500;
+    return json({ error: error.message }, status, CORS);
   }
-})
+});

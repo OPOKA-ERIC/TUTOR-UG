@@ -50,6 +50,7 @@ fun DocumentUploadScreen(
     var selectedFileName by remember { mutableStateOf("") }
     var selectedSubject  by remember { mutableStateOf("") }
     var subjectExpanded  by remember { mutableStateOf(false) }
+    var consentChecked   by remember { mutableStateOf(false) }
     // Resume/fresh dialog
     var resumeDoc by remember { mutableStateOf<UploadedDocument?>(null) }
     val context = androidx.compose.ui.platform.LocalContext.current
@@ -199,6 +200,37 @@ fun DocumentUploadScreen(
                     }
                 }
 
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // ── PROCESSING CONSENT ────────────────────────────────
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = primary.copy(alpha = 0.06f),
+                    shape = RoundedCornerShape(12.dp),
+                    border = androidx.compose.foundation.BorderStroke(
+                        width = 1.dp,
+                        color = if (consentChecked) primary else outline
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier.padding(start = 8.dp, end = 12.dp, top = 4.dp, bottom = 4.dp),
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        Checkbox(
+                            checked = consentChecked,
+                            onCheckedChange = { consentChecked = it },
+                            enabled = uploadState !is UploadState.Uploading,
+                            colors = CheckboxDefaults.colors(checkedColor = primary)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            "I consent to TutorUG processing this document to generate personalised learning content. Your document is stored securely and can be permanently deleted at any time from your settings.",
+                            fontSize = 11.sp, color = onSurfaceVar,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                    }
+                }
+
                 if (uploadState is UploadState.Error) {
                     Spacer(modifier = Modifier.height(12.dp))
                     Surface(shape = RoundedCornerShape(10.dp), color = error.copy(alpha = 0.12f)) {
@@ -210,11 +242,11 @@ fun DocumentUploadScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 // ── UPLOAD BUTTON ─────────────────────────────────────
-                val canUpload = uploadState !is UploadState.Uploading && selectedUri != null && selectedSubject.isNotBlank()
+                val canUpload = uploadState !is UploadState.Uploading && selectedUri != null && selectedSubject.isNotBlank() && consentChecked
                 Button(
                     onClick = {
                         selectedUri?.let {
-                            viewModel.uploadDocument(userId, it, selectedFileName, selectedSubject, educationLevel)
+                            viewModel.uploadDocument(userId, it, selectedFileName, selectedSubject, educationLevel, consentChecked)
                         }
                     },
                     modifier = Modifier.fillMaxWidth().height(54.dp),

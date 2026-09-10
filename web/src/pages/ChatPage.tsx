@@ -12,8 +12,7 @@ import { useAuth } from '@/lib/AuthContext'
 import { useSettings } from '@/lib/SettingsContext'
 import { useTimetable } from '@/lib/TimetableContext'
 import { supabase } from '@/lib/supabase'
-import { apiUrl } from '@/lib/api'
-import { SUPABASE_ANON } from '@/lib/supabase'
+import { apiUrl, apiHeaders } from '@/lib/api'
 import { getSidebarSubjects } from '@/lib/constants'
 import Logo from '@/components/Logo'
 import type { ChatSession, ChatMessage } from '@/types'
@@ -176,7 +175,7 @@ export default function ChatPage() {
       const res = await fetch(apiUrl('send-chat-message'), {
         method: 'POST',
         signal: controller.signal,
-        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` },
+        headers: await apiHeaders(),
         body: JSON.stringify({
           sessionId, message,
           userProfile: { name: profile.name, district: profile.district, educationLevel: profile.education_level, school: profile.school, course: profile.course, profession: profile.profession, combination: profile.combination },

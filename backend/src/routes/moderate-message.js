@@ -1,4 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk'
+import { isNonEmptyString, isOptionalString, fail } from '../utils/validate.js'
 
 export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(204).end()
@@ -7,9 +8,13 @@ export default async function handler(req, res) {
     const apiKey = process.env.ANTHROPIC_KEY
     if (!apiKey) return res.status(500).json({ error: 'ANTHROPIC_KEY not set' })
 
-    const anthropic = new Anthropic({ apiKey })
     const { message, subject, userName } = req.body
 
+    if (!isNonEmptyString(message, 2000)) return fail(res, 'Message is required.')
+    if (!isOptionalString(subject, 120)) return fail(res, 'Invalid subject.')
+    if (!isOptionalString(userName, 120)) return fail(res, 'Invalid user name.')
+
+    const anthropic = new Anthropic({ apiKey })
     const response = await anthropic.messages.create({
       model: 'claude-3-5-haiku-20241022',
       max_tokens: 10,

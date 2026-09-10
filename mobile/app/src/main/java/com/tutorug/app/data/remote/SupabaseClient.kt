@@ -15,10 +15,21 @@ object SupabaseClient {
 
     private var prefs: android.content.SharedPreferences? = null
 
+    // Defaults to NO logging; enabled at runtime only when the app is a debug
+    // build (checked from ApplicationInfo, no BuildConfig dependency).
+    private val loggingInterceptor = HttpLoggingInterceptor().apply {
+        level = HttpLoggingInterceptor.Level.NONE
+    }
+
     fun init(context: android.content.Context) {
         prefs = context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
         // Restore persisted token into memory on app start
         authToken = prefs?.getString(KEY_ACCESS, null)
+        // BASIC logs method/URL/status but never the request/response bodies.
+        loggingInterceptor.level = if (
+            (context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
+        ) HttpLoggingInterceptor.Level.BASIC
+        else HttpLoggingInterceptor.Level.NONE
     }
 
     fun persistSession(accessToken: String, refreshToken: String, userId: String) {
@@ -44,16 +55,10 @@ object SupabaseClient {
         .connectTimeout(30, TimeUnit.SECONDS)
         .readTimeout(120, TimeUnit.SECONDS)
         .writeTimeout(30, TimeUnit.SECONDS)
-        .addInterceptor(HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        })
+        .addInterceptor(loggingInterceptor)
         .addInterceptor { chain ->
             val request = chain.request()
-            val isEdgeFunction = request.url.toString().contains("/functions/v1/")
-            val token = if (isEdgeFunction) SUPABASE_ANON_KEY else (authToken ?: SUPABASE_ANON_KEY)
-            if (!isEdgeFunction && authToken == null) {
-                android.util.Log.w("TutorUG", "WARNING: REST call without user JWT — RLS may not be enforced: ${request.url}")
-            }
+            val token = authToken ?: SUPABASE_ANON_KEY
             val newRequest = request.newBuilder()
                 .header("apikey", SUPABASE_ANON_KEY)
                 .header("Authorization", "Bearer $token")

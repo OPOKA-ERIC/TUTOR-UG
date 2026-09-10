@@ -83,8 +83,9 @@ class AuthRepository {
     suspend fun getUserProfile(userId: String): Result<UserProfile> = withContext(Dispatchers.IO) {
         try {
             val request = Request.Builder()
-                .url("$base/rest/v1/users?user_id=eq.$userId&select=user_id,name,email,district,region,education_level,school,combination,course,profession,avatar_url,total_messages,total_quizzes,total_documents,streak_days,last_streak_date,created_at,last_active&limit=1")
-                .get().build()
+                .url("$base/rest/v1/rpc/get_own_profile")
+                .post("".toRequestBody(json))
+                .build()
             val response = http.newCall(request).execute()
             val responseBody = response.body?.string() ?: throw Exception("Empty response")
             if (!response.isSuccessful) throw Exception(responseBody)

@@ -1,10 +1,27 @@
+import {
+  ApiError, corsHeaders, handlePreflight, requireUser, json,
+  isEmail, isNonEmptyString, isOptionalString,
+} from "../_shared/security.ts";
+
 const resendKey = Deno.env.get("RESEND_API_KEY")!;
 const fromEmail = Deno.env.get("FROM_EMAIL") ?? "onboarding@resend.dev";
 
 Deno.serve(async (req) => {
+  const preflight = handlePreflight(req);
+  if (preflight) return preflight;
+
+  const CORS = corsHeaders(req);
+
   try {
-    const { email, name, subject, start_time } = await req.json();
-    if (!email || !subject) return json({ error: "Missing fields" }, 400);
+    requireUser(req);
+
+    const body = await req.json();
+    const { email, name, subject, start_time } = body;
+
+    if (!isEmail(email)) throw new ApiError(400, "A valid email address is required.");
+    if (!isNonEmptyString(subject, 120)) throw new ApiError(400, "Subject is required.");
+    if (!isOptionalString(start_time, 40)) throw new ApiError(400, "Invalid start time.");
+    if (!isOptionalString(name, 120)) throw new ApiError(400, "Invalid name.");
 
     const resp = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -14,16 +31,17 @@ Deno.serve(async (req) => {
       },
       body: JSON.stringify({
         from: `TutorUG <${fromEmail}>`,
-        to: [email],
+        to: [(email as string).trim().toLowerCase()],
         subject: `⏰ Study Reminder: ${subject} starts in 15 minutes!`,
         html: buildReminderEmail(name ?? "Student", subject, start_time ?? ""),
       }),
     });
 
     if (!resp.ok) throw new Error(await resp.text());
-    return json({ success: true });
-  } catch (e) {
-    return json({ error: e.message }, 500);
+    return json({ success: true }, 200, CORS);
+  } catch (error: any) {
+    const status = error instanceof ApiError ? error.status : 500;
+    return json({ error: error.message }, status, CORS);
   }
 });
 
@@ -59,11 +77,4 @@ function buildReminderEmail(name: string, subject: string, startTime: string): s
   </div>
 </body>
 </html>`;
-}
-
-function json(data: object, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { "Content-Type": "application/json" },
-  });
 }

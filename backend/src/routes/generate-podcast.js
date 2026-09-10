@@ -1,4 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk'
+import { isNonEmptyString, isPlainObject, isArrayOrEmpty, fail } from '../utils/validate.js'
 
 export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(204).end()
@@ -7,8 +8,17 @@ export default async function handler(req, res) {
     const apiKey = process.env.ANTHROPIC_KEY
     if (!apiKey) return res.status(500).json({ error: 'ANTHROPIC_KEY not set' })
 
-    const anthropic = new Anthropic({ apiKey })
     const { topic, userProfile, districtContext, conversationHistory } = req.body
+
+    if (!isNonEmptyString(topic, 2000)) return fail(res, 'Topic is required.')
+    if (!isPlainObject(userProfile) || !isNonEmptyString(userProfile.name, 120)) {
+      return fail(res, 'A valid user profile is required.')
+    }
+    if (conversationHistory !== undefined && !isArrayOrEmpty(conversationHistory, 200)) {
+      return fail(res, 'Conversation history is invalid.')
+    }
+
+    const anthropic = new Anthropic({ apiKey })
     const isFollowUp = conversationHistory && conversationHistory.length > 0
 
     const systemPrompt = `You are producing a TutorUG Learning Podcast for ${userProfile.name}, a ${userProfile.educationLevel} student from ${userProfile.district} district in Uganda.
@@ -39,7 +49,7 @@ PODCAST RULES:
 
     const messages = isFollowUp
       ? [
-          ...conversationHistory,
+          ...conversationHistory.slice(0, 200),
           { role: 'user', content: `The student has a follow-up question. Continue the podcast with 4-6 more exchanges covering this: "${topic}"` },
         ]
       : [{ role: 'user', content: `Generate a podcast episode about: "${topic}"` }]
@@ -58,6 +68,10 @@ PODCAST RULES:
     } catch {
       const match = raw.match(/\[[\s\S]*\]/)
       script = match ? JSON.parse(match[0]) : []
+    }
+
+    if (!Array.isArray(script) || script.length > 50) {
+      return fail(res, 'Invalid podcast script from AI.', 500)
     }
 
     res.json({ script })

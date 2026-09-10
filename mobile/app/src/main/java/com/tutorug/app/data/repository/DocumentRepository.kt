@@ -31,9 +31,11 @@ class DocumentRepository(private val context: Context) {
 
     suspend fun uploadDocument(
         userId: String, fileUri: Uri, fileName: String, subject: String,
-        educationLevel: String = ""
+        educationLevel: String = "",
+        consent: Boolean
     ): Result<String> = withContext(Dispatchers.IO) {
         try {
+            if (!consent) throw Exception("Consent to document processing is required")
             val documentId  = UUID.randomUUID().toString()
             val storagePath = "documents/$userId/$documentId/$fileName"
 
@@ -67,7 +69,8 @@ class DocumentRepository(private val context: Context) {
                 "subject"         to subject,
                 "education_level" to educationLevel,
                 "status"          to "processing",
-                "uploaded_at"     to Instant.now().toString()
+                "uploaded_at"     to Instant.now().toString(),
+                "consent_processing" to consent
             )
             val dbRequest = Request.Builder()
                 .url("$base/rest/v1/documents")

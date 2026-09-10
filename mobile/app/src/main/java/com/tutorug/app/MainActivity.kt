@@ -278,8 +278,8 @@ fun TutorUGNavigation(settingsViewModel: SettingsViewModel, intent: android.cont
                     onVoiceInput = {
                         if (voiceEnabled) chatViewModel.voiceManager.startSpeechRecognition(speechLauncher)
                     },
-                    onFileSelected = { uri, fileName ->
-                        chatViewModel.uploadAndStartLearning(uri, fileName, profile) {
+                    onFileSelected = { uri, fileName, consent ->
+                        chatViewModel.uploadAndStartLearning(uri, fileName, profile, consent) {
                             navController.navigate("learn")
                         }
                     },

@@ -57,7 +57,7 @@ fun ChatScreen(
     currentSpeechRate: Float = 1.0f,
     onSendMessage: (String) -> Unit = {},
     onVoiceInput: () -> Unit = {},
-    onFileSelected: (android.net.Uri, String) -> Unit = { _, _ -> },
+    onFileSelected: (android.net.Uri, String, Boolean) -> Unit = { _, _, _ -> },
     onSubjectSelect: (String) -> Unit = {},
     onSessionSelect: (String) -> Unit = {},
     onNewChat: () -> Unit = {},
@@ -78,6 +78,9 @@ fun ChatScreen(
     val listState = rememberLazyListState()
     val context = androidx.compose.ui.platform.LocalContext.current
 
+    var pendingFile by remember { mutableStateOf<Pair<android.net.Uri, String>?>(null) }
+    var consentChecked by remember { mutableStateOf(false) }
+
     val fileLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let {
             val fileName = context.contentResolver.query(it, null, null, null, null)?.use { cursor ->
@@ -85,7 +88,8 @@ fun ChatScreen(
                 cursor.moveToFirst()
                 if (idx >= 0) cursor.getString(idx) else null
             } ?: "document_${System.currentTimeMillis()}"
-            onFileSelected(it, fileName)
+            consentChecked = false
+            pendingFile = it to fileName
         }
     }
 
@@ -735,6 +739,43 @@ fun ChatScreen(
                 }
             }
         }
+    }
+
+    // ── DOCUMENT PROCESSING CONSENT DIALOG ────────────────────────────
+    pendingFile?.let { (uri, fileName) ->
+        AlertDialog(
+            onDismissRequest = { pendingFile = null },
+            title = { Text("Process this document?", color = TextWhite, fontWeight = FontWeight.Bold, fontSize = 16.sp) },
+            text = {
+                Column {
+                    Text("$fileName will be analysed by TutorUG AI to create personalised learning content.",
+                        color = onSurfaceVar, fontSize = 13.sp)
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Row(verticalAlignment = Alignment.Top) {
+                        Checkbox(checked = consentChecked, onCheckedChange = { consentChecked = it },
+                            colors = CheckboxDefaults.colors(checkedColor = primary))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("I consent to TutorUG processing this document. It is stored securely and can be deleted at any time.",
+                            fontSize = 11.sp, color = onSurfaceVar)
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    enabled = consentChecked,
+                    onClick = {
+                        onFileSelected(uri, fileName, consentChecked)
+                        pendingFile = null
+                    }
+                ) { Text("Continue", color = primary, fontWeight = FontWeight.Bold) }
+            },
+            dismissButton = {
+                TextButton(onClick = { pendingFile = null }) { Text("Cancel", color = onSurfaceVar) }
+            },
+            containerColor = surface,
+            titleContentColor = TextWhite,
+            textContentColor = onSurfaceVar
+        )
     }
 }
 

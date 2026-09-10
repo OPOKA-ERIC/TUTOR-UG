@@ -391,6 +391,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
         fileUri: android.net.Uri,
         fileName: String,
         userProfile: UserProfile,
+        consent: Boolean,
         onNavigateToLearn: () -> Unit
     ) {
         viewModelScope.launch {
@@ -436,7 +437,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                 userProfile.educationLevel == "Professional" -> userProfile.profession.ifBlank { "General" }
                 else -> "General"
             }
-            val result = docRepo.uploadDocument(userProfile.userId, fileUri, fileName, subject, userProfile.educationLevel)
+            val result = docRepo.uploadDocument(userProfile.userId, fileUri, fileName, subject, userProfile.educationLevel, consent)
             if (result.isFailure) {
                 val errMsg = ChatMessage(role = "assistant", content = "Sorry, I couldn't read that document. Please try a PDF, image, or text file.")
                 _messages.value = _messages.value + errMsg

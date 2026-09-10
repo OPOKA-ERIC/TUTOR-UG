@@ -1,4 +1,8 @@
 import Anthropic from "npm:@anthropic-ai/sdk@0.20.0";
+import {
+  ApiError, corsHeaders, handlePreflight, requireUser, json,
+  isNonEmptyString, isOptionalString,
+} from "../_shared/security.ts";
 
 const anthropic = new Anthropic({ apiKey: Deno.env.get("ANTHROPIC_KEY") });
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -11,7 +15,7 @@ const headers = {
 };
 
 async function updateDocumentStatus(documentId: string, status: string, extra: object = {}) {
-  await fetch(`${supabaseUrl}/rest/v1/documents?document_id=eq.${documentId}`, {
+  await fetch(`${supabaseUrl}/rest/v1/documents?document_id=eq.${encodeURIComponent(documentId)}`, {
     method: "PATCH",
     headers,
     body: JSON.stringify({ status, ...extra }),
@@ -19,11 +23,26 @@ async function updateDocumentStatus(documentId: string, status: string, extra: o
 }
 
 Deno.serve(async (req) => {
-  const { documentId, fileName, userId, subject, extractedText } = await req.json();
+  const preflight = handlePreflight(req);
+  if (preflight) return preflight;
+
+  const CORS = corsHeaders(req);
 
   try {
-    // Use the text extracted on the Android side
-    // Fall back to filename/subject hint if extraction yielded nothing
+    const auth = requireUser(req);
+
+    const body = await req.json();
+    const { documentId, fileName, userId, subject, extractedText } = body;
+
+    if (!isNonEmptyString(documentId, 128)) throw new ApiError(400, "Document ID is required.");
+    if (!isNonEmptyString(userId, 128)) throw new ApiError(400, "User ID is required.");
+    if (!isOptionalString(fileName, 255) || !isOptionalString(subject, 120)) {
+      throw new ApiError(400, "Invalid document fields.");
+    }
+    if (auth.userId !== userId) {
+      throw new ApiError(403, "You can only process your own documents.");
+    }
+
     const textContent = (extractedText && extractedText.trim().length > 50)
       ? extractedText.trim().slice(0, 12000)
       : `Document: ${fileName}\nSubject: ${subject}\nNote: Could not extract text. Please create educational content based on the subject "${subject}".`;
@@ -58,7 +77,6 @@ FORMATTING RULES for the content field:
       }],
     });
 
-    // Parse sections
     let sections: Array<{ title: string; content: string }> = [];
     try {
       const text = response.content[0].text.trim();
@@ -71,18 +89,17 @@ FORMATTING RULES for the content field:
       }];
     }
 
-    if (!Array.isArray(sections) || sections.length === 0) {
+    if (!Array.isArray(sections) || sections.length === 0 || sections.length > 50) {
       throw new Error("No sections returned from AI");
     }
 
-    // Insert sections into document_sections table
     const sectionRows = sections.map((s, i) => ({
       section_id: crypto.randomUUID(),
       document_id: documentId,
       user_id: userId,
       section_index: i,
-      title: s.title ?? `Section ${i + 1}`,
-      content: s.content ?? "",
+      title: String(s.title ?? `Section ${i + 1}`).slice(0, 500),
+      content: String(s.content ?? "").slice(0, 50000),
       quiz_passed: false,
       best_score: 0,
       attempt_count: 0,
@@ -105,16 +122,12 @@ FORMATTING RULES for the content field:
       processed_at: new Date().toISOString(),
     });
 
-    return new Response(
-      JSON.stringify({ success: true, sectionCount: sections.length }),
-      { headers: { "Content-Type": "application/json" } }
-    );
-
-  } catch (error) {
-    await updateDocumentStatus(documentId, "failed");
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    );
+    return json({ success: true, sectionCount: sections.length }, 200, CORS);
+  } catch (error: any) {
+    let docId: string | undefined
+    try { docId = (await req.clone().json()).documentId } catch {}
+    if (docId) await updateDocumentStatus(docId, "failed").catch(() => {});
+    const status = error instanceof ApiError ? error.status : 500;
+    return json({ error: error.message }, status, CORS);
   }
 });

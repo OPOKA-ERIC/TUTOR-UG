@@ -1,3 +1,4 @@
+import { isEmail, fail } from '../utils/validate.js'
 import { getDbHeaders, getSupabaseUrl } from '../utils/supabase-admin.js'
 import { buildSuccessEmail } from '../utils/email.js'
 
@@ -6,8 +7,10 @@ export default async function handler(req, res) {
 
   try {
     const { email: rawEmail, new_password } = req.body
-    if (!rawEmail || !new_password) return res.status(400).json({ error: 'Email and new password are required' })
-    if (new_password.length < 6) return res.status(400).json({ error: 'Password must be at least 6 characters' })
+    if (!isEmail(rawEmail)) return fail(res, 'A valid email address is required.')
+    if (typeof new_password !== 'string' || new_password.length < 8 || new_password.length > 128) {
+      return fail(res, 'Password must be between 8 and 128 characters.')
+    }
 
     const email = rawEmail.trim().toLowerCase()
     const supabaseUrl = getSupabaseUrl()
@@ -21,7 +24,7 @@ export default async function handler(req, res) {
     )
     const listData = await listResp.json()
     const authUser = listData?.users?.[0]
-    if (!authUser) return res.status(404).json({ error: 'User not found.' })
+    if (!authUser) return fail(res, 'User not found.', 404)
 
     const updateResp = await fetch(
       `${supabaseUrl}/auth/v1/admin/users/${authUser.id}`,
@@ -37,7 +40,7 @@ export default async function handler(req, res) {
     }
 
     const userResp = await fetch(
-      `${supabaseUrl}/rest/v1/users?user_id=eq.${authUser.id}&select=name&limit=1`,
+      `${supabaseUrl}/rest/v1/users?user_id=eq.${encodeURIComponent(authUser.id)}&select=name&limit=1`,
       { headers: dbHeaders }
     )
     const users = await userResp.json()

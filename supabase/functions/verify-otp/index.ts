@@ -1,3 +1,5 @@
+import { ApiError, corsHeaders, handlePreflight, json, isEmail, checkRateLimit } from "../_shared/security.ts";
+
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
@@ -8,12 +10,24 @@ const dbHeaders = {
 };
 
 Deno.serve(async (req) => {
-  try {
-    const { email: rawEmail, otp_code } = await req.json();
-    if (!rawEmail || !otp_code) return json({ error: "Email and OTP are required" }, 400);
-    const email = rawEmail.trim().toLowerCase();
+  const preflight = handlePreflight(req);
+  if (preflight) return preflight;
 
-    // Fetch the latest unused OTP for this email
+  const CORS = corsHeaders(req);
+
+  try {
+    const body = await req.json();
+    const { email: emailInput, otp_code } = body;
+
+    if (!isEmail(emailInput)) throw new ApiError(400, "A valid email address is required.");
+    if (typeof otp_code !== "string" || !/^\d{6}$/.test(otp_code.trim())) {
+      throw new ApiError(400, "A valid 6-digit code is required.");
+    }
+
+    const email = (emailInput as string).trim().toLowerCase();
+
+    await checkRateLimit(`verify-otp:${email}`, 10, 900);
+
     const resp = await fetch(
       `${supabaseUrl}/rest/v1/password_reset_otps?email=eq.${encodeURIComponent(email)}&used=eq.false&order=created_at.desc&limit=1`,
       { headers: dbHeaders }
@@ -21,22 +35,19 @@ Deno.serve(async (req) => {
     const rows = await resp.json();
 
     if (!Array.isArray(rows) || rows.length === 0) {
-      return json({ error: "No active OTP found. Please request a new one." }, 400);
+      throw new ApiError(400, "No active OTP found. Please request a new one.");
     }
 
     const record = rows[0];
 
-    // Check expiry
     if (new Date() > new Date(record.expires_at)) {
-      return json({ error: "OTP has expired. Please request a new one." }, 400);
+      throw new ApiError(400, "OTP has expired. Please request a new one.");
     }
 
-    // Check code match
     if (record.otp_code !== otp_code.trim()) {
-      return json({ error: "Incorrect OTP. Please try again." }, 400);
+      throw new ApiError(400, "Incorrect OTP. Please try again.");
     }
 
-    // Mark OTP as used
     await fetch(
       `${supabaseUrl}/rest/v1/password_reset_otps?id=eq.${record.id}`,
       {
@@ -46,15 +57,9 @@ Deno.serve(async (req) => {
       }
     );
 
-    return json({ success: true });
-  } catch (e) {
-    return json({ error: e.message }, 500);
+    return json({ success: true }, 200, CORS);
+  } catch (error: any) {
+    const status = error instanceof ApiError ? error.status : 500;
+    return json({ error: error.message }, status, CORS);
   }
 });
-
-function json(data: object, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { "Content-Type": "application/json" },
-  });
-}

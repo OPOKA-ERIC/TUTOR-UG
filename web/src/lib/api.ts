@@ -1,4 +1,4 @@
-import { SUPABASE_URL } from './supabase'
+import { supabase, SUPABASE_URL, SUPABASE_ANON } from './supabase'
 
 // Set VITE_API_BASE_URL in your .env or Vercel environment variables
 // Default: local dev backend at port 3001
@@ -20,6 +20,12 @@ export function apiUrl(name: string): string {
   return `${BASE}/${name}`
 }
 
-export function apiHeaders(): Record<string, string> {
-  return { 'Content-Type': 'application/json' }
+export async function apiHeaders(): Promise<Record<string, string>> {
+  const session = await supabase.auth.getSession()
+  const token = session.data.session?.access_token || SUPABASE_ANON
+  return {
+    'Content-Type': 'application/json',
+    apikey: SUPABASE_ANON,
+    Authorization: `Bearer ${token}`,
+  }
 }

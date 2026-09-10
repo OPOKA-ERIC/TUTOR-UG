@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { supabase } from '@/lib/supabase'
+import { supabase, SUPABASE_URL, SUPABASE_ANON } from '@/lib/supabase'
 import type { UserProfile } from '@/types'
 
 interface AuthCtx {
@@ -19,13 +19,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   async function fetchProfile(userId: string) {
-    const { data } = await supabase
-      .from('users')
-      .select('*')
-      .eq('user_id', userId)
-      .single()
-    if (data) {
-      setProfile(data as UserProfile)
+    const { data } = await supabase.rpc('get_own_profile')
+    if (data && Array.isArray(data) && data.length > 0) {
+      setProfile(data[0] as UserProfile)
     } else {
       // No profile row yet — create a minimal one so the app doesn't get stuck
       const { data: { user } } = await supabase.auth.getUser()
@@ -35,6 +31,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           email: user.email || '',
           name: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'Student',
           avatar_url: user.user_metadata?.avatar_url || '',
+          role: 'student',
           district: '', region: '', education_level: '',
           school: '', combination: '', course: '', profession: '',
           total_messages: 0, total_quizzes: 0, total_documents: 0, streak_days: 0,
@@ -58,6 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       email: user.email || '',
       name: meta?.full_name || meta?.name || user.email?.split('@')[0] || 'Student',
       avatar_url: meta?.avatar_url || '',
+      role: 'student',
       district: '', region: '', education_level: '',
       school: '', combination: '', course: '', profession: '',
       total_messages: 0, total_quizzes: 0,
@@ -77,10 +75,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           .finally(() => setLoading(false))
       } else setLoading(false)
     }).catch(() => { clearTimeout(timeout); setLoading(false) })
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session?.user) {
-        if (event === 'SIGNED_IN') await ensureProfile(session.user).catch(() => {})
-        await fetchProfile(session.user.id).catch(() => {})
+        // auth-js awaits subscriber callbacks while holding its session lock, so any
+        // blocking call here would deadlock setSession (login would hang). Defer.
+        setTimeout(() => {
+          const sync = async () => {
+            if (event === 'SIGNED_IN') await ensureProfile(session.user).catch(() => {})
+            await fetchProfile(session.user.id).catch(() => {})
+          }
+          void sync()
+        }, 0)
       } else {
         setProfile(null)
         setLoading(false)
@@ -90,19 +95,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   async function login(email: string, password: string): Promise<string | null> {
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), 20000)
     try {
-      const result = await Promise.race([
-        supabase.auth.signInWithPassword({ email, password }),
-        new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error('Login timed out. Please check your internet connection and try again.')), 30000)
-        ),
-      ]) as Awaited<ReturnType<typeof supabase.auth.signInWithPassword>>
-      if (result.error) return parseError(result.error.message)
-      // Profile is fetched by onAuthStateChange handler; no need to duplicate here
+      const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: SUPABASE_ANON,
+        },
+        body: JSON.stringify({ email, password }),
+        signal: controller.signal,
+      })
+      const data = await res.json()
+      if (!res.ok) return parseError(data?.msg || data?.error_description || `HTTP ${res.status}`)
+      const session = data as {
+        access_token: string
+        refresh_token: string
+        expires_in: number
+        token_type: string
+      }
+      if (!session.access_token) return 'Login response was missing an access token.'
+      // Save with a second hard timeout: setSession validates the token via the
+      // server, which on this app must not be blocked by our own subscriber (see handler).
+      const saved = await new Promise<boolean>((resolve, reject) => {
+        const c2 = setTimeout(() => reject(new Error('Sign-in is taking longer than usual. Please check your internet connection and try again.')), 20000)
+        supabase.auth.setSession({
+          access_token: session.access_token,
+          refresh_token: session.refresh_token,
+        }).then(() => { clearTimeout(c2); resolve(true) }).catch((err) => { clearTimeout(c2); reject(err) })
+      })
+      if (!saved) return 'Could not save your session. Please try again.'
       return null
     } catch (e: unknown) {
-      if (e instanceof Error) return e.message
+      if (e instanceof Error) {
+        if (e.name === 'AbortError') return 'Login timed out. Please check your internet connection and try again.'
+        return e.message
+      }
       return 'Connection error. Please try again.'
+    } finally {
+      clearTimeout(timer)
     }
   }
 

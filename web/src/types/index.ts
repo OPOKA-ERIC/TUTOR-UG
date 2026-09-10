@@ -10,6 +10,7 @@ export interface UserProfile {
   course: string
   profession: string
   avatar_url: string
+  role: string
   created_at: string
   last_active: string
   total_messages: number
@@ -17,6 +18,19 @@ export interface UserProfile {
   total_documents: number
   streak_days: number
   last_streak_date: string | null
+}
+
+export interface AppReview {
+  review_id: string
+  user_id: string
+  rating: number          // 1..5
+  title: string
+  comment: string
+  status: 'pending' | 'approved' | 'hidden'
+  created_at: string
+  user_name?: string      // joined from users for admin view
+  user_district?: string
+  user_education_level?: string
 }
 
 export interface ChatSession {

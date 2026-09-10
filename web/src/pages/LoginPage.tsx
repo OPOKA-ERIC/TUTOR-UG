@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Eye, EyeOff, Loader2, Mail, Lock } from 'lucide-react'
 import { useAuth } from '@/lib/AuthContext'
+import { SUPABASE_URL } from '@/lib/supabase'
 import Logo from '@/components/Logo'
 
 export default function LoginPage() {
@@ -32,6 +33,9 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-surface to-bg flex items-center justify-center p-6 relative overflow-hidden">
+      <div className="fixed top-2 left-2 z-50 text-[10px] text-white/40 bg-black/40 px-2 py-1 rounded">
+        SUPABASE_URL = {SUPABASE_URL}
+      </div>
       <div className="max-w-3xl mx-auto w-full">
       {/* Decorative glows */}
       <div className="absolute -top-20 -left-20 w-72 h-72 rounded-full pointer-events-none"

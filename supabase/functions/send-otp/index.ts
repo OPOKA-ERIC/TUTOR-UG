@@ -1,3 +1,5 @@
+import { ApiError, corsHeaders, handlePreflight, json, isEmail, checkRateLimit } from "../_shared/security.ts";
+
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const resendKey   = Deno.env.get("RESEND_API_KEY")!;
@@ -14,32 +16,41 @@ function generateOtp(): string {
 }
 
 Deno.serve(async (req) => {
-  try {
-    const { email: rawEmail } = await req.json();
-    if (!rawEmail) return json({ error: "Email is required" }, 400);
-    const email = rawEmail.trim().toLowerCase();
+  const preflight = handlePreflight(req);
+  if (preflight) return preflight;
 
-    // 1. Check if email belongs to a user via Auth Admin API (source of truth)
-    const normalizedEmail = email.trim().toLowerCase();
+  const CORS = corsHeaders(req);
+
+  try {
+    const body = await req.json();
+    const emailInput = body.email;
+
+    if (!isEmail(emailInput)) throw new ApiError(400, "A valid email address is required.");
+    const email = (emailInput as string).trim().toLowerCase();
+
+    await checkRateLimit(`send-otp:${email}`, 5, 900);
+
+    // 1. Resolve the user via the Auth Admin API (source of truth).
     const authResp = await fetch(
-      `${supabaseUrl}/auth/v1/admin/users?email=${encodeURIComponent(normalizedEmail)}`,
+      `${supabaseUrl}/auth/v1/admin/users?email=${encodeURIComponent(email)}`,
       { headers: dbHeaders }
     );
     const authData = await authResp.json();
     const authUser = authData?.users?.[0];
     if (!authUser) {
-      return json({ error: "No account found with this email address." }, 404);
+      // Don't reveal whether an account exists.
+      return json({ success: true }, 200, CORS);
     }
 
-    // 2. Try to get name from profile table, fall back gracefully
+    // 2. Try to get the name from the profile table, fall back gracefully.
     const profileResp = await fetch(
-      `${supabaseUrl}/rest/v1/users?user_id=eq.${authUser.id}&select=name&limit=1`,
+      `${supabaseUrl}/rest/v1/users?user_id=eq.${encodeURIComponent(authUser.id)}&select=name&limit=1`,
       { headers: dbHeaders }
     );
     const profiles = await profileResp.json();
     const userName = profiles?.[0]?.name || "Student";
 
-    // 2. Invalidate any existing unused OTPs for this email
+    // 3. Invalidate any existing unused OTPs for this email.
     await fetch(
       `${supabaseUrl}/rest/v1/password_reset_otps?email=eq.${encodeURIComponent(email)}&used=eq.false`,
       {
@@ -49,7 +60,7 @@ Deno.serve(async (req) => {
       }
     );
 
-    // 3. Generate OTP and store with 15-minute expiry
+    // 4. Generate OTP and store with 15-minute expiry.
     const otpCode   = generateOtp();
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
 
@@ -60,7 +71,7 @@ Deno.serve(async (req) => {
     });
     if (!insertResp.ok) throw new Error("Failed to store OTP");
 
-    // 4. Send OTP email via Resend
+    // 5. Send the OTP email via Resend.
     const emailResp = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { "Authorization": `Bearer ${resendKey}`, "Content-Type": "application/json" },
@@ -76,9 +87,10 @@ Deno.serve(async (req) => {
       throw new Error(`Failed to send email: ${err}`);
     }
 
-    return json({ success: true });
-  } catch (e) {
-    return json({ error: e.message }, 500);
+    return json({ success: true }, 200, CORS);
+  } catch (error: any) {
+    const status = error instanceof ApiError ? error.status : 500;
+    return json({ error: error.message }, status, CORS);
   }
 });
 
@@ -103,11 +115,4 @@ function buildOtpEmail(name: string, otp: string): string {
   </div>
 </body>
 </html>`;
-}
-
-function json(data: object, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { "Content-Type": "application/json" },
-  });
 }
