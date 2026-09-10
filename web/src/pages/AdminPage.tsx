@@ -473,6 +473,206 @@ function MetricBar({ label, value, pct, grad, delay = 0 }: { label: string; valu
   )
 }
 
+// ── Charts (dependency-free SVG) ────────────────────────────────────────────
+const CHART_COLORS = ['#FFB800', '#00E5FF', '#A78BFA', '#34D399', '#F472B6', '#F59E0B', '#60A5FA', '#FB923C']
+
+function signupTrend(users: UserProfile[]) {
+  if (users.length === 0) return []
+  const oldest = users.reduce((m, u) => u.created_at ? Math.min(m, new Date(u.created_at).getTime()) : m, Date.now())
+  const spanDays = (Date.now() - oldest) / 86400000
+  if (spanDays <= 21) {
+    const out: { label: string; value: number }[] = []
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date(Date.now() - i * 86400000)
+      const dayKey = Math.floor(d.getTime() / 86400000)
+      out.push({
+        label: d.toLocaleDateString('en', { day: 'numeric', month: 'short' }),
+        value: users.filter(u => {
+          if (!u.created_at) return false
+          return Math.floor(new Date(u.created_at).getTime() / 86400000) === dayKey
+        }).length,
+      })
+    }
+    return out
+  }
+  const now = new Date()
+  const out: { label: string; value: number }[] = []
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+    out.push({
+      label: d.toLocaleDateString('en', { month: 'short' }),
+      value: users.filter(u => {
+        if (!u.created_at) return false
+        const t = new Date(u.created_at)
+        return t.getFullYear() === d.getFullYear() && t.getMonth() === d.getMonth()
+      }).length,
+    })
+  }
+  return out
+}
+
+function activitySplit(users: UserProfile[]) {
+  const now = Date.now()
+  const d = 86400000
+  const day = users.filter(u => u.last_active && now - new Date(u.last_active).getTime() < d).length
+  const week = users.filter(u => u.last_active && now - new Date(u.last_active).getTime() >= d && now - new Date(u.last_active).getTime() < 7 * d).length
+  const month = users.filter(u => u.last_active && now - new Date(u.last_active).getTime() >= 7 * d && now - new Date(u.last_active).getTime() < 30 * d).length
+  const idle = users.length - day - week - month
+  return [
+    { label: 'Active today', value: day, color: '#34D399' },
+    { label: 'This week', value: week, color: '#00E5FF' },
+    { label: 'This month', value: month, color: '#FFB800' },
+    { label: '30d+ inactive', value: idle, color: '#9CA3AF' },
+  ]
+}
+
+function AreaChart({ data }: { data: { label: string; value: number }[] }) {
+  const [hover, setHover] = useState<number | null>(null)
+  const W = 600, H = 210, L = 34, R = 8, T = 14, B = 26
+  if (data.length === 0) return <EmptyHint icon={TrendingUp} text="No signup data yet." />
+  const max = Math.max(1, ...data.map(d => d.value))
+  const iw = W - L - R, ih = H - T - B
+  const x = (i: number) => L + (data.length === 1 ? iw / 2 : (i / (data.length - 1)) * iw)
+  const y = (v: number) => T + ih - (v / max) * ih
+  const pts = data.map((d, i) => `${x(i).toFixed(1)},${y(d.value).toFixed(1)}`)
+  const areaPath = `M${x(0).toFixed(1)},${(T + ih).toFixed(1)} L${pts.join(' L')} L${x(data.length - 1).toFixed(1)},${(T + ih).toFixed(1)} Z`
+  const gridTicks = [0, 0.5, 1].map(f => T + ih - f * ih)
+
+  function onMove(e: React.MouseEvent<SVGSVGElement>) {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const px = ((e.clientX - rect.left) / rect.width) * W
+    const idx = Math.min(data.length - 1, Math.max(0, Math.round(((px - L) / iw) * (data.length - 1))))
+    setHover(idx)
+  }
+
+  return (
+    <div className="relative">
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto block" onMouseMove={onMove} onMouseLeave={() => setHover(null)}>
+        <defs>
+          <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#FFB800" stopOpacity="0.35" />
+            <stop offset="100%" stopColor="#FF7A00" stopOpacity="0.02" />
+          </linearGradient>
+          <linearGradient id="areaLine" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="#FFB800" />
+            <stop offset="100%" stopColor="#FF7A00" />
+          </linearGradient>
+        </defs>
+        {gridTicks.map((gy, i) => (
+          <g key={i}>
+            <line x1={L} x2={W - R} y1={gy} y2={gy} stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
+            <text x={L - 7} y={gy + 3.5} textAnchor="end" fontSize="10" fill="rgba(255,255,255,0.35)">
+              {Math.round(max * (1 - i / 2))}
+            </text>
+          </g>
+        ))}
+        <path d={areaPath} fill="url(#areaFill)" />
+        <polyline points={pts.join(' ')} fill="none" stroke="url(#areaLine)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        {pts.map((p, i) => (
+          <circle key={i} cx={x(i)} cy={y(data[i].value)} r={hover === i ? 4.5 : 3}
+            fill={hover === i ? '#FFD166' : '#FFB800'} stroke="#0B0A1E" strokeWidth="1.5"
+            style={{ transition: 'r 120ms ease' }} />
+        ))}
+        {data.map((d, i) => {
+          const skip = data.length > 8 && i % Math.ceil(data.length / 6) !== 0
+          if (skip) return null
+          return (
+            <text key={`l${i}`} x={x(i)} y={H - 8} textAnchor="middle" fontSize="10" fill="rgba(255,255,255,0.4)">
+              {d.label}
+            </text>
+          )
+        })}
+        {hover !== null && (
+          <g>
+            <line x1={x(hover)} x2={x(hover)} y1={T} y2={T + ih} stroke="rgba(255,184,0,0.35)" strokeWidth="1" strokeDasharray="3 3" />
+            <rect x={Math.min(W - 96, Math.max(0, x(hover) - 48))} y={T - 22} width="96" height="20" rx="6"
+              fill="#1A1A3A" stroke="rgba(255,184,0,0.35)" />
+            <text x={Math.min(W - 96, Math.max(0, x(hover) - 48)) + 48} y={T - 8} textAnchor="middle" fontSize="10.5" fontWeight="700" fill="#FFD166">
+              {data[hover].value} · {data[hover].label}
+            </text>
+          </g>
+        )}
+      </svg>
+    </div>
+  )
+}
+
+function DonutSplit({ data, centerValue, centerLabel }: {
+  data: { label: string; value: number; color: string }[]; centerValue: number | string; centerLabel: string
+}) {
+  const total = data.reduce((s, d) => s + d.value, 0)
+  if (total === 0) return <EmptyHint icon={BarChart2} text="No data yet." />
+  const r = 58, thick = 20, C = 2 * Math.PI * r
+  const gap = data.length > 1 ? Math.min(2.2, C * 0.005) : 0
+  let acc = 0
+  const segs = data.map(s => {
+    const len = (s.value / total) * C
+    const seg = { ...s, len, dash: Math.max(len - (len > gap ? gap : 0), 0.5), offset: -acc }
+    acc += len
+    return seg
+  })
+  return (
+    <div className="flex flex-col items-center gap-4">
+      <div className="relative">
+        <svg width="170" height="170" viewBox="0 0 170 170">
+          <g transform="rotate(-90 85 85)">
+            {segs.map((s, i) => (
+              <circle key={i} cx="85" cy="85" r={r} fill="none"
+                stroke={s.color} strokeWidth={thick}
+                strokeDasharray={`${s.dash} ${C - s.dash}`}
+                strokeDashoffset={s.offset}
+                strokeLinecap="butt"
+                style={{ filter: `drop-shadow(0 0 6px ${s.color}55)`, transition: 'stroke-dasharray 500ms ease' }} />
+            ))}
+          </g>
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <p className="text-text-white text-2xl font-black leading-none tabular-nums">{centerValue}</p>
+          <p className="text-text-disabled text-[10px] font-bold uppercase tracking-widest mt-1">{centerLabel}</p>
+        </div>
+      </div>
+      <div className="w-full grid grid-cols-2 gap-x-4 gap-y-1.5">
+        {segs.map((s, i) => (
+          <div key={i} className="flex items-center gap-2 text-xs">
+            <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ background: s.color, boxShadow: `0 0 6px ${s.color}` }} />
+            <span className="text-text-white font-medium truncate">{s.label}</span>
+            <span className="ml-auto text-text-disabled tabular-nums">{Math.round((s.value / total) * 100)}%</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function RatingChart({ reviews }: { reviews: AppReview[] }) {
+  const counts = [5, 4, 3, 2, 1].map(r => ({ rating: r, value: reviews.filter(x => x.rating === r).length }))
+  const max = Math.max(1, ...counts.map(c => c.value))
+  if (reviews.length === 0) return <EmptyHint icon={Star} text="No ratings yet." />
+  return (
+    <div className="space-y-2.5">
+      {counts.map(c => (
+        <div key={c.rating} className="flex items-center gap-3">
+          <span className="w-9 text-sm font-bold text-text-white flex items-center gap-1">
+            {c.rating} <Star size={12} fill="#FFC107" style={{ color: '#FFC107' }} />
+          </span>
+          <div className="flex-1 h-[9px] rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+            <div className="h-full rounded-full transition-all duration-700"
+              style={{ width: `${(c.value / max) * 100}%`, background: 'linear-gradient(90deg,#FFB800,#FF7A00)', boxShadow: '0 0 10px rgba(255,184,0,0.3)' }} />
+          </div>
+          <span className="w-7 text-right text-text-disabled text-xs tabular-nums">{c.value}</span>
+        </div>
+      ))}
+      <p className="text-text-disabled text-center text-[11px] pt-1.5">{reviews.length} rating{reviews.length === 1 ? '' : 's'} · avg {avgOf(reviews)}</p>
+    </div>
+  )
+}
+
+function avgOf(reviews: AppReview[]) {
+  if (!reviews.length) return '0'
+  const s = reviews.reduce((t, r) => t + r.rating, 0)
+  return (s / reviews.length).toFixed(1)
+}
+
 function OverviewTab(props: {
   users: UserProfile[]; reviews: AppReview[]; flaggedCount: number
   msgCount: number; docCount: number; quizCount: number
@@ -534,21 +734,26 @@ function OverviewTab(props: {
         <StatCard icon={ShieldAlert} label="Flagged Messages" value={flaggedCount} from="#F87171" to="#DC2626" color="#F87171" sub="Awaiting moderation" />
       </div>
 
+      {/* Growth chart */}
+      <Card className="p-5" glow="rgba(255,184,0,0.12)">
+        <div className="flex items-center justify-between flex-wrap gap-2 mb-4">
+          <SectionTitle icon={<TrendingUp size={13} />} color="#FFB800" from="#FFB800" to="#FF7A00">Growth — New Learners</SectionTitle>
+          <span className="px-2.5 py-1 rounded-lg text-[10.5px] font-bold uppercase tracking-wider flex items-center gap-1.5"
+            style={{ background: 'rgba(255,184,0,0.08)', color: '#FFB800', border: '1px solid rgba(255,184,0,0.2)' }}>
+            <Zap size={11} /> Signups over time
+          </span>
+        </div>
+        <AreaChart data={signupTrend(users)} />
+      </Card>
+
       <div className="grid lg:grid-cols-2 gap-5">
         <Card className="p-5">
           <div className="p-1">
-            <SectionTitle icon={<Users size={13} />} color="#FFB800" from="#FFB800" to="#FF7A00">Users by Education Level</SectionTitle>
-            {eduSorted.length === 0 ? <EmptyHint /> : (
-              <div className="space-y-3">
-                {eduSorted.map(([level, count], i) => {
-                  const pct = users.length ? Math.round((count / users.length) * 100) : 0
-                  return (
-                    <MetricBar key={level} label={level || 'Unknown'} value={`${count} · ${pct}%`} pct={pct}
-                      grad="linear-gradient(90deg,#FFB800,#FF7A00)" delay={i * 60} />
-                  )
-                })}
-              </div>
-            )}
+            <SectionTitle icon={<Users size={13} />} color="#FFB800" from="#FFB800" to="#FF7A00">Learners by Education Level</SectionTitle>
+            <DonutSplit
+              data={eduSorted.map(([label, value], i) => ({ label: label || 'Unknown', value, color: CHART_COLORS[i % CHART_COLORS.length] }))}
+              centerValue={users.length}
+              centerLabel="learners" />
           </div>
         </Card>
 
@@ -566,6 +771,22 @@ function OverviewTab(props: {
                 })}
               </div>
             )}
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid lg:grid-cols-2 gap-5">
+        <Card className="p-5">
+          <div className="p-1">
+            <SectionTitle icon={<Activity size={13} />} color="#00E5FF" from="#00E5FF" to="#0884FF">Learner Activity</SectionTitle>
+            <DonutSplit data={activitySplit(users)} centerValue={activeWeek} centerLabel="active / 7d" />
+          </div>
+        </Card>
+
+        <Card className="p-5">
+          <div className="p-1">
+            <SectionTitle icon={<Star size={13} />} color="#FFC107" from="#FFC107" to="#FF8A00">Rating Distribution</SectionTitle>
+            <RatingChart reviews={reviews} />
           </div>
         </Card>
       </div>
