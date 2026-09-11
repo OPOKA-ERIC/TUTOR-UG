@@ -1,23 +1,35 @@
 import Anthropic from "npm:@anthropic-ai/sdk";
-
-const CORS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import {
+  ApiError, corsHeaders, handlePreflight, requireUser, json,
+  isNonEmptyString, isPlainObject, isArrayOrEmpty, isOptionalString,
+} from "../_shared/security.ts";
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
+  const preflight = handlePreflight(req);
+  if (preflight) return preflight;
+
+  const CORS = corsHeaders(req);
 
   try {
+    requireUser(req);
+
     const apiKey = Deno.env.get("ANTHROPIC_KEY");
-    if (!apiKey) {
-      return new Response(JSON.stringify({ error: "ANTHROPIC_KEY secret not set in Supabase" }), {
-        status: 500, headers: { ...CORS, "Content-Type": "application/json" },
-      });
-    }
+    if (!apiKey) throw new ApiError(500, "ANTHROPIC_KEY secret not set in Supabase");
 
     const anthropic = new Anthropic({ apiKey });
-    const { message, userProfile, conversationHistory, learningMode, sectionTitle } = await req.json();
+    const body = await req.json();
+    const { message, userProfile, conversationHistory, learningMode, sectionTitle } = body;
+
+    if (!isNonEmptyString(message, 20000)) throw new ApiError(400, "Message is required (max 20,000 characters).");
+    if (!isPlainObject(userProfile) || !isNonEmptyString(userProfile.name, 120)) {
+      throw new ApiError(400, "A valid user profile is required.");
+    }
+    if (!isOptionalString(userProfile.district, 120) || !isOptionalString(userProfile.educationLevel, 60)) {
+      throw new ApiError(400, "Invalid user profile fields.");
+    }
+    if (conversationHistory !== undefined && !isArrayOrEmpty(conversationHistory, 200)) {
+      throw new ApiError(400, "Conversation history is invalid.");
+    }
 
     const base = `You are TutorUG, an AI tutor for Ugandan students helping ${userProfile.name}, a ${userProfile.educationLevel} student from ${userProfile.district} district.
 Use ONLY Ugandan context, names, places, UGX currency. Follow UNEB curriculum standards.
@@ -28,8 +40,11 @@ Use **bold** for key terms. Use ## for headings. Use numbered lists for steps.`;
       : base + `\n\nBe clear, patient and encouraging. Use analogies from Ugandan daily life.`;
 
     const messages = [
-      ...(conversationHistory || []).map((m: any) => ({ role: m.role === "assistant" ? "assistant" : "user", content: m.content })),
-      { role: "user" as const, content: message },
+      ...(conversationHistory || []).map((m: any) => ({
+        role: m.role === "assistant" ? "assistant" : "user",
+        content: String(m.content || "").slice(0, 4000),
+      })),
+      { role: "user" as const, content: message.slice(0, 20000) },
     ];
 
     const response = await anthropic.messages.create({
@@ -41,19 +56,17 @@ Use **bold** for key terms. Use ## for headings. Use numbered lists for steps.`;
 
     const text = response.content[0].type === "text" ? response.content[0].text : "";
 
-    // Send as SSE so existing frontend parser works
     const encoder = new TextEncoder();
-    const body = encoder.encode(
+    const bodyOut = encoder.encode(
       `data: ${JSON.stringify({ token: text })}\n\n` +
       `data: ${JSON.stringify({ done: true, response: text })}\n\n`
     );
 
-    return new Response(body, {
+    return new Response(bodyOut, {
       headers: { ...CORS, "Content-Type": "text/event-stream", "Cache-Control": "no-cache" },
     });
   } catch (error: any) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500, headers: { ...CORS, "Content-Type": "application/json" },
-    });
+    const status = error instanceof ApiError ? error.status : 500;
+    return json({ error: error.message }, status, CORS);
   }
 });

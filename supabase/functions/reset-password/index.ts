@@ -1,3 +1,5 @@
+import { ApiError, corsHeaders, handlePreflight, json, isEmail, checkRateLimit } from "../_shared/security.ts";
+
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const resendKey   = Deno.env.get("RESEND_API_KEY")!;
@@ -10,22 +12,34 @@ const dbHeaders = {
 };
 
 Deno.serve(async (req) => {
-  try {
-    const { email: rawEmail, new_password } = await req.json();
-    if (!rawEmail || !new_password) return json({ error: "Email and new password are required" }, 400);
-    if (new_password.length < 6) return json({ error: "Password must be at least 6 characters" }, 400);
-    const email = rawEmail.trim().toLowerCase();
+  const preflight = handlePreflight(req);
+  if (preflight) return preflight;
 
-    // 1. Look up the user's auth ID via Supabase Admin API
+  const CORS = corsHeaders(req);
+
+  try {
+    const body = await req.json();
+    const { email: emailInput, new_password } = body;
+
+    if (!isEmail(emailInput)) throw new ApiError(400, "A valid email address is required.");
+    if (typeof new_password !== "string" || new_password.length < 8 || new_password.length > 128) {
+      throw new ApiError(400, "Password must be between 8 and 128 characters.");
+    }
+
+    const email = (emailInput as string).trim().toLowerCase();
+
+    await checkRateLimit(`reset-password:${email}`, 5, 900);
+
+    // 1. Look up the user's auth ID via Supabase Admin API.
     const listResp = await fetch(
       `${supabaseUrl}/auth/v1/admin/users?email=${encodeURIComponent(email)}`,
       { headers: dbHeaders }
     );
     const listData = await listResp.json();
     const authUser = listData?.users?.[0];
-    if (!authUser) return json({ error: "User not found." }, 404);
+    if (!authUser) throw new ApiError(404, "User not found.");
 
-    // 2. Update password via Supabase Admin API (handles hashing internally)
+    // 2. Update the password via Supabase Admin API (handles hashing internally).
     const updateResp = await fetch(
       `${supabaseUrl}/auth/v1/admin/users/${authUser.id}`,
       {
@@ -39,15 +53,15 @@ Deno.serve(async (req) => {
       throw new Error(`Failed to update password: ${err}`);
     }
 
-    // 3. Get user's name from users table
+    // 3. Get the user's name from the users table.
     const userResp = await fetch(
-      `${supabaseUrl}/rest/v1/users?user_id=eq.${authUser.id}&select=name&limit=1`,
+      `${supabaseUrl}/rest/v1/users?user_id=eq.${encodeURIComponent(authUser.id)}&select=name&limit=1`,
       { headers: dbHeaders }
     );
     const users = await userResp.json();
     const userName = users?.[0]?.name || "Student";
 
-    // 4. Send success email via Resend
+    // 4. Send a success email via Resend.
     await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { "Authorization": `Bearer ${resendKey}`, "Content-Type": "application/json" },
@@ -59,9 +73,10 @@ Deno.serve(async (req) => {
       }),
     });
 
-    return json({ success: true });
-  } catch (e) {
-    return json({ error: e.message }, 500);
+    return json({ success: true }, 200, CORS);
+  } catch (error: any) {
+    const status = error instanceof ApiError ? error.status : 500;
+    return json({ error: error.message }, status, CORS);
   }
 });
 
@@ -86,11 +101,4 @@ function buildSuccessEmail(name: string): string {
   </div>
 </body>
 </html>`;
-}
-
-function json(data: object, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { "Content-Type": "application/json" },
-  });
 }

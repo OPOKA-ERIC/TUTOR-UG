@@ -19,6 +19,7 @@ export default function DocumentsPage() {
   const [learningSessions, setLearningSessions] = useState<ChatSession[]>([])
   const [uploadState, setUploadState] = useState<UploadState>({ status: 'idle' })
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [consentChecked, setConsentChecked] = useState(false)
   const [subject, setSubject] = useState('')
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
   const [deleteSessionId, setDeleteSessionId] = useState<string | null>(null)
@@ -67,6 +68,7 @@ export default function DocumentsPage() {
       file_size_kb: Math.round(selectedFile.size / 1024),
       subject, education_level: profile.education_level,
       status: 'processing', uploaded_at: new Date().toISOString(),
+      consent_processing: true,
     })
 
     setUploadState({ status: 'processing', documentId })
@@ -156,7 +158,7 @@ export default function DocumentsPage() {
 
   const isUploading = uploadState.status === 'uploading' || uploadState.status === 'processing'
   const fileSelected = selectedFile !== null
-  const canUpload = !isUploading && fileSelected && subject !== ''
+  const canUpload = !isUploading && fileSelected && subject !== '' && consentChecked
 
   return (
     <div className="flex flex-col h-full bg-gradient-to-b from-surface to-bg relative overflow-hidden items-center">
@@ -228,6 +230,22 @@ export default function DocumentsPage() {
             TutorUG AI will scan your notes and create personalised learning units.
           </p>
         </div>
+
+        {/* ── PROCESSING CONSENT ── */}
+        <label className="w-full flex items-start gap-3 rounded-xl px-4 py-3.5 cursor-pointer select-none"
+          style={{ backgroundColor: 'rgba(255,184,0,0.06)', border: consentChecked ? '1px solid rgba(255,184,0,0.5)' : '1px solid rgba(255,255,255,0.08)' }}>
+          <input
+            type="checkbox"
+            checked={consentChecked}
+            onChange={e => setConsentChecked(e.target.checked)}
+            disabled={isUploading}
+            className="mt-0.5 accent-[#FFB800] w-4 h-4 shrink-0"
+          />
+          <p className="text-text-disabled text-xs leading-relaxed">
+            I consent to TutorUG processing this document to generate personalised learning content.
+            Your document is stored securely and can be permanently deleted at any time from your settings.
+          </p>
+        </label>
 
         {/* ── ERROR ── */}
         {uploadState.status === 'error' && (

@@ -15,6 +15,7 @@ data class UserProfile(
     @SerializedName("course")           val course: String = "",
     @SerializedName("profession")       val profession: String = "",
     @SerializedName("avatar_url")       val avatarUrl: String = "",
+    @SerializedName("role")             val role: String = "student",
     @SerializedName("created_at")       val createdAt: String = "",
     @SerializedName("last_active")      val lastActive: String = "",
     @SerializedName("total_messages")   val totalMessages: Int = 0,

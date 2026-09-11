@@ -20,10 +20,10 @@ class DocumentViewModel(application: Application) : AndroidViewModel(application
     private val _documents = MutableStateFlow<List<UploadedDocument>>(emptyList())
     val documents: StateFlow<List<UploadedDocument>> = _documents
 
-    fun uploadDocument(userId: String, fileUri: Uri, fileName: String, subject: String, educationLevel: String = "") {
+    fun uploadDocument(userId: String, fileUri: Uri, fileName: String, subject: String, educationLevel: String = "", consent: Boolean) {
         viewModelScope.launch {
             _uploadState.value = UploadState.Uploading
-            val result = documentRepository.uploadDocument(userId, fileUri, fileName, subject, educationLevel)
+            val result = documentRepository.uploadDocument(userId, fileUri, fileName, subject, educationLevel, consent)
             if (result.isSuccess) {
                 val documentId = result.getOrNull()!!
                 _uploadState.value = UploadState.Processing(documentId)

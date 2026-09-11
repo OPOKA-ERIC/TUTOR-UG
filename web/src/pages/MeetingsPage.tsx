@@ -112,7 +112,7 @@ export default function MeetingsPage() {
             return { ...prev, [p.meeting_id]: updated }
           })
           if (!participantNames[p.user_id]) {
-            const { data } = await supabase.from('users').select('name').eq('user_id', p.user_id).single()
+            const { data } = await supabase.from('profiles').select('name').eq('user_id', p.user_id).single()
             if (data) setParticipantNames(prev => ({ ...prev, [p.user_id]: data.name }))
           }
         })
@@ -147,7 +147,7 @@ export default function MeetingsPage() {
 
   async function fetchParticipantName(userId: string) {
     if (participantNames[userId]) return
-    const { data } = await supabase.from('users').select('name').eq('user_id', userId).single()
+    const { data } = await supabase.from('profiles').select('name').eq('user_id', userId).single()
     if (data) setParticipantNames(prev => ({ ...prev, [userId]: data.name }))
   }
 

@@ -1,3 +1,4 @@
+import { isEmail, fail } from '../utils/validate.js'
 import { getDbHeaders, getSupabaseUrl } from '../utils/supabase-admin.js'
 import { buildOtpEmail } from '../utils/email.js'
 
@@ -10,7 +11,7 @@ export default async function handler(req, res) {
 
   try {
     const { email: rawEmail } = req.body
-    if (!rawEmail) return res.status(400).json({ error: 'Email is required' })
+    if (!isEmail(rawEmail)) return fail(res, 'A valid email address is required.')
 
     const email = rawEmail.trim().toLowerCase()
     const supabaseUrl = getSupabaseUrl()
@@ -25,11 +26,12 @@ export default async function handler(req, res) {
     const authData = await authResp.json()
     const authUser = authData?.users?.[0]
     if (!authUser) {
-      return res.status(404).json({ error: 'No account found with this email address.' })
+      // Don't reveal whether an account exists.
+      return res.json({ success: true })
     }
 
     const profileResp = await fetch(
-      `${supabaseUrl}/rest/v1/users?user_id=eq.${authUser.id}&select=name&limit=1`,
+      `${supabaseUrl}/rest/v1/users?user_id=eq.${encodeURIComponent(authUser.id)}&select=name&limit=1`,
       { headers: dbHeaders }
     )
     const profiles = await profileResp.json()

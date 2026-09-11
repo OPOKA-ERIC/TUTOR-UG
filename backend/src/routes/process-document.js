@@ -1,9 +1,10 @@
 import Anthropic from '@anthropic-ai/sdk'
+import { isNonEmptyString, isOptionalString, fail } from '../utils/validate.js'
 
 async function updateDocumentStatus(documentId, status, extra = {}) {
   const supabaseUrl = process.env.SUPABASE_URL
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-  await fetch(`${supabaseUrl}/rest/v1/documents?document_id=eq.${documentId}`, {
+  await fetch(`${supabaseUrl}/rest/v1/documents?document_id=eq.${encodeURIComponent(documentId)}`, {
     method: 'PATCH',
     headers: { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ status, ...extra }),
@@ -17,9 +18,19 @@ export default async function handler(req, res) {
     const apiKey = process.env.ANTHROPIC_KEY
     if (!apiKey) return res.status(500).json({ error: 'ANTHROPIC_KEY not set' })
 
-    const anthropic = new Anthropic({ apiKey })
     const { documentId, fileName, userId, subject, extractedText } = req.body
 
+    if (!isNonEmptyString(documentId, 128)) return fail(res, 'Document ID is required.')
+    if (!isNonEmptyString(userId, 128)) return fail(res, 'User ID is required.')
+    if (!isOptionalString(fileName, 255) || !isOptionalString(subject, 120)) {
+      return fail(res, 'Invalid document fields.')
+    }
+    // A user can only process their own documents.
+    if (req.user?.id && req.user.id !== userId) {
+      return fail(res, 'You can only process your own documents.', 403)
+    }
+
+    const anthropic = new Anthropic({ apiKey })
     const textContent = (extractedText && extractedText.trim().length > 50)
       ? extractedText.trim().slice(0, 12000)
       : `Document: ${fileName}\nSubject: ${subject}\nNote: Could not extract text. Please create educational content based on the subject "${subject}".`
@@ -63,7 +74,7 @@ FORMATTING RULES for the content field:
       sections = [{ title: `Introduction to ${subject}`, content: raw }]
     }
 
-    if (!Array.isArray(sections) || sections.length === 0) {
+    if (!Array.isArray(sections) || sections.length === 0 || sections.length > 50) {
       throw new Error('No sections returned from AI')
     }
 
@@ -80,8 +91,8 @@ FORMATTING RULES for the content field:
       document_id: documentId,
       user_id: userId,
       section_index: i,
-      title: s.title ?? `Section ${i + 1}`,
-      content: s.content ?? '',
+      title: String(s.title ?? `Section ${i + 1}`).slice(0, 500),
+      content: String(s.content ?? '').slice(0, 50000),
       quiz_passed: false,
       best_score: 0,
       attempt_count: 0,
@@ -106,7 +117,7 @@ FORMATTING RULES for the content field:
 
     res.json({ success: true, sectionCount: sections.length })
   } catch (error) {
-    try { await updateDocumentStatus(req.body.documentId, 'failed') } catch {}
+    try { await updateDocumentStatus(req.body?.documentId, 'failed') } catch {}
     res.status(500).json({ error: error.message })
   }
 }

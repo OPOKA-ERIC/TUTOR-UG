@@ -5,13 +5,15 @@ import {
   BookOpen, ChevronRight, Mic, Volume2, Bell, BellRing,
   Calendar, Download, Info, Shield, FileCheck, Star, Share2,
   Lock, LogOut, Eye, EyeOff, School, Briefcase, Sparkles,
-  ChevronLeft, Palette, Headphones, Brain, BarChart2, CheckCircle,
+  ChevronLeft, Palette, Headphones, Brain, BarChart2, CheckCircle, Crown,
+  Trash2,
 } from 'lucide-react'
 import { useAuth } from '@/lib/AuthContext'
 import { useTheme } from '@/lib/ThemeContext'
 import { useTimetable } from '@/lib/TimetableContext'
 import { supabase } from '@/lib/supabase'
 import { SUPABASE_URL } from '@/lib/supabase'
+import { apiUrl, apiHeaders } from '@/lib/api'
 import { EDUCATION_LEVELS } from '@/lib/constants'
 import type { UserSettings } from '@/types'
 
@@ -172,8 +174,18 @@ export default function SettingsModal({ onClose }: { onClose?: () => void }) {
   const [showPwd, setShowPwd] = useState(false)
 
   const [showLogout, setShowLogout] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [privacyBusy, setPrivacyBusy] = useState<'idle' | 'exporting' | 'deleting'>('idle')
+  const [privacyMsg, setPrivacyMsg] = useState<{ ok: boolean; text: string } | null>(null)
   const [activeSection, setActiveSection] = useState('profile')
   const { openTimetable } = useTimetable()
+
+  const [reviewRating, setReviewRating] = useState(0)
+  const [reviewTitle, setReviewTitle] = useState('')
+  const [reviewComment, setReviewComment] = useState('')
+  const [reviewLoading, setReviewLoading] = useState(false)
+  const [reviewSubmitted, setReviewSubmitted] = useState(false)
+  const [reviewError, setReviewError] = useState('')
 
   const SECTIONS = [
     { id: 'profile', icon: Camera, label: 'Profile', color: '#F59E0B' },
@@ -183,6 +195,7 @@ export default function SettingsModal({ onClose }: { onClose?: () => void }) {
     { id: 'audio', icon: Headphones, label: 'Audio', color: '#00E5FF' },
     { id: 'notifications', icon: BellRing, label: 'Notifications', color: '#F59E0B' },
     { id: 'links', icon: Share2, label: 'Links', color: '#00E5FF' },
+    { id: 'rate', icon: Star, label: 'Rate TutorUG', color: '#F59E0B' },
     { id: 'account', icon: Lock, label: 'Account', color: '#EF4444' },
   ]
 
@@ -258,6 +271,70 @@ export default function SettingsModal({ onClose }: { onClose?: () => void }) {
     await logout()
     onClose?.()
     navigate('/login')
+  }
+
+  async function handleExportData() {
+    setPrivacyMsg(null)
+    setPrivacyBusy('exporting')
+    try {
+      const res = await fetch(apiUrl('export-data'), { method: 'POST', headers: await apiHeaders() })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: `Server error ${res.status}` }))
+        throw new Error(err.error || 'Export failed')
+      }
+      const bundle = await res.json()
+      const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `tutorug-data-${new Date().toISOString().slice(0, 10)}.json`
+      a.click()
+      URL.revokeObjectURL(url)
+      setPrivacyMsg({ ok: true, text: 'Your data has been downloaded.' })
+    } catch (e: any) {
+      setPrivacyMsg({ ok: false, text: e?.message || 'Export failed. Please try again.' })
+    } finally {
+      setPrivacyBusy('idle')
+    }
+  }
+
+  async function handleDeleteData() {
+    setPrivacyMsg(null)
+    setPrivacyBusy('deleting')
+    try {
+      const res = await fetch(apiUrl('delete-data'), { method: 'POST', headers: await apiHeaders() })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: `Server error ${res.status}` }))
+        throw new Error(err.error || 'Deletion failed')
+      }
+      setShowDeleteConfirm(false)
+      setPrivacyMsg({ ok: true, text: 'Your account and data were deleted. Signing you out...' })
+      await handleLogout()
+    } catch (e: any) {
+      setShowDeleteConfirm(false)
+      setPrivacyMsg({ ok: false, text: e?.message || 'Deletion failed. Please try again.' })
+      setPrivacyBusy('idle')
+    }
+  }
+
+  async function submitReview() {
+    if (!profile || reviewRating === 0) return
+    setReviewLoading(true)
+    setReviewError('')
+    const { error } = await supabase.from('reviews').insert({
+      user_id: profile.user_id,
+      rating: reviewRating,
+      title: reviewTitle.trim(),
+      comment: reviewComment.trim(),
+      status: 'pending',
+    })
+    setReviewLoading(false)
+    if (error) {
+      setReviewError('Could not submit review. Please try again.')
+      return
+    }
+    setReviewSubmitted(true)
+    setTimeout(() => setReviewSubmitted(false), 4000)
   }
 
   if (!profile) return null
@@ -750,6 +827,15 @@ export default function SettingsModal({ onClose }: { onClose?: () => void }) {
                       <p className="text-text-white text-sm font-bold">Offline Mode</p>
                       <p className="text-text-disabled text-[10px] mt-0.5">Coming soon</p>
                     </button>
+                    {profile.role === 'admin' && (
+                      <button onClick={() => { onClose?.(); navigate('/admin') }}
+                        className="p-3 rounded-lg text-left transition-all hover:bg-white/[0.03]"
+                        style={{ background: 'rgba(255,184,0,0.08)', border: '1px solid rgba(255,184,0,0.18)' }}>
+                        <Crown size={18} style={{ color: '#FFB800' }} className="mb-1" />
+                        <p className="text-text-white text-sm font-bold">Super Admin</p>
+                        <p className="text-text-disabled text-[10px] mt-0.5">Dashboard & analytics</p>
+                      </button>
+                    )}
                   </div>
                 </div>
               </Card>
@@ -780,6 +866,73 @@ export default function SettingsModal({ onClose }: { onClose?: () => void }) {
                       <p className="text-text-disabled text-xs">Usage terms</p>
                     </div>
                   </div>
+                </div>
+              </Card>
+            </div>
+          )}
+
+          {/* ── RATE TUTORUG ── */}
+          {activeSection === 'rate' && (
+            <div className="max-w-lg space-y-4">
+              <Card>
+                <div className="p-5">
+                  <p className="text-text-white text-lg font-bold flex items-center gap-2">
+                    <Star size={18} style={{ color: '#F59E0B' }} />
+                    Rate TutorUG
+                  </p>
+                  <p className="text-text-disabled text-sm mt-1 mb-4">
+                    Your feedback helps us improve the learning experience for all Ugandan students.
+                  </p>
+
+                  {reviewSubmitted && (
+                    <div className="px-3 py-2 rounded-lg mb-4 flex items-center gap-2 text-sm font-semibold"
+                      style={{ background: 'rgba(0,230,118,0.1)', color: '#00E676', border: '1px solid rgba(0,230,118,0.2)' }}>
+                      <CheckCircle size={15} /> Thank you! Your review has been submitted.
+                    </div>
+                  )}
+                  {reviewError && (
+                    <div className="px-3 py-2 rounded-lg mb-4 text-sm font-medium"
+                      style={{ background: 'rgba(239,68,68,0.1)', color: '#EF4444', border: '1px solid rgba(239,68,68,0.2)' }}>
+                      {reviewError}
+                    </div>
+                  )}
+
+                  <p className="text-text-disabled text-xs font-bold uppercase tracking-widest mb-2">Your Rating</p>
+                  <div className="flex gap-1.5 mb-5">
+                    {[1, 2, 3, 4, 5].map(n => (
+                      <button key={n} onClick={() => setReviewRating(n)}
+                        className="transition-transform hover:scale-125 active:scale-95"
+                        aria-label={`${n} star${n > 1 ? 's' : ''}`}>
+                        <Star size={30}
+                          fill={n <= reviewRating ? '#FFC107' : 'transparent'}
+                          style={{ color: n <= reviewRating ? '#FFC107' : 'rgba(255,255,255,0.2)' }} />
+                      </button>
+                    ))}
+                    <span className="ml-2 self-center text-text-disabled text-sm">
+                      {reviewRating ? ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'][reviewRating] : 'Tap to rate'}
+                    </span>
+                  </div>
+
+                  <p className="text-text-disabled text-xs font-bold uppercase tracking-widest mb-2">Title <span className="normal-case font-normal">(optional)</span></p>
+                  <input value={reviewTitle} onChange={e => setReviewTitle(e.target.value)} maxLength={80} placeholder="e.g. Amazing AI tutor!"
+                    className="w-full px-3 py-2.5 rounded-lg mb-4 text-sm outline-none"
+                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: '#fff' }} />
+
+                  <p className="text-text-disabled text-xs font-bold uppercase tracking-widest mb-2">Feedback <span className="normal-case font-normal">(optional)</span></p>
+                  <textarea value={reviewComment} onChange={e => setReviewComment(e.target.value)} maxLength={1000} rows={4}
+                    placeholder="What do you love? What should we improve?"
+                    className="w-full px-3 py-2.5 rounded-lg mb-4 text-sm outline-none resize-none"
+                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: '#fff' }} />
+
+                  <button onClick={submitReview} disabled={reviewLoading || reviewRating === 0}
+                    className="w-full h-11 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50"
+                    style={{
+                      background: 'linear-gradient(135deg, #F59E0B, #D97706)',
+                      color: '#0A0A1F',
+                    }}>
+                    {reviewLoading ? <Loader2 size={16} className="animate-spin" /> : <Star size={16} />}
+                    Submit Review
+                  </button>
                 </div>
               </Card>
             </div>
@@ -838,6 +991,29 @@ export default function SettingsModal({ onClose }: { onClose?: () => void }) {
                   </button>
                 </div>
               </Card>
+              <Card>
+                <div className="p-4 space-y-3">
+                  <p className="text-text-disabled text-xs font-bold uppercase tracking-widest">Privacy &amp; Your Data</p>
+                  {privacyMsg && (
+                    <p className="text-xs px-3 py-1.5 rounded-lg"
+                      style={{ background: privacyMsg.ok ? 'rgba(0,230,118,0.1)' : 'rgba(239,68,68,0.1)', color: privacyMsg.ok ? '#00E676' : '#EF4444' }}>
+                      {privacyMsg.text}
+                    </p>
+                  )}
+                  <button onClick={handleExportData} disabled={privacyBusy !== 'idle'}
+                    className="w-full px-4 py-3 rounded-lg flex items-center gap-3 text-sm font-bold transition-all hover:brightness-110 disabled:opacity-50"
+                    style={{ background: 'rgba(124,58,237,0.1)', border: '1px solid rgba(124,58,237,0.25)', color: '#C4B5FD' }}>
+                    {privacyBusy === 'exporting' ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
+                    Download my data
+                  </button>
+                  <button onClick={() => setShowDeleteConfirm(true)} disabled={privacyBusy !== 'idle'}
+                    className="w-full px-4 py-3 rounded-lg flex items-center gap-3 text-sm font-bold transition-all hover:brightness-110 disabled:opacity-50"
+                    style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: '#F87171' }}>
+                    {privacyBusy === 'deleting' ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
+                    Delete my account and data
+                  </button>
+                </div>
+              </Card>
               <button onClick={() => setShowLogout(true)}
                 className="w-full p-4 rounded-xl flex items-center gap-3 transition-all hover:brightness-110"
                 style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.15)' }}>
@@ -881,6 +1057,41 @@ export default function SettingsModal({ onClose }: { onClose?: () => void }) {
                 className="flex-1 py-2 rounded-lg text-xs font-bold transition-all hover:brightness-110"
                 style={{ background: 'linear-gradient(135deg, #EF4444, #DC2626)', color: '#fff' }}>
                 Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── DELETE ACCOUNT DIALOG ── */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6"
+          style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)' }}>
+          <div className="rounded-xl p-5 w-full max-w-[300px] text-center"
+            style={{
+              background: 'linear-gradient(135deg, rgba(18,18,42,0.96), rgba(26,26,58,0.92))',
+              border: '1px solid rgba(255,255,255,0.06)',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
+            }}>
+            <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3" style={{ background: 'rgba(239,68,68,0.15)' }}>
+              <Trash2 size={22} style={{ color: '#EF4444' }} />
+            </div>
+            <p className="text-text-white font-bold text-base mb-1">Delete account?</p>
+            <p className="text-text-disabled text-xs mb-4">
+              This permanently deletes your account, documents, chats, quiz history and uploaded files. This cannot be undone.
+            </p>
+            <div className="flex gap-2.5">
+              <button onClick={() => setShowDeleteConfirm(false)}
+                className="flex-1 py-2 rounded-lg text-xs font-bold transition-all hover:bg-white/5"
+                style={{ border: '1px solid rgba(255,255,255,0.1)', color: '#999' }}>
+                Cancel
+              </button>
+              <button onClick={handleDeleteData}
+                disabled={privacyBusy !== 'idle'}
+                className="flex-1 py-2 rounded-lg text-xs font-bold transition-all hover:brightness-110 disabled:opacity-50 flex items-center justify-center gap-1.5"
+                style={{ background: 'linear-gradient(135deg, #EF4444, #DC2626)', color: '#fff' }}>
+                {privacyBusy === 'deleting' ? <Loader2 size={12} className="animate-spin" /> : null}
+                Delete
               </button>
             </div>
           </div>

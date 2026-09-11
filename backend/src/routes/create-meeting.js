@@ -1,8 +1,22 @@
+import { isNonEmptyString, isOptionalString, isPositiveNumber, fail } from '../utils/validate.js'
+
 export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(204).end()
 
   try {
-    const { meetingId, hostId, title, subject, scheduledAt, durationMins, userName } = req.body
+const { meetingId, hostId, title, subject, scheduledAt, durationMins, userName } = req.body
+
+    if (!isNonEmptyString(meetingId, 128)) return fail(res, 'Meeting ID is required.')
+    if (!isNonEmptyString(hostId, 128)) return fail(res, 'Host ID is required.')
+    if (req.user?.id && req.user.id !== hostId) {
+      return fail(res, 'You can only create meetings as yourself.', 403)
+    }
+    if (!isOptionalString(title, 200)) return fail(res, 'Invalid meeting title.')
+    if (!isOptionalString(subject, 120)) return fail(res, 'Invalid meeting subject.')
+    if (durationMins !== undefined && !isPositiveNumber(durationMins, 600)) {
+      return fail(res, 'Invalid meeting duration.')
+    }
+
     const dailyKey = process.env.DAILY_API_KEY
 
     if (dailyKey) {

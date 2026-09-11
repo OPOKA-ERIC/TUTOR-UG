@@ -4,8 +4,7 @@ import { ArrowLeft, Mic, Send } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { useAuth } from '@/lib/AuthContext'
-import { apiUrl } from '@/lib/api'
-import { SUPABASE_ANON } from '@/lib/supabase'
+import { apiUrl, apiHeaders } from '@/lib/api'
 import Logo from '@/components/Logo'
 import type { DocumentSection, ChatMessage } from '@/types'
 
@@ -80,7 +79,7 @@ export default function LearningPage() {
 
     const res = await fetch(apiUrl('send-chat-message'), {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` },
+      headers: await apiHeaders(),
       body: JSON.stringify({
         sessionId: `learn-${docId}-${sectionIndex}`,
         message: text,

@@ -1,4 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk'
+import { isNonEmptyString, isPlainObject, isOptionalString, fail } from '../utils/validate.js'
 
 function buildSystemPrompt(userProfile, districtContext) {
   return `You are TutorUG, an AI tutor for Ugandan students helping ${userProfile.name}, a ${userProfile.educationLevel} student from ${userProfile.district}.
@@ -18,9 +19,15 @@ export default async function handler(req, res) {
     const apiKey = process.env.ANTHROPIC_KEY
     if (!apiKey) return res.status(500).json({ error: 'ANTHROPIC_KEY not set' })
 
-    const anthropic = new Anthropic({ apiKey })
     const { sectionContent, userProfile, districtContext } = req.body
 
+    if (!isNonEmptyString(sectionContent, 60000)) return fail(res, 'Section content is required.')
+    if (!isPlainObject(userProfile) || !isNonEmptyString(userProfile.name, 120)) {
+      return fail(res, 'A valid user profile is required.')
+    }
+    if (!isOptionalString(districtContext, 2000)) return fail(res, 'Invalid district context.')
+
+    const anthropic = new Anthropic({ apiKey })
     const systemPrompt = buildSystemPrompt(userProfile, districtContext)
 
     const response = await anthropic.messages.create({
@@ -29,7 +36,7 @@ export default async function handler(req, res) {
       system: systemPrompt + '\n\nGenerate 3-5 multiple choice quiz questions based on the section content. Use local Ugandan context in questions. Return ONLY a valid JSON array with no extra text. Each item must have: question (string), options (array of exactly 4 strings), correctIndex (number 0-3), explanation (string).',
       messages: [{
         role: 'user',
-        content: `Generate quiz questions for this section:\n\n${sectionContent}`,
+        content: `Generate quiz questions for this section:\n\n${sectionContent.slice(0, 60000)}`,
       }],
     })
 
@@ -41,6 +48,10 @@ export default async function handler(req, res) {
       const match = raw.match(/\[.*\]/s)
       if (!match) throw new Error('Could not parse quiz questions')
       questions = JSON.parse(match[0])
+    }
+
+    if (!Array.isArray(questions) || questions.length > 20) {
+      return fail(res, 'Invalid quiz response from AI.', 500)
     }
 
     res.json({ questions })
