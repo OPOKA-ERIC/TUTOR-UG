@@ -3,6 +3,8 @@ package com.tutorug.app.ui.screens
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Intent
+import android.net.Uri
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -68,9 +70,16 @@ fun MeetingsScreen(
         }
     }
 
-    // ── ACTIVE MEETING (WebView) ─────────────────────────────────────────────
+    // ── ACTIVE MEETING (opened in external browser) ─────────────────────────
     if (activeMeeting != null) {
         val (roomUrl, token) = activeMeeting!!
+        val context = LocalContext.current
+        val meetingLink = remember(roomUrl, token) { buildMeetingUrl(roomUrl, token, userProfile.name) }
+
+        LaunchedEffect(meetingLink) {
+            openMeetingInBrowser(context, meetingLink)
+        }
+
         BackHandler { viewModel.leaveMeeting() }
         Column(modifier = Modifier.fillMaxSize().background(AppColors.background).statusBarsPadding()) {
             Row(
@@ -81,7 +90,7 @@ fun MeetingsScreen(
             ) {
                 Box(modifier = Modifier.size(8.dp).background(error, CircleShape))
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Meeting in progress", color = AppColors.textPrimary, fontWeight = FontWeight.Bold,
+                Text("Meeting opened in your browser", color = AppColors.textPrimary, fontWeight = FontWeight.Bold,
                     fontSize = 14.sp, modifier = Modifier.weight(1f))
                 Surface(
                     shape = RoundedCornerShape(10.dp),
@@ -92,8 +101,35 @@ fun MeetingsScreen(
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp))
                 }
             }
-            DailyCoWebView(roomUrl = roomUrl, token = token, userName = userProfile.name,
-                modifier = Modifier.fillMaxSize())
+            Column(
+                modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Box(modifier = Modifier.size(64.dp).background(primary.copy(alpha = 0.15f), CircleShape),
+                    contentAlignment = Alignment.Center) {
+                    Icon(Icons.Default.VideoCall, null, tint = primary, modifier = Modifier.size(30.dp))
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Text("Your meeting opened in the browser",
+                    color = AppColors.textPrimary, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Spacer(modifier = Modifier.height(6.dp))
+                Text("Tap the app again when you're done, or reopen the meeting below.",
+                    color = AppColors.onSurfaceVar, fontSize = 12.sp)
+                Spacer(modifier = Modifier.height(20.dp))
+                Button(
+                    onClick = { openMeetingInBrowser(context, meetingLink) },
+                    colors = ButtonDefaults.buttonColors(containerColor = primary)
+                ) {
+                    Icon(Icons.Default.VideoCall, null, modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Reopen meeting", fontWeight = FontWeight.Bold)
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+                TextButton(onClick = { viewModel.leaveMeeting() }) {
+                    Text("Leave meeting", color = error, fontWeight = FontWeight.Bold)
+                }
+            }
         }
         return
     }
@@ -626,34 +662,24 @@ private fun MeetingInput(value: String, onValue: (String) -> Unit, placeholder: 
     BasicTextInput(value = value, onValue = onValue, placeholder = placeholder)
 }
 
-@SuppressLint("SetJavaScriptEnabled")
-@Composable
-fun DailyCoWebView(roomUrl: String, token: String, userName: String = "",
-    modifier: Modifier = Modifier) {
+private fun openMeetingInBrowser(context: android.content.Context, url: String) {
+    try {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(intent)
+    } catch (_: Exception) {
+        // No browser available on device; user stays on this screen.
+    }
+}
+
+private fun buildMeetingUrl(roomUrl: String, token: String, userName: String): String {
     val displayName = java.net.URLEncoder.encode(userName.ifBlank { "Participant" }, "UTF-8")
     // Jitsi URLs carry their config in the #fragment (never append ?query after it) —
-    // appending "?t=..." after "#" corrupts the config and re-enables the prejoin/deep-link screens.
-    val fullUrl = remember(roomUrl, token, displayName) {
-        if (roomUrl.contains("#")) {
-            if (roomUrl.contains("displayName")) roomUrl
-            else roomUrl.replaceFirst("#", "#config.displayName=\"$displayName\"&")
-        } else {
-            val sep = if (roomUrl.contains("?")) "&" else "?"
-            "$roomUrl${sep}t=$token&userName=$displayName"
-        }
+    // appending "?t=..." after "#" corrupts the config and re-enables prejoin/deep-link screens.
+    return if (roomUrl.contains("#")) {
+        if (roomUrl.contains("displayName")) roomUrl
+        else roomUrl.replaceFirst("#", "#config.displayName=\"$displayName\"&")
+    } else {
+        val sep = if (roomUrl.contains("?")) "&" else "?"
+        "$roomUrl${sep}t=$token&userName=$displayName"
     }
-    AndroidView(
-        modifier = modifier,
-        factory = { ctx ->
-            WebView(ctx).apply {
-                layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-                webViewClient = WebViewClient()
-                settings.javaScriptEnabled = true
-                settings.mediaPlaybackRequiresUserGesture = false
-                settings.domStorageEnabled = true
-                settings.javaScriptCanOpenWindowsAutomatically = true
-                loadUrl(fullUrl)
-            }
-        }
-    )
 }
