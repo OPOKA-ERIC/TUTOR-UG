@@ -635,7 +635,8 @@ fun DailyCoWebView(roomUrl: String, token: String, userName: String = "",
     // appending "?t=..." after "#" corrupts the config and re-enables the prejoin/deep-link screens.
     val fullUrl = remember(roomUrl, token, displayName) {
         if (roomUrl.contains("#")) {
-            roomUrl
+            if (roomUrl.contains("displayName")) roomUrl
+            else roomUrl.replaceFirst("#", "#config.displayName=\"$displayName\"&")
         } else {
             val sep = if (roomUrl.contains("?")) "&" else "?"
             "$roomUrl${sep}t=$token&userName=$displayName"

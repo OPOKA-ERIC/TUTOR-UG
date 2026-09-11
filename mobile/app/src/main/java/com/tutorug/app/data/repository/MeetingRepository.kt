@@ -18,6 +18,11 @@ class MeetingRepository {
     private val base = SupabaseClient.SUPABASE_URL
     private val http = SupabaseClient.http
 
+    private fun jitsiUrl(meetingId: String): String {
+        val room = meetingId.take(8)
+        return "https://meet.jit.si/tutorug-$room#config.prejoinPageEnabled=false&config.requireDisplayName=false&config.disableDeepLinking=true&interfaceConfig.disableDeepLinking=true"
+    }
+
     suspend fun loadMeetings(): List<Meeting> = withContext(Dispatchers.IO) {
         val req = Request.Builder()
             .url("$base/rest/v1/meetings?status=in.(\"scheduled\",\"live\")&order=scheduled_at.asc")
@@ -57,9 +62,9 @@ class MeetingRepository {
             .build()
         val edgeBody = http.newCall(edgeReq).execute().body?.string() ?: "{}"
         val edgeJson = JSONObject(edgeBody)
-        val roomUrl = edgeJson.optString("roomUrl", "https://tutorug.daily.co/$meetingId")
-        val hostToken = edgeJson.optString("hostToken", "host_$meetingId")
-        val participantToken = edgeJson.optString("participantToken", "join_$meetingId")
+        val roomUrl = edgeJson.optString("roomUrl", jitsiUrl(meetingId))
+        val hostToken = edgeJson.optString("hostToken", "")
+        val participantToken = edgeJson.optString("participantToken", "")
 
         val row = JSONObject().apply {
             put("meeting_id", meetingId); put("host_id", hostId); put("title", title)
@@ -109,7 +114,7 @@ class MeetingRepository {
                 .post(payload.toString().toRequestBody("application/json".toMediaType()))
                 .build()
             val edgeBody = http.newCall(edgeReq).execute().body?.string() ?: "{}"
-            val token = JSONObject(edgeBody).optString("participantToken", "join_$meetingId")
+            val token = JSONObject(edgeBody).optString("participantToken", "")
 
             val upsert = JSONObject().apply {
                 put("meeting_id", meetingId); put("user_id", userId)
