@@ -11,6 +11,8 @@ import sendOtp from './routes/send-otp.js'
 import verifyOtp from './routes/verify-otp.js'
 import resetPassword from './routes/reset-password.js'
 import sendReminder from './routes/send-reminder.js'
+import inviteToMeeting from './routes/invite-to-meeting.js'
+import respondInvite from './routes/respond-invite.js'
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -30,6 +32,8 @@ app.use('/api/send-otp', sendOtp)
 app.use('/api/verify-otp', verifyOtp)
 app.use('/api/reset-password', resetPassword)
 app.use('/api/send-reminder', sendReminder)
+app.use('/api/invite-to-meeting', inviteToMeeting)
+app.use('/api/respond-invite', respondInvite)
 
 app.listen(PORT, () => {
   console.log(`TutorUG API running on port ${PORT}`)

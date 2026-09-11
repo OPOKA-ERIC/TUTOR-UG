@@ -177,7 +177,7 @@ export interface Meeting {
   duration_mins: number
   status: 'scheduled' | 'live' | 'ended'
   created_at: string
-  host_name?: string   // joined from users
+  host_name?: string
 }
 
 export interface MeetingParticipant {
@@ -185,7 +185,17 @@ export interface MeetingParticipant {
   meeting_id: string
   user_id: string
   join_token: string
+  status: 'pending' | 'approved' | 'refused'
   joined_at: string
+}
+
+export interface MeetingInvite {
+  id: string
+  meeting_id: string
+  email: string
+  user_id: string | null
+  status: 'pending' | 'accepted' | 'refused'
+  invited_at: string
 }
 
 // ── STUDY ROOMS ───────────────────────────────────────────────────────────────

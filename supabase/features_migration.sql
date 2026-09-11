@@ -32,12 +32,18 @@ do $$ begin
   end if;
 end $$;
 
+alter table meetings add column if not exists host_name text default '';
+
 create index if not exists meetings_status_idx on meetings(status);
 create index if not exists meetings_scheduled_idx on meetings(scheduled_at);
 
--- Enable Realtime for live meeting status updates
-alter publication supabase_realtime add table meetings;
-alter publication supabase_realtime add table meeting_participants;
+-- Enable Realtime for live meeting status updates (idempotent)
+do $$ begin
+  alter publication supabase_realtime add table meetings;
+exception when duplicate_object then null; end $$;
+do $$ begin
+  alter publication supabase_realtime add table meeting_participants;
+exception when duplicate_object then null; end $$;
 
 -- ── MEETING PARTICIPANTS ──────────────────────────────────────────────────────
 create table if not exists meeting_participants (
@@ -45,9 +51,12 @@ create table if not exists meeting_participants (
   meeting_id   text not null references meetings(meeting_id) on delete cascade,
   user_id      text not null references users(user_id),
   join_token   text default '',
+  status       text default 'approved',
   joined_at    text default now()::text,
   unique(meeting_id, user_id)
 );
+
+alter table meeting_participants add column if not exists status text default 'approved';
 
 alter table meeting_participants enable row level security;
 
@@ -56,6 +65,75 @@ do $$ begin
     create policy "participants_own" on meeting_participants for all using (auth.uid()::text = user_id);
   end if;
 end $$;
+
+do $$ begin
+  if not exists (select 1 from pg_policies where tablename='meeting_participants' and policyname='participants_host_read') then
+    create policy "participants_host_read" on meeting_participants for select
+      using (exists (
+        select 1 from meetings where meetings.meeting_id = meeting_participants.meeting_id
+        and meetings.host_id = auth.uid()::text
+      ));
+  end if;
+end $$;
+
+do $$ begin
+  if not exists (select 1 from pg_policies where tablename='meeting_participants' and policyname='participants_host_update') then
+    create policy "participants_host_update" on meeting_participants for update
+      using (exists (
+        select 1 from meetings where meetings.meeting_id = meeting_participants.meeting_id
+        and meetings.host_id = auth.uid()::text
+      ));
+  end if;
+end $$;
+
+-- ── MEETING INVITES ───────────────────────────────────────────────────────────
+create table if not exists meeting_invites (
+  id           text primary key default gen_random_uuid()::text,
+  meeting_id   text not null references meetings(meeting_id) on delete cascade,
+  email        text not null,
+  user_id      text default null,
+  status       text default 'pending',
+  invited_at   text default now()::text,
+  unique(meeting_id, email)
+);
+
+alter table meeting_invites enable row level security;
+
+do $$ begin
+  if not exists (select 1 from pg_policies where tablename='meeting_invites' and policyname='invites_host_manage') then
+    create policy "invites_host_manage" on meeting_invites for all
+      using (exists (
+        select 1 from meetings where meetings.meeting_id = meeting_invites.meeting_id
+        and meetings.host_id = auth.uid()::text
+      ));
+  end if;
+end $$;
+
+do $$ begin
+  if not exists (select 1 from pg_policies where tablename='meeting_invites' and policyname='invites_read_own') then
+    create policy "invites_read_own" on meeting_invites for select
+      using (auth.uid()::text = user_id or email = (
+        select email from users where user_id = auth.uid()::text
+      ));
+  end if;
+end $$;
+
+do $$ begin
+  if not exists (select 1 from pg_policies where tablename='meeting_invites' and policyname='invites_respond') then
+    create policy "invites_respond" on meeting_invites for update
+      using (auth.uid()::text = user_id or email = (
+        select email from users where user_id = auth.uid()::text
+      ));
+  end if;
+end $$;
+
+create index if not exists meeting_invites_email_idx on meeting_invites(email);
+create index if not exists meeting_invites_meeting_idx on meeting_invites(meeting_id);
+
+-- Enable Realtime for invite updates (idempotent, after table exists)
+do $$ begin
+  alter publication supabase_realtime add table meeting_invites;
+exception when duplicate_object then null; end $$;
 
 -- ── STUDY ROOMS ───────────────────────────────────────────────────────────────
 create table if not exists study_rooms (
@@ -120,7 +198,9 @@ create index if not exists room_messages_room_idx on room_messages(room_id);
 create index if not exists room_messages_created_idx on room_messages(created_at);
 
 -- Enable Realtime for live chat
-alter publication supabase_realtime add table room_messages;
+do $$ begin
+  alter publication supabase_realtime add table room_messages;
+exception when duplicate_object then null; end $$;
 
 -- ── PODCAST SESSIONS ──────────────────────────────────────────────────────────
 create table if not exists podcast_sessions (

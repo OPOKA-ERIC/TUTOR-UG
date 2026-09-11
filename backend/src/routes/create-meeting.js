@@ -2,7 +2,7 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(204).end()
 
   try {
-    const { meetingId, hostId, title, subject, scheduledAt, durationMins } = req.body
+    const { meetingId, hostId, title, subject, scheduledAt, durationMins, userName } = req.body
     const dailyKey = process.env.DAILY_API_KEY
 
     if (dailyKey) {
@@ -24,14 +24,14 @@ export default async function handler(req, res) {
       const hostRes = await fetch(`${DAILY_API}/meeting-tokens`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${dailyKey}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ properties: { room_name: meetingId, is_owner: true, exp: expiry } }),
+        body: JSON.stringify({ properties: { room_name: meetingId, is_owner: true, exp: expiry, user_name: userName || 'Host' } }),
       })
       const { token: hostToken } = await hostRes.json()
 
       const joinRes = await fetch(`${DAILY_API}/meeting-tokens`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${dailyKey}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ properties: { room_name: meetingId, is_owner: false, exp: expiry } }),
+        body: JSON.stringify({ properties: { room_name: meetingId, is_owner: false, exp: expiry, user_name: userName || 'Participant' } }),
       })
       const { token: participantToken } = await joinRes.json()
 
@@ -39,7 +39,8 @@ export default async function handler(req, res) {
     }
 
     const roomName = `tutorug-${meetingId.slice(0, 8)}`
-    const roomUrl = `https://meet.jit.si/${roomName}`
+    const displayName = encodeURIComponent(userName || 'Participant')
+    const roomUrl = `https://meet.jit.si/${roomName}#config.displayName="${displayName}"&config.prejoinPageEnabled=false`
     res.json({ roomUrl, hostToken: '', participantToken: '' })
   } catch (error) {
     res.status(500).json({ error: error.message })

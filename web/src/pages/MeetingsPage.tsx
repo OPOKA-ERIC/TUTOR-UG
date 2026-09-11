@@ -3,19 +3,20 @@ import { useNavigate } from 'react-router-dom'
 import {
   ArrowLeft, Plus, Video, Clock, Users, Calendar, X, Loader2,
   Zap, Share2, StopCircle, CheckCircle2, UserCheck, ChevronDown,
-  ChevronUp, Bell, History, Copy, ExternalLink
+  ChevronUp, Bell, History, Copy, ExternalLink, Trash2, Mail,
+  Check, Ban, Send, UserPlus
 } from 'lucide-react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { apiUrl } from '@/lib/api'
 import { SUPABASE_ANON } from '@/lib/supabase'
 import Logo from '@/components/Logo'
-import type { Meeting, MeetingParticipant } from '@/types'
+import type { Meeting, MeetingParticipant, MeetingInvite } from '@/types'
 
 interface Notification {
   id: string
   message: string
-  type: 'info' | 'live' | 'success'
+  type: 'info' | 'live' | 'success' | 'error'
 }
 
 export default function MeetingsPage() {
@@ -23,13 +24,19 @@ export default function MeetingsPage() {
   const navigate = useNavigate()
   const [meetings, setMeetings] = useState<Meeting[]>([])
   const [endedMeetings, setEndedMeetings] = useState<Meeting[]>([])
+  const [invitedMeetings, setInvitedMeetings] = useState<Meeting[]>([])
   const [loading, setLoading] = useState(true)
   const [creating, setCreating] = useState(false)
   const [showCreate, setShowCreate] = useState(false)
   const [showEnded, setShowEnded] = useState(false)
   const [showParticipants, setShowParticipants] = useState<string | null>(null)
+  const [showInvites, setShowInvites] = useState<string | null>(null)
+  const [showInviteForm, setShowInviteForm] = useState<string | null>(null)
+  const [inviteEmails, setInviteEmails] = useState('')
+  const [sendingInvite, setSendingInvite] = useState(false)
   const [participants, setParticipants] = useState<Record<string, MeetingParticipant[]>>({})
   const [participantNames, setParticipantNames] = useState<Record<string, string>>({})
+  const [invites, setInvites] = useState<Record<string, MeetingInvite[]>>({})
   const [notification, setNotification] = useState<Notification | null>(null)
   const [form, setForm] = useState({ title: '', subject: '', description: '', scheduled_at: '', duration_mins: 60 })
   const notifTimer = useRef<ReturnType<typeof setTimeout>>()
@@ -40,7 +47,7 @@ export default function MeetingsPage() {
     notifTimer.current = setTimeout(() => setNotification(null), 5000)
   }, [])
 
-  useEffect(() => { if (profile) { loadMeetings(); loadEndedMeetings() } }, [profile])
+  useEffect(() => { if (profile) { loadMeetings(); loadEndedMeetings(); loadInvitedMeetings() } }, [profile])
 
   // ── REALTIME SUBSCRIPTION ──
   useEffect(() => {
@@ -63,6 +70,7 @@ export default function MeetingsPage() {
             const old = payload.old as Meeting
             setMeetings(prev => prev.map(m => m.meeting_id === changed.meeting_id ? changed : m))
             setEndedMeetings(prev => prev.filter(m => m.meeting_id !== changed.meeting_id))
+            setInvitedMeetings(prev => prev.map(m => m.meeting_id === changed.meeting_id ? changed : m).filter(m => m.status !== 'ended'))
 
             if (old.status === 'scheduled' && changed.status === 'live') {
               showNotif(`🔴 ${changed.title} is live now!`, 'live')
@@ -78,21 +86,43 @@ export default function MeetingsPage() {
 
           if (payload.eventType === 'DELETE') {
             setMeetings(prev => prev.filter(m => m.meeting_id !== payload.old.meeting_id))
+            setInvitedMeetings(prev => prev.filter(m => m.meeting_id !== payload.old.meeting_id))
           }
         })
       .on('postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'meeting_participants' },
+        { event: '*', schema: 'public', table: 'meeting_participants' },
         async (payload) => {
           const p = payload.new as MeetingParticipant
+          if (payload.eventType === 'INSERT' && p.status === 'pending') {
+            showNotif('New join request!', 'info')
+          }
+          if (payload.eventType === 'UPDATE') {
+            const old = payload.old as MeetingParticipant
+            if (old.status === 'pending' && p.status === 'approved') {
+              showNotif('Join request approved!', 'success')
+            }
+            if (old.status === 'pending' && p.status === 'refused') {
+              showNotif('Join request refused', 'info')
+            }
+          }
           setParticipants(prev => {
             const existing = prev[p.meeting_id] || []
-            if (existing.find(x => x.user_id === p.user_id)) return prev
-            return { ...prev, [p.meeting_id]: [...existing, p] }
+            const updated = existing.map(x => x.id === p.id ? p : x)
+            if (!existing.find(x => x.id === p.id)) updated.push(p)
+            return { ...prev, [p.meeting_id]: updated }
           })
-          // Fetch name if not cached
           if (!participantNames[p.user_id]) {
             const { data } = await supabase.from('users').select('name').eq('user_id', p.user_id).single()
             if (data) setParticipantNames(prev => ({ ...prev, [p.user_id]: data.name }))
+          }
+        })
+      .on('postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'meeting_invites' },
+        (payload) => {
+          const inv = payload.new as MeetingInvite
+          if (inv.user_id === profile.user_id) {
+            showNotif('You have been invited to a meeting!', 'info')
+            loadInvitedMeetings()
           }
         })
       .subscribe()
@@ -107,7 +137,7 @@ export default function MeetingsPage() {
       meetings.forEach(m => {
         if (m.status !== 'scheduled') return
         const diff = new Date(m.scheduled_at).getTime() - now.getTime()
-        if (diff > 0 && diff < 600000) { // 10 minutes
+        if (diff > 0 && diff < 600000) {
           showNotif(`⏰ ${m.title} starts in ${Math.round(diff / 60000)} minutes`, 'info')
         }
       })
@@ -132,6 +162,16 @@ export default function MeetingsPage() {
     list.forEach(p => fetchParticipantName(p.user_id))
   }
 
+  async function loadInvites(meetingId: string) {
+    const { data } = await supabase
+      .from('meeting_invites')
+      .select('*')
+      .eq('meeting_id', meetingId)
+      .order('invited_at', { ascending: true })
+    const list = (data as MeetingInvite[]) || []
+    setInvites(prev => ({ ...prev, [meetingId]: list }))
+  }
+
   async function loadMeetings() {
     setLoading(true)
     const { data } = await supabase
@@ -153,6 +193,23 @@ export default function MeetingsPage() {
     setEndedMeetings((data as Meeting[]) || [])
   }
 
+  async function loadInvitedMeetings() {
+    if (!profile) return
+    const { data: inviteData } = await supabase
+      .from('meeting_invites')
+      .select('meeting_id')
+      .eq('user_id', profile.user_id)
+      .in('status', ['pending', 'accepted'])
+    if (!inviteData?.length) { setInvitedMeetings([]); return }
+    const ids = inviteData.map(i => i.meeting_id)
+    const { data } = await supabase
+      .from('meetings')
+      .select('*')
+      .in('meeting_id', ids)
+      .in('status', ['scheduled', 'live'])
+    setInvitedMeetings((data as Meeting[]) || [])
+  }
+
   async function createMeeting() {
     if (!profile || !form.title || !form.scheduled_at) return
     setCreating(true)
@@ -170,6 +227,7 @@ export default function MeetingsPage() {
           subject: form.subject,
           scheduledAt: form.scheduled_at,
           durationMins: form.duration_mins,
+          userName: profile.name || profile.user_id,
         }),
       })
       if (!res.ok) throw new Error(`Edge function error: ${res.status}`)
@@ -186,6 +244,7 @@ export default function MeetingsPage() {
         scheduled_at: form.scheduled_at,
         duration_mins: form.duration_mins,
         status: 'scheduled',
+        host_name: profile.name || '',
         created_at: new Date().toISOString(),
       })
       if (dbErr) throw new Error(dbErr.message)
@@ -200,6 +259,16 @@ export default function MeetingsPage() {
     }
   }
 
+  async function deleteMeeting(meeting: Meeting) {
+    if (!confirm(`Delete "${meeting.title}"? This cannot be undone.`)) return
+    const { error } = await supabase.from('meetings').delete().eq('meeting_id', meeting.meeting_id)
+    if (error) { showNotif('Failed to delete meeting', 'error'); return }
+    setMeetings(prev => prev.filter(m => m.meeting_id !== meeting.meeting_id))
+    setEndedMeetings(prev => prev.filter(m => m.meeting_id !== meeting.meeting_id))
+    setInvitedMeetings(prev => prev.filter(m => m.meeting_id !== meeting.meeting_id))
+    showNotif('Meeting deleted', 'success')
+  }
+
   async function joinMeeting(meeting: Meeting) {
     if (!profile) return
     const isHost = meeting.host_id === profile.user_id
@@ -211,26 +280,72 @@ export default function MeetingsPage() {
       const res = await fetch(apiUrl('create-meeting'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ meetingId: meeting.meeting_id, hostId: meeting.host_id, title: meeting.title, subject: meeting.subject, scheduledAt: meeting.scheduled_at, durationMins: meeting.duration_mins }),
+        body: JSON.stringify({
+          meetingId: meeting.meeting_id, hostId: meeting.host_id, title: meeting.title,
+          subject: meeting.subject, scheduledAt: meeting.scheduled_at, durationMins: meeting.duration_mins,
+          userName: profile.name || profile.user_id,
+        }),
       })
       const data = await res.json()
       roomUrl = data.roomUrl
       await supabase.from('meetings').update({ room_url: roomUrl }).eq('meeting_id', meeting.meeting_id)
     }
 
-    // Record participant
-    await supabase.from('meeting_participants').upsert({
-      meeting_id: meeting.meeting_id,
-      user_id: profile.user_id,
-      join_token: meeting.room_token || '',
-      joined_at: new Date().toISOString(),
-    }, { onConflict: 'meeting_id, user_id' })
+    // If not host, check approval status
+    if (!isHost) {
+      const { data: existing } = await supabase
+        .from('meeting_participants')
+        .select('status')
+        .eq('meeting_id', meeting.meeting_id)
+        .eq('user_id', profile.user_id)
+        .single()
+
+      if (existing && existing.status === 'refused') {
+        showNotif('Your join request was refused by the host', 'error')
+        return
+      }
+
+      if (existing && existing.status === 'pending') {
+        showNotif('Your join request is pending host approval', 'info')
+        return
+      }
+
+      if (!existing) {
+        await supabase.from('meeting_participants').upsert({
+          meeting_id: meeting.meeting_id,
+          user_id: profile.user_id,
+          join_token: '',
+          status: 'pending',
+          joined_at: new Date().toISOString(),
+        }, { onConflict: 'meeting_id, user_id' })
+        showNotif('Join request sent! Waiting for host approval.', 'info')
+        return
+      }
+    }
 
     if (isHost) {
       await supabase.from('meetings').update({ status: 'live' }).eq('meeting_id', meeting.meeting_id)
     }
 
     window.open(roomUrl, '_blank', 'noopener,noreferrer')
+  }
+
+  async function approveParticipant(participant: MeetingParticipant) {
+    await supabase.from('meeting_participants').update({ status: 'approved', join_token: '' }).eq('id', participant.id)
+    setParticipants(prev => {
+      const list = prev[participant.meeting_id] || []
+      return { ...prev, [participant.meeting_id]: list.map(p => p.id === participant.id ? { ...p, status: 'approved' as const } : p) }
+    })
+    showNotif('Participant approved', 'success')
+  }
+
+  async function refuseParticipant(participant: MeetingParticipant) {
+    await supabase.from('meeting_participants').update({ status: 'refused' }).eq('id', participant.id)
+    setParticipants(prev => {
+      const list = prev[participant.meeting_id] || []
+      return { ...prev, [participant.meeting_id]: list.map(p => p.id === participant.id ? { ...p, status: 'refused' as const } : p) }
+    })
+    showNotif('Participant refused', 'info')
   }
 
   async function endMeeting(meeting: Meeting) {
@@ -259,19 +374,60 @@ export default function MeetingsPage() {
     }
   }
 
+  async function sendInvites(meetingId: string) {
+    if (!inviteEmails.trim()) return
+    setSendingInvite(true)
+    try {
+      const emailList = inviteEmails.split(',').map(e => e.trim()).filter(Boolean)
+      const session = await supabase.auth.getSession()
+      const token = session.data.session?.access_token || SUPABASE_ANON
+      const res = await fetch(apiUrl('invite-to-meeting'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({
+          meetingId,
+          emails: emailList,
+          hostName: profile?.name || 'A TutorUG user',
+        }),
+      })
+      if (!res.ok) throw new Error('Failed to send invites')
+      const data = await res.json()
+      showNotif(`Invited ${data.invited?.length || 0} people!`, 'success')
+      setInviteEmails('')
+      setShowInviteForm(null)
+      loadInvites(meetingId)
+    } catch (e: any) {
+      showNotif('Failed to send invites: ' + (e.message || 'Unknown error'), 'error')
+    } finally {
+      setSendingInvite(false)
+    }
+  }
+
   function viewParticipants(meetingId: string) {
     if (showParticipants === meetingId) {
       setShowParticipants(null)
       return
     }
     setShowParticipants(meetingId)
+    setShowInvites(null)
     if (!participants[meetingId]) loadParticipants(meetingId)
+  }
+
+  function viewInvites(meetingId: string) {
+    if (showInvites === meetingId) {
+      setShowInvites(null)
+      return
+    }
+    setShowInvites(meetingId)
+    setShowParticipants(null)
+    if (!invites[meetingId]) loadInvites(meetingId)
   }
 
   if (!profile) return null
 
   const liveMeetings = meetings.filter(m => m.status === 'live')
   const scheduledMeetings = meetings.filter(m => m.status === 'scheduled')
+  const myInvited = invitedMeetings.filter(m => m.host_id !== profile.user_id)
 
   return (
     <div className="flex flex-col h-full bg-gradient-to-b from-surface to-bg relative overflow-hidden">
@@ -293,17 +449,19 @@ export default function MeetingsPage() {
                 ? 'bg-error/20 border border-error/40'
                 : notification.type === 'success'
                 ? 'bg-lime/20 border border-lime/40'
+                : notification.type === 'error'
+                ? 'bg-error/20 border border-error/40'
                 : 'bg-primary/20 border border-primary/40'
             }`}
             style={{
-              background: notification.type === 'live'
+              background: notification.type === 'live' || notification.type === 'error'
                 ? 'rgba(239,68,68,0.15)'
                 : notification.type === 'success'
                 ? 'rgba(132,204,22,0.15)'
                 : 'rgba(255,184,0,0.15)',
             }}>
               <Bell size={18} className={
-                notification.type === 'live' ? 'text-error shrink-0'
+                notification.type === 'live' || notification.type === 'error' ? 'text-error shrink-0'
                 : notification.type === 'success' ? 'text-lime shrink-0'
                 : 'text-primary shrink-0'
               } />
@@ -347,7 +505,7 @@ export default function MeetingsPage() {
             <div className="flex items-center justify-center py-20">
               <Loader2 size={32} className="animate-spin text-primary" />
             </div>
-          ) : meetings.length === 0 && !showEnded ? (
+          ) : meetings.length === 0 && !showEnded && myInvited.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 gap-4 text-center animate-fade-in">
               <div className="w-20 h-20 rounded-full flex items-center justify-center"
                 style={{ background: 'rgba(255,184,0,0.1)' }}>
@@ -365,59 +523,111 @@ export default function MeetingsPage() {
             </div>
           ) : (
             <div className="space-y-6 animate-fade-in">
-              {/* ── LIVE MEETINGS ── */}
-              {liveMeetings.length > 0 && (
+              {/* ── MY MEETINGS ── */}
+              {(liveMeetings.length > 0 || scheduledMeetings.length > 0) && (
                 <div>
                   <div className="flex items-center gap-2 mb-3">
-                    <div className="w-2 h-2 rounded-full bg-error animate-pulse" />
-                    <span className="text-error text-xs font-bold uppercase tracking-wider">
-                      Live Now ({liveMeetings.length})
-                    </span>
+                    <Video size={14} className="text-primary" />
+                    <span className="text-primary text-xs font-bold uppercase tracking-wider">My Meetings</span>
                   </div>
-                  <div className="space-y-3">
-                    {liveMeetings.map((m, i) => (
-                      <MeetingCard
-                        key={m.meeting_id}
-                        meeting={m}
-                        isHost={m.host_id === profile.user_id}
-                        participantCount={participants[m.meeting_id]?.length || 0}
-                        onJoin={joinMeeting}
-                        onEnd={endMeeting}
-                        onShare={shareMeeting}
-                        onViewParticipants={viewParticipants}
-                        showParticipants={showParticipants === m.meeting_id}
-                        participantList={participants[m.meeting_id] || []}
-                        participantNames={participantNames}
-                        index={i}
-                      />
-                    ))}
-                  </div>
+
+                  {liveMeetings.length > 0 && (
+                    <div className="space-y-3 mb-3">
+                      {liveMeetings.map((m, i) => (
+                        <MeetingCard
+                          key={m.meeting_id}
+                          meeting={m}
+                          isHost={m.host_id === profile.user_id}
+                          participantCount={participants[m.meeting_id]?.length || 0}
+                          onJoin={joinMeeting}
+                          onEnd={endMeeting}
+                          onShare={shareMeeting}
+                          onDelete={deleteMeeting}
+                          onViewParticipants={viewParticipants}
+                          showParticipants={showParticipants === m.meeting_id}
+                          participantList={participants[m.meeting_id] || []}
+                          participantNames={participantNames}
+                          onInvite={() => setShowInviteForm(m.meeting_id)}
+                          showInviteForm={showInviteForm === m.meeting_id}
+                          inviteEmails={inviteEmails}
+                          onInviteEmailsChange={setInviteEmails}
+                          onSendInvites={() => sendInvites(m.meeting_id)}
+                          sendingInvite={sendingInvite}
+                          invites={invites[m.meeting_id] || []}
+                          showInvites={showInvites === m.meeting_id}
+                          onViewInvites={() => viewInvites(m.meeting_id)}
+                          onApprove={approveParticipant}
+                          onRefuse={refuseParticipant}
+                          index={i}
+                        />
+                      ))}
+                    </div>
+                  )}
+
+                  {scheduledMeetings.length > 0 && (
+                    <div className="space-y-3">
+                      {scheduledMeetings.map((m, i) => (
+                        <MeetingCard
+                          key={m.meeting_id}
+                          meeting={m}
+                          isHost={m.host_id === profile.user_id}
+                          participantCount={participants[m.meeting_id]?.length || 0}
+                          onJoin={joinMeeting}
+                          onEnd={endMeeting}
+                          onShare={shareMeeting}
+                          onDelete={deleteMeeting}
+                          onViewParticipants={viewParticipants}
+                          showParticipants={showParticipants === m.meeting_id}
+                          participantList={participants[m.meeting_id] || []}
+                          participantNames={participantNames}
+                          onInvite={() => setShowInviteForm(m.meeting_id)}
+                          showInviteForm={showInviteForm === m.meeting_id}
+                          inviteEmails={inviteEmails}
+                          onInviteEmailsChange={setInviteEmails}
+                          onSendInvites={() => sendInvites(m.meeting_id)}
+                          sendingInvite={sendingInvite}
+                          invites={invites[m.meeting_id] || []}
+                          showInvites={showInvites === m.meeting_id}
+                          onViewInvites={() => viewInvites(m.meeting_id)}
+                          onApprove={approveParticipant}
+                          onRefuse={refuseParticipant}
+                          index={i + liveMeetings.length}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 
-              {/* ── UPCOMING MEETINGS ── */}
-              {scheduledMeetings.length > 0 && (
+              {/* ── INVITED MEETINGS ── */}
+              {myInvited.length > 0 && (
                 <div>
                   <div className="flex items-center gap-2 mb-3">
-                    <Calendar size={14} className="text-primary" />
-                    <span className="text-primary text-xs font-bold uppercase tracking-wider">
-                      Upcoming ({scheduledMeetings.length})
+                    <Mail size={14} className="text-lime" />
+                    <span className="text-lime text-xs font-bold uppercase tracking-wider">
+                      Invited to ({myInvited.length})
                     </span>
                   </div>
                   <div className="space-y-3">
-                    {scheduledMeetings.map((m, i) => (
+                    {myInvited.map((m, i) => (
                       <MeetingCard
                         key={m.meeting_id}
                         meeting={m}
-                        isHost={m.host_id === profile.user_id}
+                        isHost={false}
                         participantCount={participants[m.meeting_id]?.length || 0}
                         onJoin={joinMeeting}
                         onEnd={endMeeting}
                         onShare={shareMeeting}
+                        onDelete={deleteMeeting}
                         onViewParticipants={viewParticipants}
                         showParticipants={showParticipants === m.meeting_id}
                         participantList={participants[m.meeting_id] || []}
                         participantNames={participantNames}
+                        invites={[]}
+                        showInvites={false}
+                        onViewInvites={() => {}}
+                        onApprove={approveParticipant}
+                        onRefuse={refuseParticipant}
                         index={i}
                       />
                     ))}
@@ -444,10 +654,16 @@ export default function MeetingsPage() {
                         onJoin={joinMeeting}
                         onEnd={endMeeting}
                         onShare={shareMeeting}
+                        onDelete={deleteMeeting}
                         onViewParticipants={viewParticipants}
                         showParticipants={showParticipants === m.meeting_id}
                         participantList={participants[m.meeting_id] || []}
                         participantNames={participantNames}
+                        invites={[]}
+                        showInvites={false}
+                        onViewInvites={() => {}}
+                        onApprove={approveParticipant}
+                        onRefuse={refuseParticipant}
                         index={i}
                       />
                     ))}
@@ -548,20 +764,31 @@ export default function MeetingsPage() {
 }
 
 function MeetingCard({
-  meeting, isHost, participantCount, onJoin, onEnd, onShare,
-  onViewParticipants, showParticipants, participantList, participantNames, index,
+  meeting, isHost, participantCount, onJoin, onEnd, onShare, onDelete,
+  onViewParticipants, showParticipants, participantList, participantNames,
+  onInvite, showInviteForm, inviteEmails, onInviteEmailsChange, onSendInvites,
+  sendingInvite, invites, showInvites, onViewInvites, onApprove, onRefuse, index,
 }: {
   meeting: Meeting; isHost: boolean; participantCount: number
-  onJoin: (m: Meeting) => void; onEnd: (m: Meeting) => void; onShare: (m: Meeting) => void
+  onJoin: (m: Meeting) => void; onEnd: (m: Meeting) => void
+  onShare: (m: Meeting) => void; onDelete: (m: Meeting) => void
   onViewParticipants: (id: string) => void
   showParticipants: boolean
   participantList: MeetingParticipant[]
   participantNames: Record<string, string>
+  onInvite?: () => void; showInviteForm?: boolean
+  inviteEmails?: string; onInviteEmailsChange?: (v: string) => void
+  onSendInvites?: () => void; sendingInvite?: boolean
+  invites?: MeetingInvite[]; showInvites?: boolean; onViewInvites?: () => void
+  onApprove: (p: MeetingParticipant) => void
+  onRefuse: (p: MeetingParticipant) => void
   index: number
 }) {
   const isLive = meeting.status === 'live'
   const isEnded = meeting.status === 'ended'
   const info = formatDateTimeStatic(meeting.scheduled_at)
+  const pendingParticipants = participantList.filter(p => p.status === 'pending')
+  const approvedParticipants = participantList.filter(p => p.status !== 'refused')
 
   return (
     <div
@@ -605,6 +832,13 @@ function MeetingCard({
               className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors"
               title="Share meeting">
               <Share2 size={14} className="text-text-disabled" />
+            </button>
+          )}
+          {isHost && !isEnded && (
+            <button onClick={(e) => { e.stopPropagation(); onDelete(meeting) }}
+              className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-error/20 transition-colors"
+              title="Delete meeting">
+              <Trash2 size={14} className="text-error" />
             </button>
           )}
           {isHost && isLive && (
@@ -655,6 +889,15 @@ function MeetingCard({
             {showParticipants ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
           </button>
         )}
+        {isHost && !isEnded && onViewInvites && (
+          <button onClick={(e) => { e.stopPropagation(); onViewInvites() }}
+            className="flex items-center gap-1.5 text-xs transition-colors"
+            style={{ color: '#606080' }}>
+            <Mail size={13} />
+            <span>Invited</span>
+            {showInvites ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+          </button>
+        )}
       </div>
 
       {/* ── PARTICIPANT ROSTER ── */}
@@ -662,11 +905,41 @@ function MeetingCard({
         <div className="mt-3 pt-3 animate-fade-in"
           style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
           <p className="text-text-disabled text-xs font-medium mb-2">Participants</p>
-          {participantList.length === 0 ? (
+
+          {/* Pending requests (host only) */}
+          {isHost && pendingParticipants.length > 0 && (
+            <div className="mb-2">
+              <p className="text-primary text-[10px] font-bold uppercase mb-1">Pending Approval</p>
+              {pendingParticipants.map(p => (
+                <div key={p.id} className="flex items-center gap-2 mb-1.5 p-1.5 rounded-lg"
+                  style={{ background: 'rgba(255,184,0,0.06)' }}>
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0"
+                    style={{ background: 'linear-gradient(135deg,#F59E0B,#D97706)', color: '#0A0A1F' }}>
+                    {(participantNames[p.user_id] || '?').charAt(0).toUpperCase()}
+                  </div>
+                  <span className="text-text-white text-xs font-medium flex-1">
+                    {participantNames[p.user_id] || 'Loading...'}
+                  </span>
+                  <button onClick={(e) => { e.stopPropagation(); onApprove(p) }}
+                    className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-lime/20 transition-colors"
+                    title="Approve">
+                    <Check size={14} className="text-lime" />
+                  </button>
+                  <button onClick={(e) => { e.stopPropagation(); onRefuse(p) }}
+                    className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-error/20 transition-colors"
+                    title="Refuse">
+                    <Ban size={14} className="text-error" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {approvedParticipants.length === 0 ? (
             <p className="text-text-disabled text-xs">No one has joined yet.</p>
           ) : (
             <div className="space-y-1.5 max-h-32 overflow-y-auto">
-              {participantList.map(p => (
+              {approvedParticipants.map(p => (
                 <div key={p.id} className="flex items-center gap-2">
                   <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0"
                     style={{ background: 'linear-gradient(135deg,#F59E0B,#D97706)', color: '#0A0A1F' }}>
@@ -681,6 +954,72 @@ function MeetingCard({
                       Host
                     </span>
                   )}
+                  {p.status === 'pending' && (
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full font-bold"
+                      style={{ background: 'rgba(255,184,0,0.12)', color: '#FFB800' }}>
+                      Pending
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── INVITE FORM (host only) ── */}
+      {isHost && showInviteForm && (
+        <div className="mt-3 pt-3 animate-fade-in"
+          style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+          <p className="text-text-disabled text-xs font-medium mb-2">Invite by Email</p>
+          <div className="flex gap-2">
+            <input
+              value={inviteEmails || ''}
+              onChange={e => onInviteEmailsChange?.(e.target.value)}
+              placeholder="email1@example.com, email2@example.com"
+              className="flex-1 rounded-xl px-3 py-2 text-xs outline-none"
+              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }}
+            />
+            <button onClick={onSendInvites} disabled={sendingInvite || !inviteEmails?.trim()}
+              className="h-9 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-1 transition-all disabled:opacity-40"
+              style={{ background: 'linear-gradient(135deg,#F59E0B,#D97706)', color: '#0A0A1F' }}>
+              {sendingInvite ? <Loader2 size={12} className="animate-spin" /> : <Send size={12} />}
+              Invite
+            </button>
+          </div>
+          <p className="text-text-disabled text-[10px] mt-1.5">Separate multiple emails with commas</p>
+        </div>
+      )}
+
+      {/* ── INVITED LIST (host only) ── */}
+      {isHost && showInvites && invites && (
+        <div className="mt-3 pt-3 animate-fade-in"
+          style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-text-disabled text-xs font-medium">Invited People</p>
+            {onInvite && (
+              <button onClick={(e) => { e.stopPropagation(); onInvite() }}
+                className="flex items-center gap-1 text-[10px] font-bold"
+                style={{ color: '#FFB800' }}>
+                <UserPlus size={11} /> Add More
+              </button>
+            )}
+          </div>
+          {invites.length === 0 ? (
+            <p className="text-text-disabled text-xs">No invites sent yet.</p>
+          ) : (
+            <div className="space-y-1.5 max-h-32 overflow-y-auto">
+              {invites.map(inv => (
+                <div key={inv.id} className="flex items-center gap-2">
+                  <Mail size={12} className="text-text-disabled shrink-0" />
+                  <span className="text-text-white text-xs font-medium flex-1">{inv.email}</span>
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
+                    inv.status === 'accepted' ? 'bg-lime/20 text-lime'
+                    : inv.status === 'refused' ? 'bg-error/20 text-error'
+                    : 'bg-primary/20 text-primary'
+                  }`}>
+                    {inv.status}
+                  </span>
                 </div>
               ))}
             </div>
@@ -697,6 +1036,14 @@ function MeetingCard({
             title="Copy meeting details">
             {typeof navigator.share === 'function' ? <Share2 size={16} className="text-text-disabled" /> : <Copy size={16} className="text-text-disabled" />}
           </button>
+          {isHost && onInvite && (
+            <button onClick={(e) => { e.stopPropagation(); onInvite() }}
+              className="w-11 h-11 rounded-2xl flex items-center justify-center transition-all active:scale-90 shrink-0"
+              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+              title="Invite people">
+              <UserPlus size={16} className="text-text-disabled" />
+            </button>
+          )}
           <button onClick={() => onJoin(meeting)}
             className="flex-1 h-11 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
             style={{
@@ -717,6 +1064,13 @@ function MeetingCard({
             <ExternalLink size={15} />
             View Details
           </button>
+          {isHost && onDelete && (
+            <button onClick={(e) => { e.stopPropagation(); onDelete(meeting) }}
+              className="h-11 px-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+              style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', color: '#EF4444' }}>
+              <Trash2 size={15} />
+            </button>
+          )}
         </div>
       )}
     </div>

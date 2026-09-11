@@ -44,6 +44,37 @@ export function buildSuccessEmail(name) {
 </html>`
 }
 
+export function buildMeetingInviteEmail(inviterName, meetingTitle, meetingSubject, scheduledAt, durationMins) {
+  const dateStr = new Date(scheduledAt).toLocaleString('en-UG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+  return `<!DOCTYPE html>
+<html>
+<body style="font-family:Arial,sans-serif;background:#0f0f1a;margin:0;padding:20px;">
+  <div style="max-width:480px;margin:0 auto;background:#1a1a2e;border-radius:16px;padding:32px;border:1px solid #2a2a3e;">
+    <div style="text-align:center;margin-bottom:24px;">
+      <h1 style="color:#FFB800;margin:0;font-size:24px;">&#127482;&#127468; TutorUG</h1>
+      <p style="color:#888;margin:4px 0 0;">Uganda's Smart Learning Companion</p>
+    </div>
+    <h2 style="color:#fff;font-size:20px;margin-bottom:8px;">&#128197; Meeting Invitation</h2>
+    <p style="color:#ccc;font-size:15px;">You've been invited to a meeting by <strong style="color:#FFB800;">${inviterName}</strong>.</p>
+    <div style="background:#0f0f1a;border:2px solid #FFB800;border-radius:12px;padding:20px;margin:24px 0;">
+      <p style="color:#FFB800;font-size:20px;font-weight:bold;margin:0 0 8px;">${meetingTitle}</p>
+      ${meetingSubject ? `<p style="color:#aaa;font-size:14px;margin:0 0 4px;">Subject: ${meetingSubject}</p>` : ''}
+      <p style="color:#aaa;font-size:14px;margin:0 0 4px;">&#128197; ${dateStr}</p>
+      <p style="color:#aaa;font-size:14px;margin:0;">&#9200; ${durationMins} minutes</p>
+    </div>
+    <p style="color:#ccc;font-size:14px;">Open TutorUG to view and respond to this invitation.</p>
+    <div style="text-align:center;margin:24px 0;">
+      <a href="https://tutorug.com/meetings" style="background:#FFB800;color:#000;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:15px;">
+        View Meeting
+      </a>
+    </div>
+    <hr style="border:none;border-top:1px solid #2a2a3e;margin:24px 0;">
+    <p style="color:#555;font-size:12px;text-align:center;">&copy; 2025 TutorUG | info@tutorug.com</p>
+  </div>
+</body>
+</html>`
+}
+
 export function buildReminderEmail(name, subject, startTime) {
   return `<!DOCTYPE html>
 <html>

@@ -190,7 +190,26 @@ data class Meeting(
     @SerializedName("scheduled_at")  val scheduledAt: String = "",
     @SerializedName("duration_mins") val durationMins: Int = 60,
     @SerializedName("status")        val status: String = "scheduled",
+    @SerializedName("host_name")     val hostName: String = "",
     @SerializedName("created_at")    val createdAt: String = ""
+)
+
+data class MeetingParticipant(
+    @SerializedName("id")          val id: String = "",
+    @SerializedName("meeting_id")  val meetingId: String = "",
+    @SerializedName("user_id")     val userId: String = "",
+    @SerializedName("join_token")  val joinToken: String = "",
+    @SerializedName("status")      val status: String = "approved",
+    @SerializedName("joined_at")   val joinedAt: String = ""
+)
+
+data class MeetingInvite(
+    @SerializedName("id")          val id: String = "",
+    @SerializedName("meeting_id")  val meetingId: String = "",
+    @SerializedName("email")       val email: String = "",
+    @SerializedName("user_id")     val userId: String? = null,
+    @SerializedName("status")      val status: String = "pending",
+    @SerializedName("invited_at")  val invitedAt: String = ""
 )
 
 // ── study_rooms ───────────────────────────────────────────────────────────────
