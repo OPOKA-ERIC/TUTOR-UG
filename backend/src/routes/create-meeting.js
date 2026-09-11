@@ -29,7 +29,7 @@ const { meetingId, hostId, title, subject, scheduledAt, durationMins, userName }
         body: JSON.stringify({
           name: meetingId,
           privacy: 'private',
-          properties: { exp: expiry, max_participants: 50, enable_chat: true, enable_screenshare: true },
+          properties: { exp: expiry, max_participants: 10, enable_chat: true, enable_screenshare: true },
         }),
       })
       const room = await roomRes.json()
