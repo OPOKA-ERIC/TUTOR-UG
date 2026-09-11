@@ -54,7 +54,7 @@ const { meetingId, hostId, title, subject, scheduledAt, durationMins, userName }
 
     const roomName = `tutorug-${meetingId.slice(0, 8)}`
     const displayName = encodeURIComponent(userName || 'Participant')
-    const roomUrl = `https://meet.jit.si/${roomName}#config.displayName="${displayName}"&config.prejoinPageEnabled=false`
+    const roomUrl = `https://meet.jit.si/${roomName}#config.displayName="${displayName}"&config.prejoinPageEnabled=false&config.requireDisplayName=false&config.disableDeepLinking=true&interfaceConfig.disableDeepLinking=true`
     res.json({ roomUrl, hostToken: '', participantToken: '' })
   } catch (error) {
     res.status(500).json({ error: error.message })

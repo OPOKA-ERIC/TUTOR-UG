@@ -58,7 +58,7 @@ method: "POST",
 
 const roomName = `tutorug-${meetingId.slice(0, 8)}`;
     const displayName = encodeURIComponent(userName || 'Participant')
-    const roomUrl = `https://meet.jit.si/${roomName}#config.displayName="${displayName}"&config.prejoinPageEnabled=false`;
+    const roomUrl = `https://meet.jit.si/${roomName}#config.displayName="${displayName}"&config.prejoinPageEnabled=false&config.requireDisplayName=false&config.disableDeepLinking=true&interfaceConfig.disableDeepLinking=true`;
     return json({ roomUrl, hostToken: "", participantToken: "" }, 200, CORS);
   } catch (error: any) {
     const status = error instanceof ApiError ? error.status : 500;

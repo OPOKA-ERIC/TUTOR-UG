@@ -6,6 +6,7 @@ import android.app.TimePickerDialog
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -70,6 +71,7 @@ fun MeetingsScreen(
     // ── ACTIVE MEETING (WebView) ─────────────────────────────────────────────
     if (activeMeeting != null) {
         val (roomUrl, token) = activeMeeting!!
+        BackHandler { viewModel.leaveMeeting() }
         Column(modifier = Modifier.fillMaxSize().background(AppColors.background).statusBarsPadding()) {
             Row(
                 modifier = Modifier.fillMaxWidth()
@@ -629,7 +631,16 @@ private fun MeetingInput(value: String, onValue: (String) -> Unit, placeholder: 
 fun DailyCoWebView(roomUrl: String, token: String, userName: String = "",
     modifier: Modifier = Modifier) {
     val displayName = java.net.URLEncoder.encode(userName.ifBlank { "Participant" }, "UTF-8")
-    val fullUrl = "$roomUrl?t=$token&userName=$displayName"
+    // Jitsi URLs carry their config in the #fragment (never append ?query after it) —
+    // appending "?t=..." after "#" corrupts the config and re-enables the prejoin/deep-link screens.
+    val fullUrl = remember(roomUrl, token, displayName) {
+        if (roomUrl.contains("#")) {
+            roomUrl
+        } else {
+            val sep = if (roomUrl.contains("?")) "&" else "?"
+            "$roomUrl${sep}t=$token&userName=$displayName"
+        }
+    }
     AndroidView(
         modifier = modifier,
         factory = { ctx ->
@@ -639,6 +650,7 @@ fun DailyCoWebView(roomUrl: String, token: String, userName: String = "",
                 settings.javaScriptEnabled = true
                 settings.mediaPlaybackRequiresUserGesture = false
                 settings.domStorageEnabled = true
+                settings.javaScriptCanOpenWindowsAutomatically = true
                 loadUrl(fullUrl)
             }
         }
