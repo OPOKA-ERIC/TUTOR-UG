@@ -120,7 +120,9 @@ export default function MeetingsPage() {
         { event: 'INSERT', schema: 'public', table: 'meeting_invites' },
         (payload) => {
           const inv = payload.new as MeetingInvite
-          if (inv.user_id === profile.user_id) {
+          const wasIInvited = inv.user_id === profile.user_id ||
+            (profile.email && inv.email === profile.email)
+          if (wasIInvited) {
             showNotif('You have been invited to a meeting!', 'info')
             loadInvitedMeetings()
           }
@@ -195,11 +197,12 @@ export default function MeetingsPage() {
 
   async function loadInvitedMeetings() {
     if (!profile) return
-    const { data: inviteData } = await supabase
+    const query = supabase
       .from('meeting_invites')
       .select('meeting_id')
-      .eq('user_id', profile.user_id)
+      .or(`user_id.eq.${profile.user_id}${profile.email ? `,email.eq.${profile.email}` : ''}`)
       .in('status', ['pending', 'accepted'])
+    const { data: inviteData } = await query
     if (!inviteData?.length) { setInvitedMeetings([]); return }
     const ids = inviteData.map(i => i.meeting_id)
     const { data } = await supabase
@@ -291,8 +294,23 @@ export default function MeetingsPage() {
       await supabase.from('meetings').update({ room_url: roomUrl }).eq('meeting_id', meeting.meeting_id)
     }
 
-    // If not host, check approval status
+    // If not host, they join instantly when invited — no approval needed
     if (!isHost) {
+      const isInvited = invitedMeetings.some(iv => iv.meeting_id === meeting.meeting_id)
+
+      if (isInvited) {
+        await supabase.from('meeting_participants').upsert({
+          meeting_id: meeting.meeting_id,
+          user_id: profile.user_id,
+          join_token: '',
+          status: 'approved',
+          joined_at: new Date().toISOString(),
+        }, { onConflict: 'meeting_id, user_id' })
+        await supabase.from('meetings').update({ status: 'live' }).eq('meeting_id', meeting.meeting_id)
+        window.open(roomUrl, '_blank', 'noopener,noreferrer')
+        return
+      }
+
       const { data: existing } = await supabase
         .from('meeting_participants')
         .select('status')

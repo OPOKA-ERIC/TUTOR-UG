@@ -25,23 +25,29 @@ class MeetingRepository {
 
     suspend fun loadMeetings(): List<Meeting> = withContext(Dispatchers.IO) {
         val req = Request.Builder()
-            .url("$base/rest/v1/meetings?status=in.(\"scheduled\",\"live\")&order=scheduled_at.asc")
+            .url("$base/rest/v1/meetings?status=in.(scheduled,live)&order=scheduled_at.asc")
             .get().build()
         val body = http.newCall(req).execute().body?.string() ?: return@withContext emptyList()
         gson.fromJson(body, object : TypeToken<List<Meeting>>() {}.type) ?: emptyList()
     }
 
-    suspend fun loadInvitedMeetings(userId: String): List<Meeting> = withContext(Dispatchers.IO) {
+    suspend fun loadInvitedMeetings(userId: String, email: String): List<Meeting> = withContext(Dispatchers.IO) {
+        // Match by user id OR email so invites sent to a not-yet-registered
+        // address still show up once that user signs in with the same email.
+        val orFilter = buildString {
+            append("user_id.eq.$userId")
+            if (email.isNotBlank()) append(",email.eq.${java.net.URLEncoder.encode(email, "UTF-8")}")
+        }
         val inviteReq = Request.Builder()
-            .url("$base/rest/v1/meeting_invites?user_id=eq.$userId&status=in.(\"pending\",\"accepted\")&select=meeting_id")
+            .url("$base/rest/v1/meeting_invites?or=($orFilter)&status=in.(pending,accepted)&select=meeting_id")
             .get().build()
         val inviteBody = http.newCall(inviteReq).execute().body?.string() ?: return@withContext emptyList()
         val inviteList = gson.fromJson<List<Map<String, String>>>(inviteBody, object : TypeToken<List<Map<String, String>>>() {}.type)
         val ids = inviteList?.mapNotNull { it["meeting_id"] } ?: return@withContext emptyList()
         if (ids.isEmpty()) return@withContext emptyList()
-        val idsParam = ids.joinToString(",") { "\"$it\"" }
+        val idsParam = ids.joinToString(",")
         val req = Request.Builder()
-            .url("$base/rest/v1/meetings?meeting_id=in.($idsParam)&status=in.(\"scheduled\",\"live\")")
+            .url("$base/rest/v1/meetings?meeting_id=in.($idsParam)&status=in.(scheduled,live)")
             .get().build()
         val body = http.newCall(req).execute().body?.string() ?: return@withContext emptyList()
         gson.fromJson(body, object : TypeToken<List<Meeting>>() {}.type) ?: emptyList()
@@ -60,7 +66,11 @@ class MeetingRepository {
             .url("$base/functions/v1/create-meeting")
             .post(payload.toString().toRequestBody("application/json".toMediaType()))
             .build()
-        val edgeBody = http.newCall(edgeReq).execute().body?.string() ?: "{}"
+        val edgeResp = http.newCall(edgeReq).execute()
+        val edgeBody = edgeResp.body?.string() ?: "{}"
+        if (!edgeResp.isSuccessful) {
+            throw Exception("Meeting service error ${edgeResp.code}: ${edgeBody.take(200)}")
+        }
         val edgeJson = JSONObject(edgeBody)
         val roomUrl = edgeJson.optString("roomUrl", jitsiUrl(meetingId))
         val hostToken = edgeJson.optString("hostToken", "")
@@ -78,7 +88,11 @@ class MeetingRepository {
             .url("$base/rest/v1/meetings")
             .post(row.toString().toRequestBody("application/json".toMediaType()))
             .build()
-        http.newCall(insertReq).execute()
+        val insertResp = http.newCall(insertReq).execute()
+        val insertBody = insertResp.body?.string() ?: ""
+        if (!insertResp.isSuccessful) {
+            throw Exception("Meeting couldn't be saved (${insertResp.code}): ${insertBody.take(300)}")
+        }
 
         Triple(roomUrl, hostToken, participantToken)
     }
@@ -177,24 +191,10 @@ class MeetingRepository {
             put("emails", org.json.JSONArray(emails.toTypedArray()))
         }
         val req = Request.Builder()
-            .url("${SupabaseClient.SUPABASE_URL.replace("https://jsjhgwficdrgzwbwzkhm.supabase.co", "http://localhost:3001/api")}/invite-to-meeting")
+            .url("$base/functions/v1/invite-to-meeting")
             .post(payload.toString().toRequestBody("application/json".toMediaType()))
             .build()
-        // Fallback: use Supabase Edge Function if backend not available
-        try {
-            http.newCall(req).execute()
-        } catch (e: Exception) {
-            val edgePayload = JSONObject().apply {
-                put("meetingId", meetingId)
-                put("hostName", hostName)
-                put("emails", org.json.JSONArray(emails.toTypedArray()))
-            }
-            val edgeReq = Request.Builder()
-                .url("$base/functions/v1/invite-to-meeting")
-                .post(edgePayload.toString().toRequestBody("application/json".toMediaType()))
-                .build()
-            http.newCall(edgeReq).execute()
-        }
+        http.newCall(req).execute()
     }
 
     suspend fun loadInvites(meetingId: String): List<MeetingInvite> = withContext(Dispatchers.IO) {

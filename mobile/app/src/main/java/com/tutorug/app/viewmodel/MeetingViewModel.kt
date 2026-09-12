@@ -39,13 +39,13 @@ class MeetingViewModel : ViewModel() {
     private val _invites = MutableStateFlow<List<MeetingInvite>>(emptyList())
     val invites = _invites.asStateFlow()
 
-    fun load(userId: String? = null) {
+    fun load(userId: String? = null, email: String = "") {
         viewModelScope.launch {
             _state.value = MeetingState.Loading
             try {
                 _meetings.value = repo.loadMeetings()
                 if (userId != null) {
-                    _invitedMeetings.value = repo.loadInvitedMeetings(userId)
+                    _invitedMeetings.value = repo.loadInvitedMeetings(userId, email)
                 }
             } catch (e: Exception) { _state.value = MeetingState.Error(e.message ?: "Failed to load") }
             finally { _state.value = MeetingState.Idle }
@@ -90,6 +90,11 @@ class MeetingViewModel : ViewModel() {
                 val isHost = meeting.hostId == userId
                 if (isHost) {
                     val token = meeting.roomToken.ifBlank { "" }
+                    repo.updateStatus(meeting.meetingId, "live")
+                    _activeMeeting.value = meeting.roomUrl to token
+                } else if (_invitedMeetings.value.any { it.meetingId == meeting.meetingId }) {
+                    // Invited people join instantly — no host approval needed.
+                    val token = repo.getParticipantToken(meeting.meetingId, userId, meeting, userName)
                     repo.updateStatus(meeting.meetingId, "live")
                     _activeMeeting.value = meeting.roomUrl to token
                 } else {

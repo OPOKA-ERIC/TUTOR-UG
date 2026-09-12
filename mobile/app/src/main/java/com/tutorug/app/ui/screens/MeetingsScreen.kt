@@ -60,7 +60,17 @@ fun MeetingsScreen(
     val onSurfaceVar = AppColors.onSurfaceVar
     val error = AppColors.error
 
-    LaunchedEffect(Unit) { viewModel.load(userProfile.userId) }
+    // Poll meetings + invites so new invites "pop in" without reopening the screen.
+    // Pauses while a meeting call is open. Uses the user's email too, so invites
+    // sent to an address that registered later still get picked up.
+    LaunchedEffect(activeMeeting) {
+        if (activeMeeting != null) return@LaunchedEffect
+        viewModel.load(userProfile.userId, userProfile.email)
+        while (true) {
+            kotlinx.coroutines.delay(15_000)
+            viewModel.load(userProfile.userId, userProfile.email)
+        }
+    }
 
     // Show toast for success/error messages
     LaunchedEffect(state) {
@@ -287,7 +297,8 @@ fun MeetingsScreen(
                         onSendInvites = { },
                         invites = emptyList(),
                         showInvites = false,
-                        onShowInvites = { }
+                        onShowInvites = { },
+                        isInvited = true
                     )
                 }
             }
@@ -418,10 +429,12 @@ private fun MeetingCard(
     onSendInvites: () -> Unit,
     invites: List<MeetingInvite>,
     showInvites: Boolean,
-    onShowInvites: () -> Unit
+    onShowInvites: () -> Unit,
+    isInvited: Boolean = false
 ) {
     val isHost = meeting.hostId == userId
     val isLive = meeting.status == "live"
+    val invitedColor = Color(0xFF84CC16)
     Surface(
         shape = RoundedCornerShape(16.dp),
         color = surface,
@@ -465,6 +478,10 @@ private fun MeetingCard(
                 }
                 if (isHost) Surface(shape = RoundedCornerShape(20.dp), color = primary.copy(0.15f)) {
                     Text("Host", color = primary, fontSize = 10.sp, fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp))
+                }
+                if (isInvited) Surface(shape = RoundedCornerShape(20.dp), color = invitedColor.copy(0.15f)) {
+                    Text("Invited", color = invitedColor, fontSize = 10.sp, fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp))
                 }
                 if (isPending) Surface(shape = RoundedCornerShape(20.dp), color = Color(0xFFFFB800).copy(0.15f)) {

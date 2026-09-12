@@ -21,12 +21,6 @@ create table if not exists meetings (
 alter table meetings enable row level security;
 
 do $$ begin
-  if not exists (select 1 from pg_policies where tablename='meetings' and policyname='meetings_read') then
-    create policy "meetings_read" on meetings for select using (auth.uid() is not null);
-  end if;
-end $$;
-
-do $$ begin
   if not exists (select 1 from pg_policies where tablename='meetings' and policyname='meetings_host_write') then
     create policy "meetings_host_write" on meetings for all using (auth.uid()::text = host_id);
   end if;
@@ -86,6 +80,19 @@ do $$ begin
   end if;
 end $$;
 
+-- Host can delete participant rows for their meetings. Without this, ON DELETE
+-- CASCADE from meetings fails: RLS blocks the cascade on participant rows owned
+-- by other users, raising an FK error and leaving the meeting undeletable.
+do $$ begin
+  if not exists (select 1 from pg_policies where tablename='meeting_participants' and policyname='participants_host_delete') then
+    create policy "participants_host_delete" on meeting_participants for delete
+      using (exists (
+        select 1 from meetings where meetings.meeting_id = meeting_participants.meeting_id
+        and meetings.host_id = auth.uid()::text
+      ));
+  end if;
+end $$;
+
 -- ── MEETING INVITES ───────────────────────────────────────────────────────────
 create table if not exists meeting_invites (
   id           text primary key default gen_random_uuid()::text,
@@ -134,6 +141,44 @@ create index if not exists meeting_invites_meeting_idx on meeting_invites(meetin
 do $$ begin
   alter publication supabase_realtime add table meeting_invites;
 exception when duplicate_object then null; end $$;
+
+-- ── MEETINGS VISIBILITY ───────────────────────────────────────────────────────
+-- A meeting is only visible to its host and people invited to it (matched by
+-- user_id or email). Replaces the old "any signed-in user can read everything".
+--
+-- IMPORTANT: the invite lookup MUST go through a SECURITY DEFINER helper.
+-- Putting the meeting_invites subquery directly in the policy causes infinite
+-- recursion (42P17): meeting_invites has its own RLS policy that queries
+-- meetings again. The helper runs as the table owner, bypasses RLS, and
+-- breaks the cycle.
+create or replace function public.is_user_invited(p_meeting_id text)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1 from public.meeting_invites mi
+    where mi.meeting_id = p_meeting_id
+      and (
+        mi.user_id = auth.uid()::text
+        or mi.email = (select email from public.users where user_id = auth.uid()::text)
+      )
+  );
+$$;
+
+grant execute on function public.is_user_invited(text) to anon, authenticated, service_role;
+
+do $$ begin
+  drop policy if exists "meetings_read" on meetings;
+end $$;
+
+create policy "meetings_read" on meetings for select
+  using (
+    auth.uid()::text = host_id
+    or public.is_user_invited(meeting_id)
+  );
 
 -- ── STUDY ROOMS ───────────────────────────────────────────────────────────────
 create table if not exists study_rooms (
