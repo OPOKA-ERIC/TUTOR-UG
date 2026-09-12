@@ -1,10 +1,9 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  Menu, Send, Mic, Plus, Trash2, Loader2,
-  Settings, Calendar, LogOut, Volume2, Paperclip,
+  Menu, Send, Mic, Plus, Loader2, Volume2, Paperclip,
   Square, ChevronUp, ChevronDown, Video, Users,
-  PanelLeftClose, PanelLeftOpen, X, BookOpen, MessageSquare
+  PanelLeftOpen, Calendar, Settings, MessageSquare
 } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -14,7 +13,8 @@ import { useTimetable } from '@/lib/TimetableContext'
 import { supabase } from '@/lib/supabase'
 import { apiUrl, apiHeaders } from '@/lib/api'
 import { getSidebarSubjects } from '@/lib/constants'
-import Logo from '@/components/Logo'
+import ChatSidebar, { subjectMeta } from '@/components/ChatSidebar'
+import ChatHistoryModal from '@/components/ChatHistoryModal'
 import type { ChatSession, ChatMessage } from '@/types'
 
 // AI avatar — Amber→Violet gradient circle
@@ -27,6 +27,18 @@ function AIAvatar() {
   )
 }
 
+const TOPIC_CHIPS = ['Understand a concept', 'Work through problems', 'Prepare for exams']
+
+function formatMessageTime(iso: string): string {
+  const d = new Date(iso)
+  if (isNaN(d.getTime())) return ''
+  const now = new Date()
+  const time = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+  return d.toDateString() === now.toDateString()
+    ? time
+    : `${d.toLocaleDateString([], { month: 'short', day: 'numeric' })}, ${time}`
+}
+
 export default function ChatPage() {
   const { profile, logout } = useAuth()
   const { openSettings } = useSettings()
@@ -35,6 +47,7 @@ export default function ChatPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [sessions, setSessions] = useState<ChatSession[]>([])
+  const [historyLoading, setHistoryLoading] = useState(true)
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null)
   const [currentSubject, setCurrentSubject] = useState('')
   const [messages, setMessages] = useState<ChatMessage[]>([])
@@ -43,13 +56,24 @@ export default function ChatPage() {
   const [streamingText, setStreamingText] = useState('')
   const [listening, setListening] = useState(false)
   const [subjectsOpen, setSubjectsOpen] = useState(false)
-  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
+  const [historyOpen, setHistoryOpen] = useState(false)
   const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null)
+  const [showQuickReplies, setShowQuickReplies] = useState(false)
   const [speechRate, setSpeechRate] = useState(1.0)
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null)
   const abortRef = useRef<AbortController | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
   const subjects = profile ? getSidebarSubjects(profile) : []
+
+  const subjectCounts = useMemo(() => {
+    const map: Record<string, number> = {}
+    for (const se of sessions) {
+      const k = (se.subject || '').trim()
+      if (!k || /^general$/i.test(k)) continue
+      map[k] = (map[k] || 0) + 1
+    }
+    return map
+  }, [sessions])
 
   // context label shown in top bar — matches Android contextLabel
   const contextLabel = !profile ? '' :
@@ -65,13 +89,29 @@ export default function ChatPage() {
 
   async function loadHistory() {
     if (!profile) return
+    setHistoryLoading(true)
     const { data } = await supabase
       .from('chat_sessions').select('*')
       .eq('user_id', profile.user_id)
       .is('document_id', null)
       .order('last_message_at', { ascending: false })
       .limit(50)
-    setSessions((data as ChatSession[]) || [])
+    const list: ChatSession[] = ((data as ChatSession[]) || []).map(s => ({ ...s, first_message: undefined }))
+    if (list.length) {
+      const { data: msgs } = await supabase
+        .from('chat_messages')
+        .select('session_id, content, role, created_at')
+        .in('session_id', list.map(s => s.session_id))
+        .eq('role', 'user')
+        .order('created_at', { ascending: true })
+      const firstBySession: Record<string, string> = {}
+      for (const m of (msgs as { session_id: string; content: string }[]) || []) {
+        if (!(m.session_id in firstBySession)) firstBySession[m.session_id] = m.content
+      }
+      list.forEach(s => { s.first_message = firstBySession[s.session_id] })
+    }
+    setSessions(list)
+    setHistoryLoading(false)
   }
 
   async function createSession(subject: string): Promise<string> {
@@ -95,6 +135,7 @@ export default function ChatPage() {
       .eq('session_id', session.session_id)
       .order('created_at', { ascending: true })
     setMessages((data as ChatMessage[]) || [])
+    setShowQuickReplies(false)
     setMobileOpen(false)
   }
 
@@ -103,7 +144,13 @@ export default function ChatPage() {
     await supabase.from('chat_sessions').delete().eq('session_id', sessionId)
     setSessions(s => s.filter(x => x.session_id !== sessionId))
     if (currentSessionId === sessionId) { setCurrentSessionId(null); setMessages([]) }
-    setDeleteConfirmId(null)
+  }
+
+  async function renameSession(sessionId: string, title: string) {
+    const clean = title.trim().slice(0, 120)
+    if (!clean) return
+    await supabase.from('chat_sessions').update({ title: clean }).eq('session_id', sessionId)
+    setSessions(s => s.map(x => x.session_id === sessionId ? { ...x, title: clean } : x))
   }
 
   async function startSubjectChat(subject: string) {
@@ -120,22 +167,33 @@ export default function ChatPage() {
       started_at: new Date().toISOString(), last_message_at: new Date().toISOString(),
       document_id: null, section_index: 0,
     }, ...s])
-    const introPrompt = `The student has just opened the ${subject} subject. Greet them warmly, briefly introduce what you can help them with in ${subject} at ${profile.education_level} level, and ask what specific topic they want to study today. Keep it short, friendly and encouraging.`
+    const level = profile.education_level || 'unknown level'
+const combo = ['S5', 'S6'].includes(profile.education_level) && profile.combination ? ` They study ${profile.combination}.` : ''
+const introPrompt = `This student is at the exact level "${level}" (from their profile record).${combo} They just opened the ${subject} subject. Reply with exactly this structure, keeping it very short and warm:
+Line 1: one short friendly greeting.
+Line 2: "What would you like to do today?"
+Then a markdown bullet list with exactly these three options:
+- Understand a concept
+- Work through problems
+- Prepare for exams
+No other text, no long intro, no extra questions. Never refer to any level other than "${level}".`
     await sendToAI(introPrompt, sessionId, [], true)
     setLoading(false)
+    setShowQuickReplies(true)
   }
 
   function handleNewChat() {
     setCurrentSessionId(null)
     setMessages([])
     setCurrentSubject('')
+    setShowQuickReplies(false)
     setMobileOpen(false)
   }
 
-  async function sendMessage() {
-    if (!input.trim() || loading || !profile) return
-    const text = input.trim()
-    setInput('')
+  async function submitMessage(value: string) {
+    if (!value.trim() || loading || !profile) return
+    setShowQuickReplies(false)
+    const text = value.trim()
 
     let sessionId = currentSessionId
     if (!sessionId) {
@@ -157,6 +215,13 @@ export default function ChatPage() {
     }
     setMessages(m => [...m, userMsg])
     await sendToAI(text, sessionId, [...messages, userMsg])
+  }
+
+  async function sendMessage() {
+    if (!input.trim() || loading || !profile) return
+    const text = input.trim()
+    setInput('')
+    await submitMessage(text)
   }
 
   async function sendToAI(message: string, sessionId: string, history: ChatMessage[], hideUserMsg = false) {
@@ -312,12 +377,13 @@ export default function ChatPage() {
     return (
       <div className="flex items-center gap-2 px-2 py-2 rounded-full"
         style={{ background: 'linear-gradient(135deg, #1A1A3A, #12122A)', border: '1.5px solid rgba(255,184,0,0.7)' }}>
-        <button onClick={startVoice}
-          className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+        <button onClick={startVoice} title="Voice input" aria-label="Voice input"
+          className="w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shrink-0"
           style={{ background: listening ? 'linear-gradient(135deg,#EF4444,#DC2626)' : 'linear-gradient(135deg,#F59E0B,#D97706)' }}>
           <Mic size={20} style={{ color: '#0A0A1F' }} />
         </button>
-        <label className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 cursor-pointer"
+        <label title="Attach a file" aria-label="Attach a file"
+          className="w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shrink-0 cursor-pointer"
           style={{ background: 'rgba(255,184,0,0.12)' }}>
           <Paperclip size={20} style={{ color: '#FFB800' }} />
           <input type="file" accept="*/*" className="hidden"
@@ -333,7 +399,8 @@ export default function ChatPage() {
           placeholder="Ask a question..." rows={1}
           className="flex-1 bg-transparent text-text-white placeholder-text-disabled resize-none outline-none text-sm max-h-24" />
         <button onClick={sendMessage} disabled={!input.trim() || loading}
-          className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+          title="Send message" aria-label="Send message"
+          className="w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shrink-0"
           style={{ background: input.trim() && !loading ? 'linear-gradient(135deg,#7C3AED,#6D28D9)' : '#1A1A3A' }}>
           <Send size={18} className="text-text-white" />
         </button>
@@ -348,163 +415,31 @@ export default function ChatPage() {
       {/* ── DESKTOP SIDEBAR (inline, does not cover chat) ── */}
       <aside className={`${sidebarOpen ? 'w-72' : 'w-16'} transition-all duration-300 shrink-0 hidden md:flex flex-col border-r border-outline`}>
         {sidebarOpen ? (
-          <div className="w-72 h-full bg-surface flex flex-col shrink-0">
-
-            {/* Minimize button */}
-            <div className="flex items-center justify-end px-3 pt-2">
-              <button onClick={() => setSidebarOpen(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors">
-                <PanelLeftClose size={18} className="text-text-disabled" />
-              </button>
-            </div>
-
-            {/* ── PROFILE CARD ── */}
-            <div className="bg-gradient-to-r from-surface to-surface-var px-4 pb-4">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-14 h-14 rounded-full flex items-center justify-center font-bold text-2xl overflow-hidden shrink-0"
-                  style={{ background: 'linear-gradient(135deg, #F59E0B, #D97706)', color: '#0A0A1F' }}>
-                  {profile.avatar_url
-                    ? <img src={profile.avatar_url} className="w-full h-full object-cover" alt="" />
-                    : profile.name.charAt(0).toUpperCase()}
-                </div>
-                <div className="min-w-0">
-                  <p className="text-text-white font-bold text-base truncate">{profile.name || 'Student'}</p>
-                  <p className="text-text-disabled text-xs truncate">{profile.email}</p>
-                </div>
-              </div>
-              <div className="h-px bg-white/10 mb-2" />
-              {profile.education_level === 'University' && (
-                <><DrawerRow label="Course" value={profile.course || '—'} />{profile.school && <DrawerRow label="University" value={profile.school} />}</>
-              )}
-              {profile.education_level === 'Professional' && (
-                <DrawerRow label="Profession" value={profile.profession || '—'} />
-              )}
-              {['S5', 'S6'].includes(profile.education_level) && (
-                <><DrawerRow label="Combination" value={profile.combination || '—'} />{profile.school && <DrawerRow label="School" value={profile.school} />}</>
-              )}
-              {!['University', 'Professional', 'S5', 'S6'].includes(profile.education_level) && profile.school && (
-                <DrawerRow label="School" value={profile.school} />
-              )}
-            </div>
-
-            {/* ── SCROLLABLE CONTENT ── */}
-            <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
-
-              {/* New Chat button */}
-              <button onClick={handleNewChat}
-                className="w-full h-11 rounded-xl flex items-center justify-center gap-2 font-bold text-sm"
-                style={{ background: 'linear-gradient(135deg, #F59E0B, #D97706)', color: '#0A0A1F' }}>
-                <Plus size={18} /> New Chat
-              </button>
-
-              {/* Subjects - dropdown button */}
-              {subjects.length > 0 && (
-                <div>
-                  <button onClick={() => setSubjectsOpen(!subjectsOpen)}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
-                    <BookOpen size={20} style={{ color: '#10B981' }} />
-                    <span className="text-text-disabled text-sm">Subjects</span>
-                    <ChevronDown size={16} className={`ml-auto text-text-disabled transition-transform ${subjectsOpen ? 'rotate-180' : ''}`} />
-                  </button>
-                  {subjectsOpen && (
-                    <div className="ml-8 mt-1 space-y-1 max-h-44 overflow-y-auto">
-                      {subjects.map(s => (
-                        <button key={s} onClick={() => startSubjectChat(s)}
-                          className="w-full text-left px-3 py-2 rounded-xl text-sm transition-colors"
-                          style={{
-                            backgroundColor: currentSubject === s ? 'rgba(255,184,0,0.15)' : '#1A1A3A',
-                            color: currentSubject === s ? '#FFB800' : '#C0C0D8',
-                            fontWeight: currentSubject === s ? 600 : 400,
-                          }}>
-                          {s}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Navigation */}
-              <div className="space-y-1">
-                <button onClick={() => { navigate('/meetings'); setMobileOpen(false) }}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
-                  <Video size={20} style={{ color: '#F59E0B' }} /><span className="text-text-disabled text-sm">Meetings</span>
-                </button>
-                <button onClick={() => { navigate('/rooms'); setMobileOpen(false) }}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
-                  <Users size={20} style={{ color: '#7C3AED' }} /><span className="text-text-disabled text-sm">Study Rooms</span>
-                </button>
-                <button onClick={() => { navigate('/podcast'); setMobileOpen(false) }}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
-                  <Mic size={20} style={{ color: '#EF4444' }} /><span className="text-text-disabled text-sm">AI Podcast</span>
-                </button>
-                <button onClick={() => { openTimetable(); setMobileOpen(false) }}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
-                  <Calendar size={20} style={{ color: '#F59E0B' }} /><span className="text-text-disabled text-sm">Study Timetable</span>
-                </button>
-                <button onClick={() => { openSettings(); setMobileOpen(false) }}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
-                  <Settings size={20} className="text-text-disabled" /><span className="text-text-disabled text-sm">Settings</span>
-                </button>
-              </div>
-
-              {/* Chat History */}
-              <div>
-                <p className="text-text-disabled text-xs font-bold uppercase tracking-wider mb-2">Chat History</p>
-                {sessions.length === 0 ? (
-                  <p className="text-text-disabled text-xs py-2">No chat history yet.</p>
-                ) : (
-                  <div className="space-y-1 max-h-52 overflow-y-auto">
-                    {sessions.map(s => (
-                      <div key={s.session_id}>
-                        {deleteConfirmId === s.session_id && (
-                          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-6">
-                            <div className="bg-surface-var rounded-2xl p-5 w-full max-w-xs">
-                              <p className="text-text-white font-bold mb-1">Delete Chat?</p>
-                              <p className="text-text-disabled text-sm mb-4">This will permanently delete this chat and all its messages.</p>
-                              <div className="flex gap-3">
-                                <button onClick={() => setDeleteConfirmId(null)} className="flex-1 btn-secondary py-2 text-sm">Cancel</button>
-                                <button onClick={() => confirmDeleteSession(s.session_id)} className="flex-1 bg-error text-white font-bold py-2 rounded-xl text-sm">Delete</button>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                        <div onClick={() => selectSession(s)}
-                          className="flex items-center gap-2 px-3 py-2 rounded-xl cursor-pointer group transition-colors"
-                          style={{ backgroundColor: currentSessionId === s.session_id ? 'rgba(255,184,0,0.1)' : '#1A1A3A' }}>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-primary text-xs font-medium truncate">{s.subject || 'Chat'}</p>
-                            {s.message_count > 0 && (
-                              <span className="text-xs px-1.5 py-0.5 rounded-full"
-                                style={{ backgroundColor: 'rgba(255,184,0,0.15)', color: '#FFB800' }}>
-                                {s.message_count}
-                              </span>
-                            )}
-                          </div>
-                          <button onClick={e => { e.stopPropagation(); setDeleteConfirmId(s.session_id) }}
-                            className="opacity-0 group-hover:opacity-100 transition-opacity p-1">
-                            <Trash2 size={13} className="text-error" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Logout */}
-              <button onClick={handleLogout}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-error/10 transition-colors">
-                <LogOut size={20} className="text-error" /><span className="text-error text-sm">Logout</span>
-              </button>
-            </div>
-          </div>
+          <ChatSidebar
+            profile={profile}
+            subjects={subjects}
+            subjectsOpen={subjectsOpen}
+            currentSubject={currentSubject}
+            historyOpen={historyOpen}
+            subjectCounts={subjectCounts}
+            onSubjectsToggle={() => setSubjectsOpen(v => !v)}
+            onNewChat={handleNewChat}
+            onStartSubjectChat={startSubjectChat}
+            onNavigate={p => navigate(p)}
+            onOpenTimetable={openTimetable}
+            onOpenSettings={openSettings}
+            onOpenHistory={() => setHistoryOpen(true)}
+            onLogout={handleLogout}
+            onCollapse={() => setSidebarOpen(false)}
+            onClose={() => setMobileOpen(false)}
+            isMobile={false}
+          />
         ) : (
           /* ── COLLAPSED ICON BAR ── */
           <div className="w-16 h-full bg-surface flex flex-col items-center py-3 gap-5 shrink-0">
             <button onClick={() => setSidebarOpen(true)}
-              className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
-              title="Expand sidebar">
+              className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/10 hover:text-primary transition-colors"
+              title="Expand sidebar" aria-label="Expand sidebar">
               <PanelLeftOpen size={20} className="text-text-disabled" />
             </button>
 
@@ -521,43 +456,43 @@ export default function ChatPage() {
 
             <button onClick={handleNewChat}
               className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
-              title="New Chat">
+              title="New Chat" aria-label="New Chat">
               <Plus size={20} style={{ color: '#F59E0B' }} />
             </button>
 
             <button onClick={() => { navigate('/meetings') }}
               className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
-              title="Meetings">
+              title="Meetings" aria-label="Meetings">
               <Video size={20} style={{ color: '#F59E0B' }} />
             </button>
 
             <button onClick={() => { navigate('/rooms') }}
               className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
-              title="Study Rooms">
+              title="Study Rooms" aria-label="Study Rooms">
               <Users size={20} style={{ color: '#7C3AED' }} />
             </button>
 
             <button onClick={() => { navigate('/podcast') }}
               className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
-              title="AI Podcast">
+              title="AI Podcast" aria-label="AI Podcast">
               <Mic size={20} style={{ color: '#EF4444' }} />
             </button>
 
             <button onClick={() => { openTimetable() }}
               className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
-              title="Study Timetable">
+              title="Study Timetable" aria-label="Study Timetable">
               <Calendar size={20} style={{ color: '#F59E0B' }} />
             </button>
 
             <button onClick={() => { openSettings() }}
               className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
-              title="Settings">
+              title="Settings" aria-label="Settings">
               <Settings size={20} className="text-text-disabled" />
             </button>
 
-            <button onClick={() => setSidebarOpen(true)}
+            <button onClick={() => setHistoryOpen(true)}
               className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
-              title="Chat History">
+              title="Chat History" aria-label="Chat History">
               <MessageSquare size={20} className="text-text-disabled" />
             </button>
           </div>
@@ -575,11 +510,23 @@ export default function ChatPage() {
               <Menu size={24} className="text-text-white" />
             </button>
           )}
+          {currentSubject && currentSubject !== 'General' && (() => {
+            const meta = subjectMeta(currentSubject)
+            const Icon = meta.icon
+            return (
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full shrink-0"
+                style={{ background: 'rgba(255,184,0,0.1)', border: '1px solid rgba(255,184,0,0.3)' }}>
+                <Icon size={15} style={{ color: meta.color }} />
+                <span className="text-xs font-bold truncate max-w-[160px]" style={{ color: '#FFB800' }}>{currentSubject}</span>
+                <span className="text-[10px] tracking-wide uppercase hidden sm:inline" style={{ color: '#9A9AC4' }}>mode</span>
+              </div>
+            )
+          })()}
         </div>
 
         {/* ── EMPTY STATE or MESSAGES ── */}
         {messages.length === 0 && !loading && !streamingText ? (
-          <div className="flex-1 flex flex-col items-center justify-center px-4 pb-8">
+          <div className="flex-1 min-h-0 flex flex-col items-center justify-center px-4 pb-8">
             <div className="w-full max-w-2xl mx-auto flex flex-col items-center gap-5">
               <div className="text-center">
                 <p className="text-5xl mb-3">👋</p>
@@ -597,7 +544,18 @@ export default function ChatPage() {
                   <p className="text-text-disabled text-sm">Level: {profile.education_level}{profile.school ? ` • ${profile.school}` : ''}</p>
                 )}
                 <p className="text-text-disabled text-sm">District: {profile.district || 'Not set'}</p>
-                <p className="text-primary font-semibold text-lg mt-3">What's on your mind today?</p>
+                {historyLoading ? (
+                  <div className="flex items-center justify-center gap-2 text-sm mt-3" style={{ color: '#8E8EBB' }}>
+                    <Loader2 size={15} className="animate-spin" /> Loading your conversations…
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-primary font-semibold text-lg mt-3">What's on your mind today?</p>
+                    {sessions.length === 0 && (
+                      <p className="text-text-disabled text-sm mt-1">No conversations yet — start typing below.</p>
+                    )}
+                  </>
+                )}
               </div>
               <div className="w-full">
                 {renderInputBar()}
@@ -605,77 +563,111 @@ export default function ChatPage() {
             </div>
           </div>
         ) : (
-          <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
-            {messages.map(msg => (
-              <div key={msg.message_id}
-                className={`flex items-end gap-2 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                {msg.role === 'assistant' && <AIAvatar />}
-                <div className="max-w-[78%]">
-                  {msg.role === 'assistant' && (
+          <div className="flex-1 min-h-0 overflow-y-auto px-4 pt-6 pb-4">
+            <div className="mx-auto w-full max-w-[700px] space-y-3">
+              {messages.map(msg => (
+                <div key={msg.message_id}
+                  className={`flex items-end gap-2 ${msg.role === 'user' ? 'flex-row-reverse justify-start' : 'flex-row'}`}>
+                  {msg.role === 'assistant' && <AIAvatar />}
+                  <div className={`${msg.role === 'user' ? 'max-w-[75%]' : 'max-w-[78%]'}`}>
+                    {msg.role === 'assistant' && (
+                      <div className="flex items-center gap-1.5 mb-1 ml-0.5">
+                        <span className="text-primary text-xs font-bold">TutorUG AI</span>
+                        <span className="text-xs px-1 rounded" style={{ backgroundColor: 'rgba(255,184,0,0.15)', color: '#FFB800' }}>✦</span>
+                        <button onClick={() => speakMessage(msg.message_id, msg.content)}
+                          className="ml-auto text-text-disabled hover:text-primary transition-colors">
+                          {speakingMsgId === msg.message_id ? <Square size={12} style={{ color: '#EF4444' }} /> : <Volume2 size={12} />}
+                        </button>
+                      </div>
+                    )}
+                    <div className={`px-4 py-3 ${msg.role === 'user' ? 'rounded-2xl rounded-br-sm text-ink text-sm font-medium' : 'rounded-tl-sm rounded-tr-2xl rounded-br-2xl rounded-bl-2xl'}`}
+                      style={msg.role === 'user'
+                        ? { background: 'linear-gradient(135deg, #F59E0B80, #D97706)' }
+                        : { background: 'linear-gradient(135deg, #12122A, #1A1A3A)', border: '1px solid rgba(255,184,0,0.3)' }}>
+                      {msg.role === 'assistant' ? (
+                        <div className="prose prose-invert prose-sm max-w-none text-text-white">
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
+                        </div>
+                      ) : (
+                        <p className="text-sm" style={{ color: '#1A1A1A' }}>{msg.content}</p>
+                      )}
+                    </div>
+                    <p className={`text-[10px] mt-1 px-1 ${msg.role === 'user' ? 'text-right' : 'text-left'}`}
+                      style={{ color: '#9A9AC4' }}>
+                      {formatMessageTime(msg.created_at)}
+                    </p>
+                  </div>
+                  {msg.role === 'user' && (
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 font-black text-xs"
+                      style={{ background: 'linear-gradient(135deg, #F59E0B, #D97706)', color: '#1A1A1A' }}>Me</div>
+                  )}
+                </div>
+              ))}
+              {!currentSubject && showQuickReplies && !loading && !streamingText && subjects.slice(0, 4).length > 0 && (
+                <div className="flex items-start gap-2">
+                  <AIAvatar />
+                  <div className="flex flex-col items-start gap-1.5 pt-0.5">
+                    {subjects.slice(0, 4).map(s => (
+                      <button key={s} onClick={() => startSubjectChat(s)}
+                        className="px-3 py-1.5 rounded-full text-xs font-semibold hover:opacity-80 transition-opacity"
+                        style={{ background: 'rgba(255,184,0,0.12)', border: '1px solid rgba(255,184,0,0.35)', color: '#FFB800' }}>
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {showQuickReplies && !loading && !streamingText && (
+                <div className="flex items-start gap-2">
+                  <AIAvatar />
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {TOPIC_CHIPS.map(t => (
+                      <button key={t} onClick={() => submitMessage(t)}
+                        className="px-3 py-1.5 rounded-full text-xs font-semibold hover:opacity-80 transition-opacity"
+                        style={{ background: 'rgba(26,26,58,0.6)', border: '1px solid rgba(255,255,255,0.18)', color: '#C0C0D8' }}>
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {loading && !streamingText && (
+                <div className="flex items-end gap-2">
+                  <AIAvatar />
+                  <div className="px-4 py-3 rounded-tl-sm rounded-tr-2xl rounded-br-2xl rounded-bl-2xl flex items-center gap-1"
+                    style={{ background: 'linear-gradient(135deg, #12122A, #1A1A3A)', border: '1px solid rgba(255,184,0,0.3)' }}>
+                    {[0, 1, 2].map(i => (
+                      <div key={i} className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: `${i * 150}ms` }} />
+                    ))}
+                  </div>
+                </div>
+              )}
+              {streamingText && (
+                <div className="flex items-end gap-2">
+                  <AIAvatar />
+                  <div className="max-w-[78%]">
                     <div className="flex items-center gap-1.5 mb-1 ml-0.5">
                       <span className="text-primary text-xs font-bold">TutorUG AI</span>
                       <span className="text-xs px-1 rounded" style={{ backgroundColor: 'rgba(255,184,0,0.15)', color: '#FFB800' }}>✦</span>
-                      <button onClick={() => speakMessage(msg.message_id, msg.content)}
-                        className="ml-auto text-text-disabled hover:text-primary transition-colors">
-                        {speakingMsgId === msg.message_id ? <Square size={12} style={{ color: '#EF4444' }} /> : <Volume2 size={12} />}
-                      </button>
                     </div>
-                  )}
-                  <div className={`px-4 py-3 ${msg.role === 'user' ? 'rounded-2xl rounded-br-sm text-ink text-sm font-medium' : 'rounded-tl-sm rounded-tr-2xl rounded-br-2xl rounded-bl-2xl'}`}
-                    style={msg.role === 'user'
-                      ? { background: 'linear-gradient(135deg, #F59E0B80, #D97706)' }
-                      : { background: 'linear-gradient(135deg, #12122A, #1A1A3A)', border: '1px solid rgba(255,184,0,0.3)' }}>
-                    {msg.role === 'assistant' ? (
+                    <div className="px-4 py-3 rounded-tl-sm rounded-tr-2xl rounded-br-2xl rounded-bl-2xl"
+                      style={{ background: 'linear-gradient(135deg, #12122A, #1A1A3A)', border: '1px solid rgba(255,184,0,0.5)' }}>
                       <div className="prose prose-invert prose-sm max-w-none text-text-white">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{streamingText}</ReactMarkdown>
                       </div>
-                    ) : (
-                      <p className="text-sm" style={{ color: '#1A1A1A' }}>{msg.content}</p>
-                    )}
-                  </div>
-                </div>
-                {msg.role === 'user' && (
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 font-black text-xs"
-                    style={{ background: 'linear-gradient(135deg, #F59E0B, #D97706)', color: '#1A1A1A' }}>Me</div>
-                )}
-              </div>
-            ))}
-            {loading && !streamingText && (
-              <div className="flex items-end gap-2">
-                <AIAvatar />
-                <div className="px-4 py-3 rounded-tl-sm rounded-tr-2xl rounded-br-2xl rounded-bl-2xl flex items-center gap-1"
-                  style={{ background: 'linear-gradient(135deg, #12122A, #1A1A3A)', border: '1px solid rgba(255,184,0,0.3)' }}>
-                  {[0, 1, 2].map(i => (
-                    <div key={i} className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: `${i * 150}ms` }} />
-                  ))}
-                </div>
-              </div>
-            )}
-            {streamingText && (
-              <div className="flex items-end gap-2">
-                <AIAvatar />
-                <div className="max-w-[78%]">
-                  <div className="flex items-center gap-1.5 mb-1 ml-0.5">
-                    <span className="text-primary text-xs font-bold">TutorUG AI</span>
-                    <span className="text-xs px-1 rounded" style={{ backgroundColor: 'rgba(255,184,0,0.15)', color: '#FFB800' }}>✦</span>
-                  </div>
-                  <div className="px-4 py-3 rounded-tl-sm rounded-tr-2xl rounded-br-2xl rounded-bl-2xl"
-                    style={{ background: 'linear-gradient(135deg, #12122A, #1A1A3A)', border: '1px solid rgba(255,184,0,0.5)' }}>
-                    <div className="prose prose-invert prose-sm max-w-none text-text-white">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{streamingText}</ReactMarkdown>
+                      <span className="inline-block w-2 h-4 bg-primary animate-pulse ml-0.5 align-middle" />
                     </div>
-                    <span className="inline-block w-2 h-4 bg-primary animate-pulse ml-0.5 align-middle" />
                   </div>
                 </div>
-              </div>
-            )}
-            <div ref={bottomRef} />
+              )}
+              <div ref={bottomRef} />
+            </div>
           </div>
         )}
 
         {/* ── VOICE PLAYBACK BAR ── */}
         {speakingMsgId && (
-          <div className="px-4 py-2 flex items-center gap-3 shrink-0"
+          <div className="px-4 py-2 flex items-center gap-3 shrink-0 relative z-10"
             style={{ background: 'rgba(26,26,58,0.95)', borderTop: '1px solid rgba(255,184,0,0.2)' }}>
             <div className="w-2 h-2 rounded-full bg-primary animate-pulse shrink-0" />
             <span className="text-text-disabled text-xs flex-1">Speaking…</span>
@@ -688,7 +680,7 @@ export default function ChatPage() {
 
         {/* ── INPUT BAR (bottom) ── */}
         {(messages.length > 0 || loading || streamingText) && (
-          <div className="px-4 py-3 shrink-0">
+          <div className="px-4 py-3 shrink-0 relative z-10">
             {renderInputBar()}
           </div>
         )}
@@ -698,155 +690,42 @@ export default function ChatPage() {
       {mobileOpen && (
         <>
           <div className="fixed inset-0 bg-black/65 z-40" onClick={() => setMobileOpen(false)} />
-          <div className="fixed top-0 left-0 h-full w-72 bg-surface z-50 flex flex-col shadow-2xl">
-            <div className="flex items-center justify-end px-3 pt-2">
-              <button onClick={() => setMobileOpen(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors">
-                <X size={18} className="text-text-disabled" />
-              </button>
-            </div>
-            <div className="bg-gradient-to-r from-surface to-surface-var px-4 pb-4">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-14 h-14 rounded-full flex items-center justify-center font-bold text-2xl overflow-hidden shrink-0"
-                  style={{ background: 'linear-gradient(135deg, #F59E0B, #D97706)', color: '#0A0A1F' }}>
-                  {profile.avatar_url
-                    ? <img src={profile.avatar_url} className="w-full h-full object-cover" alt="" />
-                    : profile.name.charAt(0).toUpperCase()}
-                </div>
-                <div className="min-w-0">
-                  <p className="text-text-white font-bold text-base truncate">{profile.name || 'Student'}</p>
-                  <p className="text-text-disabled text-xs truncate">{profile.email}</p>
-                </div>
-              </div>
-              <div className="h-px bg-white/10 mb-2" />
-              {profile.education_level === 'University' && (
-                <><DrawerRow label="Course" value={profile.course || '—'} />{profile.school && <DrawerRow label="University" value={profile.school} />}</>
-              )}
-              {profile.education_level === 'Professional' && (
-                <DrawerRow label="Profession" value={profile.profession || '—'} />
-              )}
-              {['S5', 'S6'].includes(profile.education_level) && (
-                <><DrawerRow label="Combination" value={profile.combination || '—'} />{profile.school && <DrawerRow label="School" value={profile.school} />}</>
-              )}
-              {!['University', 'Professional', 'S5', 'S6'].includes(profile.education_level) && profile.school && (
-                <DrawerRow label="School" value={profile.school} />
-              )}
-            </div>
-            <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
-              <button onClick={handleNewChat}
-                className="w-full h-11 rounded-xl flex items-center justify-center gap-2 font-bold text-sm"
-                style={{ background: 'linear-gradient(135deg, #F59E0B, #D97706)', color: '#0A0A1F' }}>
-                <Plus size={18} /> New Chat
-              </button>
-              {subjects.length > 0 && (
-                <div>
-                  <button onClick={() => setSubjectsOpen(!subjectsOpen)}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
-                    <BookOpen size={20} style={{ color: '#10B981' }} />
-                    <span className="text-text-disabled text-sm">Subjects</span>
-                    <ChevronDown size={16} className={`ml-auto text-text-disabled transition-transform ${subjectsOpen ? 'rotate-180' : ''}`} />
-                  </button>
-                  {subjectsOpen && (
-                    <div className="ml-8 mt-1 space-y-1 max-h-44 overflow-y-auto">
-                      {subjects.map(s => (
-                        <button key={s} onClick={() => startSubjectChat(s)}
-                          className="w-full text-left px-3 py-2 rounded-xl text-sm transition-colors"
-                          style={{
-                            backgroundColor: currentSubject === s ? 'rgba(255,184,0,0.15)' : '#1A1A3A',
-                            color: currentSubject === s ? '#FFB800' : '#C0C0D8',
-                            fontWeight: currentSubject === s ? 600 : 400,
-                          }}>
-                          {s}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-              <div className="space-y-1">
-                <button onClick={() => { navigate('/meetings'); setMobileOpen(false) }}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
-                  <Video size={20} style={{ color: '#F59E0B' }} /><span className="text-text-disabled text-sm">Meetings</span>
-                </button>
-                <button onClick={() => { navigate('/rooms'); setMobileOpen(false) }}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
-                  <Users size={20} style={{ color: '#7C3AED' }} /><span className="text-text-disabled text-sm">Study Rooms</span>
-                </button>
-                <button onClick={() => { navigate('/podcast'); setMobileOpen(false) }}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
-                  <Mic size={20} style={{ color: '#EF4444' }} /><span className="text-text-disabled text-sm">AI Podcast</span>
-                </button>
-                <button onClick={() => { openTimetable(); setMobileOpen(false) }}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
-                  <Calendar size={20} style={{ color: '#F59E0B' }} /><span className="text-text-disabled text-sm">Study Timetable</span>
-                </button>
-                <button onClick={() => { openSettings(); setMobileOpen(false) }}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-var transition-colors">
-                  <Settings size={20} className="text-text-disabled" /><span className="text-text-disabled text-sm">Settings</span>
-                </button>
-              </div>
-              <div>
-                <p className="text-text-disabled text-xs font-bold uppercase tracking-wider mb-2">Chat History</p>
-                {sessions.length === 0 ? (
-                  <p className="text-text-disabled text-xs py-2">No chat history yet.</p>
-                ) : (
-                  <div className="space-y-1 max-h-52 overflow-y-auto">
-                    {sessions.map(s => (
-                      <div key={s.session_id}>
-                        {deleteConfirmId === s.session_id && (
-                          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-6">
-                            <div className="bg-surface-var rounded-2xl p-5 w-full max-w-xs">
-                              <p className="text-text-white font-bold mb-1">Delete Chat?</p>
-                              <p className="text-text-disabled text-sm mb-4">This will permanently delete this chat and all its messages.</p>
-                              <div className="flex gap-3">
-                                <button onClick={() => setDeleteConfirmId(null)} className="flex-1 btn-secondary py-2 text-sm">Cancel</button>
-                                <button onClick={() => confirmDeleteSession(s.session_id)} className="flex-1 bg-error text-white font-bold py-2 rounded-xl text-sm">Delete</button>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                        <div onClick={() => selectSession(s)}
-                          className="flex items-center gap-2 px-3 py-2 rounded-xl cursor-pointer group transition-colors"
-                          style={{ backgroundColor: currentSessionId === s.session_id ? 'rgba(255,184,0,0.1)' : '#1A1A3A' }}>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-primary text-xs font-medium truncate">{s.subject || 'Chat'}</p>
-                            {s.message_count > 0 && (
-                              <span className="text-xs px-1.5 py-0.5 rounded-full"
-                                style={{ backgroundColor: 'rgba(255,184,0,0.15)', color: '#FFB800' }}>
-                                {s.message_count}
-                              </span>
-                            )}
-                          </div>
-                          <button onClick={e => { e.stopPropagation(); setDeleteConfirmId(s.session_id) }}
-                            className="opacity-0 group-hover:opacity-100 transition-opacity p-1">
-                            <Trash2 size={13} className="text-error" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <button onClick={handleLogout}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-error/10 transition-colors">
-                <LogOut size={20} className="text-error" /><span className="text-error text-sm">Logout</span>
-              </button>
-            </div>
+          <div className="fixed top-0 left-0 h-full w-72 z-50 shadow-2xl">
+            <ChatSidebar
+              profile={profile}
+              subjects={subjects}
+              subjectsOpen={subjectsOpen}
+              currentSubject={currentSubject}
+              historyOpen={historyOpen}
+              subjectCounts={subjectCounts}
+              onSubjectsToggle={() => setSubjectsOpen(v => !v)}
+              onNewChat={handleNewChat}
+              onStartSubjectChat={startSubjectChat}
+              onNavigate={p => { navigate(p); setMobileOpen(false) }}
+              onOpenTimetable={() => { openTimetable(); setMobileOpen(false) }}
+              onOpenSettings={() => { openSettings(); setMobileOpen(false) }}
+              onOpenHistory={() => { setHistoryOpen(true); setMobileOpen(false) }}
+              onLogout={handleLogout}
+              onCollapse={() => setSidebarOpen(false)}
+              onClose={() => setMobileOpen(false)}
+              isMobile
+            />
           </div>
         </>
       )}
-    </div>
-    </div>
-  )
-}
 
-// DrawerProfileRow — matches Android DrawerProfileRow composable
-function DrawerRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-center gap-1 py-0.5">
-      <span className="text-text-disabled text-xs font-medium">{label}:</span>
-      <span className="text-text-disabled text-xs truncate">{value}</span>
+      {historyOpen && (
+        <ChatHistoryModal
+          sessions={sessions}
+          currentSessionId={currentSessionId}
+          historyLoading={historyLoading}
+          onSelect={s => { selectSession(s); setHistoryOpen(false) }}
+          onDelete={confirmDeleteSession}
+          onRename={renameSession}
+          onClose={() => setHistoryOpen(false)}
+        />
+      )}
+    </div>
     </div>
   )
 }

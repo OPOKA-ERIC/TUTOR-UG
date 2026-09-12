@@ -19,7 +19,7 @@ export default {
         // Text — fixed across all themes
         'text-white':   '#F0F0FF',
         'text-light':   '#C0C0D8',
-        'text-disabled':'#606080',
+        'text-disabled':'#8888A8',
         // Fixed accents
         lime:           '#84CC16',
         'lime-dark':    '#65A30D',

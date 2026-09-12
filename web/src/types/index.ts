@@ -39,6 +39,7 @@ export interface ChatSession {
   subject: string
   education_level: string
   title: string
+  first_message?: string
   message_count: number
   started_at: string
   last_message_at: string

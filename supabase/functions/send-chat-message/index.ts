@@ -27,11 +27,18 @@ Deno.serve(async (req) => {
     if (!isOptionalString(userProfile.district, 120) || !isOptionalString(userProfile.educationLevel, 60)) {
       throw new ApiError(400, "Invalid user profile fields.");
     }
+    if (userProfile.combination !== undefined && !isOptionalString(userProfile.combination, 120)) {
+      throw new ApiError(400, "Invalid user profile fields.");
+    }
     if (conversationHistory !== undefined && !isArrayOrEmpty(conversationHistory, 200)) {
       throw new ApiError(400, "Conversation history is invalid.");
     }
 
-    const base = `You are TutorUG, an AI tutor for Ugandan students helping ${userProfile.name}, a ${userProfile.educationLevel} student from ${userProfile.district} district.
+    const level = userProfile.educationLevel || "an unspecified level";
+    const combo = userProfile.combination ? ` Their combination/subjects are: ${userProfile.combination}.` : "";
+
+    const base = `You are TutorUG, an AI tutor for Ugandan students helping ${userProfile.name}, a ${level} student from ${userProfile.district} district.
+IMPORTANT (never violate): this student's education level is exactly "${userProfile.educationLevel}". Always refer to this exact level and never mention or imply any other class/grade level.${combo}
 Use ONLY Ugandan context, names, places, UGX currency. Follow UNEB curriculum standards.
 Use **bold** for key terms. Use ## for headings. Use numbered lists for steps.`;
 
