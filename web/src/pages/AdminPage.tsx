@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  ChevronLeft, Users, MessageSquare, FileText, Star, ShieldAlert,
+  ChevronLeft, ChevronRight, Users, MessageSquare, FileText, Star, ShieldAlert,
   Shield, ShieldCheck, Trash2, Loader2, CheckCircle2, EyeOff,
   Search, Crown, Activity, TrendingUp, BookOpen, UserCheck, AlertTriangle,
-  BarChart2, Sparkles, Clock, ArrowUpRight, CalendarDays, Gauge, Zap,
+  BarChart2, Sparkles, Clock, ArrowUpRight, ArrowUp, ArrowDown, CalendarDays, Gauge, Zap,
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/lib/AuthContext'
@@ -69,7 +69,7 @@ function StatCard({ icon: Icon, label, value, from, to, color, sub, trend }: {
           <Icon size={19} strokeWidth={2.4} />
         </div>
         <div className="min-w-0">
-          <p className="text-2xl lg:text-[27px] font-black leading-none tabular-nums tracking-tight">
+          <p className="text-2xl lg:text-[27px] font-black leading-[1.3] tabular-nums tracking-tight">
             <GradText from="#fff" to="#C9C8FF">{value}</GradText>
           </p>
           <p className="text-text-disabled text-[10.5px] font-bold uppercase tracking-[0.14em] mt-1 truncate">{label}</p>
@@ -425,7 +425,8 @@ export default function AdminPage() {
               activeToday={activeToday} activeWeek={activeWeek}
               newWeek={newWeek} newMonth={newMonth}
               eduSorted={eduSorted} districtTop={districtTop}
-              quizPassRate={quizPassRate} avgScore={avgScore} avgRating={avgRating} />
+              quizPassRate={quizPassRate} avgScore={avgScore} avgRating={avgRating}
+              adminName={profile.name || ''} />
           ) : tab === 'reviews' ? (
             <ReviewsTab
               reviews={reviews} userName={userName} users={users}
@@ -562,7 +563,7 @@ function AreaChart({ data }: { data: { label: string; value: number }[] }) {
           <g key={i}>
             <line x1={L} x2={W - R} y1={gy} y2={gy} stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
             <text x={L - 7} y={gy + 3.5} textAnchor="end" fontSize="10" fill="rgba(255,255,255,0.35)">
-              {Math.round(max * (1 - i / 2))}
+              {Math.round(max * (i / 2))}
             </text>
           </g>
         ))}
@@ -627,7 +628,7 @@ function DonutSplit({ data, centerValue, centerLabel }: {
           </g>
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <p className="text-text-white text-2xl font-black leading-none tabular-nums">{centerValue}</p>
+          <p className="text-text-white text-2xl font-black leading-[1.3] tabular-nums">{centerValue}</p>
           <p className="text-text-disabled text-[10px] font-bold uppercase tracking-widest mt-1">{centerLabel}</p>
         </div>
       </div>
@@ -650,19 +651,27 @@ function RatingChart({ reviews }: { reviews: AppReview[] }) {
   if (reviews.length === 0) return <EmptyHint icon={Star} text="No ratings yet." />
   return (
     <div className="space-y-2.5">
-      {counts.map(c => (
-        <div key={c.rating} className="flex items-center gap-3">
-          <span className="w-9 text-sm font-bold text-text-white flex items-center gap-1">
-            {c.rating} <Star size={12} fill="#FFC107" style={{ color: '#FFC107' }} />
-          </span>
-          <div className="flex-1 h-[9px] rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
-            <div className="h-full rounded-full transition-all duration-700"
-              style={{ width: `${(c.value / max) * 100}%`, background: 'linear-gradient(90deg,#FFB800,#FF7A00)', boxShadow: '0 0 10px rgba(255,184,0,0.3)' }} />
+      {counts.map(c => {
+        const pct = (c.value / max) * 100
+        return (
+          <div key={c.rating} className="flex items-center gap-3"
+            title={`${c.rating}★ · ${c.value} of ${reviews.length} rating${reviews.length === 1 ? '' : 's'}`}>
+            <span className="w-9 text-sm font-bold text-text-white flex items-center gap-1 shrink-0">
+              {c.rating} <Star size={12} fill="#FFC107" style={{ color: '#FFC107' }} />
+            </span>
+            <div className="flex-1 h-[9px] rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
+              {c.value > 0 && (
+                <div className="h-full rounded-full transition-all duration-700"
+                  style={{ width: `${Math.max(5, pct)}%`, background: 'linear-gradient(90deg,#FFB800,#FF7A00)', boxShadow: '0 0 10px rgba(255,184,0,0.3)' }} />
+              )}
+            </div>
+            <span className="w-7 text-right text-text-disabled text-xs tabular-nums shrink-0">{c.value}</span>
           </div>
-          <span className="w-7 text-right text-text-disabled text-xs tabular-nums">{c.value}</span>
-        </div>
-      ))}
-      <p className="text-text-disabled text-center text-[11px] pt-1.5">{reviews.length} rating{reviews.length === 1 ? '' : 's'} · avg {avgOf(reviews)}</p>
+        )
+      })}
+      <p className="text-text-disabled text-center text-[11px] pt-1.5">
+        {reviews.length} rating{reviews.length === 1 ? '' : 's'} · avg {avgOf(reviews)} · scale = max {max}
+      </p>
     </div>
   )
 }
@@ -678,16 +687,40 @@ function OverviewTab(props: {
   msgCount: number; docCount: number; quizCount: number
   activeToday: number; activeWeek: number; newWeek: number; newMonth: number
   eduSorted: [string, number][]; districtTop: [string, number][]
-  quizPassRate: number; avgScore: number; avgRating: string
+  quizPassRate: number; avgScore: number; avgRating: string; adminName: string
 }) {
   const {
     users, reviews, flaggedCount, msgCount, docCount, quizCount,
     activeToday, activeWeek, newWeek, newMonth, eduSorted, districtTop,
-    quizPassRate, avgScore, avgRating,
+    quizPassRate, avgScore, avgRating, adminName,
   } = props
 
   const recentUsers = users.slice(0, 7)
   const pendingReviews = reviews.filter(r => r.status === 'pending').length
+
+  const dayW = 86400000
+  const _nowW = nowMs()
+  const prevWeek = users.filter(u => {
+    if (!u.created_at) return false
+    const t = _nowW - new Date(u.created_at).getTime()
+    return t >= 7 * dayW && t < 14 * dayW
+  }).length
+  const wkDelta = newWeek - prevWeek
+  const wkUp = wkDelta >= 0
+  const activePct = users.length ? Math.round((activeWeek / users.length) * 100) : 0
+
+  function jumpTo(id: string) {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  const OVERVIEW_NAV = [
+    { id: 'ov-stats', label: 'Stats', icon: BarChart2 },
+    { id: 'ov-growth', label: 'Growth', icon: TrendingUp },
+    { id: 'ov-demographics', label: 'Demographics', icon: Users },
+    { id: 'ov-activity', label: 'Activity', icon: Activity },
+    { id: 'ov-ratings', label: 'Ratings', icon: Star },
+    { id: 'ov-signups', label: 'Signups', icon: UserCheck },
+  ]
 
   return (
     <div className="space-y-5">
@@ -700,7 +733,7 @@ function OverviewTab(props: {
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-text-white text-lg font-black tracking-tight">
-              Hey, <GradText from="#FFB800" to="#FF7A00">{profileName(users)}</GradText> — the platform looks healthy.
+              Hey, <GradText from="#FFB800" to="#FF7A00">{adminName || 'Admiral'}</GradText> — the platform looks healthy.
             </p>
             <p className="text-text-disabled text-sm mt-0.5 flex items-center gap-1.5 flex-wrap">
               <TrendingUp size={13} style={{ color: '#00E676' }} />
@@ -710,20 +743,36 @@ function OverviewTab(props: {
           </div>
           <div className="hidden md:flex items-center gap-2.5">
             <div className="px-3.5 py-2 rounded-xl text-center"
-              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
-              <p className="text-text-white font-black text-lg leading-none tabular-nums">{users.length}</p>
-              <p className="text-text-disabled text-[9.5px] font-bold uppercase tracking-widest mt-1">Learners</p>
+              style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid ${wkUp ? 'rgba(52,211,153,0.3)' : 'rgba(239,68,68,0.3)'}` }}>
+              <p className="font-black text-lg leading-tight tabular-nums flex items-center justify-center gap-1"
+                style={{ color: wkUp ? '#34D399' : '#F87171' }}>
+                {wkUp ? '▲' : '▼'} {Math.abs(wkDelta)}
+              </p>
+              <p className="text-text-disabled text-[9.5px] font-bold uppercase tracking-widest mt-1">Vs prev 7d</p>
             </div>
             <div className="px-3.5 py-2 rounded-xl text-center"
               style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
-              <p className="text-text-white font-black text-lg leading-none tabular-nums">{newWeek}</p>
-              <p className="text-text-disabled text-[9.5px] font-bold uppercase tracking-widest mt-1">New/Wk</p>
+              <p className="text-text-white font-black text-lg leading-tight tabular-nums">{activePct}%</p>
+              <p className="text-text-disabled text-[9.5px] font-bold uppercase tracking-widest mt-1">Active / wk</p>
             </div>
           </div>
         </div>
       </Card>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+      {/* Section jump nav */}
+      <div className="sticky z-20 -mx-1 px-1 pb-1.5 flex gap-1.5 overflow-x-auto"
+        style={{ top: 100, background: 'rgba(6,6,23,0.88)', backdropFilter: 'blur(10px)' }}>
+        {OVERVIEW_NAV.map(s => (
+          <button key={s.id} onClick={() => jumpTo(s.id)}
+            className="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide whitespace-nowrap shrink-0 flex items-center gap-1.5 transition-all active:scale-[0.96] hover:text-text-white"
+            style={{ background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <s.icon size={12} />
+            {s.label}
+          </button>
+        ))}
+      </div>
+
+      <section id="ov-stats" className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 scroll-mt-40">
         <StatCard icon={Users} label="Total Users" value={users.length} from="#FFB800" to="#FF7A00" color="#FFB800" sub={`${newMonth} new this month`} />
         <StatCard icon={Activity} label="Active Today" value={activeToday} from="#00E5FF" to="#0884FF" color="#00E5FF" sub={`${activeWeek} active this week`} />
         <StatCard icon={TrendingUp} label="New This Week" value={newWeek} from="#34D399" to="#059669" color="#34D399" sub="New signups (7 days)" />
@@ -732,9 +781,10 @@ function OverviewTab(props: {
         <StatCard icon={FileText} label="Documents" value={docCount.toLocaleString()} from="#FCD34D" to="#F59E0B" color="#F59E0B" sub="Uploaded by users" />
         <StatCard icon={Star} label="Avg Rating" value={avgRating} from="#FFC107" to="#FF8A00" color="#FFC107" sub={`${pendingReviews} review${pendingReviews === 1 ? '' : 's'} pending`} />
         <StatCard icon={ShieldAlert} label="Flagged Messages" value={flaggedCount} from="#F87171" to="#DC2626" color="#F87171" sub="Awaiting moderation" />
-      </div>
+      </section>
 
       {/* Growth chart */}
+      <section id="ov-growth" className="scroll-mt-40">
       <Card className="p-5" glow="rgba(255,184,0,0.12)">
         <div className="flex items-center justify-between flex-wrap gap-2 mb-4">
           <SectionTitle icon={<TrendingUp size={13} />} color="#FFB800" from="#FFB800" to="#FF7A00">Growth — New Learners</SectionTitle>
@@ -745,8 +795,9 @@ function OverviewTab(props: {
         </div>
         <AreaChart data={signupTrend(users)} />
       </Card>
+      </section>
 
-      <div className="grid lg:grid-cols-2 gap-5">
+      <section id="ov-demographics" className="grid lg:grid-cols-2 gap-5 scroll-mt-40">
         <Card className="p-5">
           <div className="p-1">
             <SectionTitle icon={<Users size={13} />} color="#FFB800" from="#FFB800" to="#FF7A00">Learners by Education Level</SectionTitle>
@@ -773,25 +824,29 @@ function OverviewTab(props: {
             )}
           </div>
         </Card>
-      </div>
+      </section>
 
       <div className="grid lg:grid-cols-2 gap-5">
+        <section id="ov-activity" className="scroll-mt-40">
         <Card className="p-5">
           <div className="p-1">
             <SectionTitle icon={<Activity size={13} />} color="#00E5FF" from="#00E5FF" to="#0884FF">Learner Activity</SectionTitle>
             <DonutSplit data={activitySplit(users)} centerValue={activeWeek} centerLabel="active / 7d" />
           </div>
         </Card>
+        </section>
 
+        <section id="ov-ratings" className="scroll-mt-40">
         <Card className="p-5">
           <div className="p-1">
             <SectionTitle icon={<Star size={13} />} color="#FFC107" from="#FFC107" to="#FF8A00">Rating Distribution</SectionTitle>
             <RatingChart reviews={reviews} />
           </div>
         </Card>
+        </section>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-5">
+      <section id="ov-signups" className="grid lg:grid-cols-2 gap-5 scroll-mt-40">
         <Card className="p-5">
           <div className="p-1">
             <SectionTitle icon={<UserCheck size={13} />} color="#34D399" from="#34D399" to="#059669">Recent Signups</SectionTitle>
@@ -836,7 +891,7 @@ function OverviewTab(props: {
                     style={{ background: `linear-gradient(135deg,${i.from},${i.to})`, color: INK, boxShadow: `0 8px 16px -8px ${i.color}` }}>
                     <i.icon size={15} strokeWidth={2.4} />
                   </div>
-                  <p className="text-text-white text-lg font-black leading-none tabular-nums">{i.value}</p>
+                  <p className="text-text-white text-lg font-black leading-tight tabular-nums">{i.value}</p>
                   <p className="text-text-disabled text-[9.5px] mt-1 font-bold uppercase tracking-widest">{i.label}</p>
                 </div>
               ))}
@@ -850,15 +905,12 @@ function OverviewTab(props: {
             </div>
           </div>
         </Card>
-      </div>
+      </section>
     </div>
   )
 }
 
 // helpers used by OverviewTab
-function profileName(users: UserProfile[]) {
-  return users[0]?.name?.split(' ')[0] || 'Admiral'
-}
 function nowMs() { return Date.now() }
 
 function MapPinIcon() {
@@ -882,25 +934,6 @@ function EmptyHint({ icon: Icon = Sparkles, text = 'No data yet.' }: { icon?: an
   )
 }
 
-function CountPill({ icon: Icon, value, from, to, color, label }: {
-  icon: any; value: number | string; from: string; to: string; color: string; label: string
-}) {
-  return (
-    <Card className="p-4" glow={`${color}30`}>
-      <div className="flex items-center gap-3">
-        <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-          style={{ background: `linear-gradient(135deg,${from},${to})`, color: INK, boxShadow: `0 8px 18px -8px ${color}` }}>
-          <Icon size={16} strokeWidth={2.4} />
-        </div>
-        <div>
-          <GradText from="#fff" to="#C9C8FF"><span className="text-2xl font-black leading-none tabular-nums">{value}</span></GradText>
-          <p className="text-text-disabled text-[10.5px] font-bold uppercase tracking-widest mt-1 flex items-center gap-1">{label}</p>
-        </div>
-      </div>
-    </Card>
-  )
-}
-
 function ReviewsTab(props: {
   reviews: AppReview[]; userName: (id: string) => UserProfile | undefined
   users: UserProfile[]; avgRating: string
@@ -909,9 +942,24 @@ function ReviewsTab(props: {
 }) {
   const { reviews, userName, avgRating, counts, onStatus } = props
   const [statusFilter, setStatusFilter] = useState<'all' | AppReview['status']>('all')
+  const [sort, setSort] = useState<'newest' | 'oldest' | 'ratingAsc'>('newest')
+  const [page, setPage] = useState(0)
   const [busy, setBusy] = useState<string | null>(null)
 
+  const PAGE = 6
+
+  useEffect(() => { setPage(0) }, [statusFilter, sort])
+
   const filtered = reviews.filter(r => statusFilter === 'all' || r.status === statusFilter)
+  const ts = (iso: string) => { const t = new Date(iso || '').getTime(); return isNaN(t) ? 0 : t }
+  const sorted = [...filtered].sort((a, b) => {
+    if (sort === 'oldest') return ts(a.created_at) - ts(b.created_at)
+    if (sort === 'ratingAsc') return a.rating - b.rating
+    return ts(b.created_at) - ts(a.created_at)
+  })
+  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE))
+  const safePage = Math.min(page, totalPages - 1)
+  const pageRows = sorted.slice(safePage * PAGE, safePage * PAGE + PAGE)
 
   async function act(id: string, status: AppReview['status']) {
     setBusy(id)
@@ -919,8 +967,16 @@ function ReviewsTab(props: {
     setBusy(null)
   }
 
+  const EMPTY: Record<string, { icon: any; text: string }> = {
+    all: { icon: Star, text: 'No reviews yet — students have not left any.' },
+    pending: { icon: Clock, text: 'No pending reviews — everything has been reviewed.' },
+    approved: { icon: CheckCircle2, text: 'No approved reviews yet.' },
+    hidden: { icon: EyeOff, text: 'No hidden reviews — nothing has been hidden.' },
+  }
+
   return (
     <div className="space-y-5">
+      {/* Avg rating header */}
       <Card className="p-4" glow="rgba(255,193,7,0.2)">
         <div className="flex items-center gap-3">
           <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
@@ -928,83 +984,136 @@ function ReviewsTab(props: {
             <Star size={20} strokeWidth={2.4} />
           </div>
           <div className="flex-1 min-w-0">
-            <GradText from="#FFC107" to="#FF8A00"><span className="text-3xl font-black leading-none">{avgRating}</span></GradText>
-            <p className="text-text-disabled text-[11px] font-bold uppercase tracking-widest mt-0.5">Average Rating</p>
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <div className="min-w-0">
+                <p className="text-3xl font-black leading-[1.3] tracking-tight">
+                  <GradText from="#FFC107" to="#FF8A00">{avgRating}</GradText>
+                </p>
+                <p className="text-text-disabled text-[11px] font-bold uppercase tracking-widest mt-1">Average Rating</p>
+              </div>
+              <div className="ml-auto shrink-0">
+                <StarRow rating={Math.round(Number(avgRating) || 0)} size={16} />
+              </div>
+            </div>
           </div>
-          <StarRow rating={Math.round(Number(avgRating) || 0)} size={16} />
         </div>
       </Card>
 
-      <div className="grid grid-cols-3 gap-3">
-        <CountPill icon={Clock} value={counts.pending} from="#FFB800" to="#FF7A00" color="#FFB800" label="Pending" />
-        <CountPill icon={CheckCircle2} value={counts.approved} from="#34D399" to="#059669" color="#34D399" label="Approved" />
-        <CountPill icon={EyeOff} value={counts.hidden} from="#F87171" to="#DC2626" color="#F87171" label="Hidden" />
+      {/* Filters + sort */}
+      <div className="flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
+        <div className="flex gap-1.5 overflow-x-auto">
+          {(['all', 'pending', 'approved', 'hidden'] as const).map(s => {
+            const active = statusFilter === s
+            return (
+              <button key={s} onClick={() => setStatusFilter(s)}
+                className="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all duration-200 active:scale-[0.97] flex items-center"
+                style={{
+                  background: active ? 'linear-gradient(135deg,#FFB800,#FF7A00)' : 'rgba(255,255,255,0.03)',
+                  color: active ? INK : 'rgba(255,255,255,0.5)',
+                  border: `1px solid ${active ? 'rgba(255,138,0,0.5)' : 'rgba(255,255,255,0.07)'}`,
+                }}>
+                {s === 'all' ? 'All' : s}
+                <span className="ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] font-black leading-none"
+                  style={{
+                    background: active ? 'rgba(11,10,30,0.85)' : 'rgba(255,255,255,0.08)',
+                    color: active ? '#FFB800' : 'rgba(255,255,255,0.45)',
+                  }}>
+                  {s === 'all' ? reviews.length : counts[s]}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="text-text-disabled text-[11px] font-bold uppercase tracking-wider shrink-0">Sort</span>
+          <select value={sort} onChange={e => setSort(e.target.value as typeof sort)}
+            className="h-9 px-2.5 rounded-lg text-sm outline-none cursor-pointer"
+            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)', color: '#fff' }}>
+            <option value="newest" style={{ background: '#141336' }}>Newest first</option>
+            <option value="oldest" style={{ background: '#141336' }}>Oldest first</option>
+            <option value="ratingAsc" style={{ background: '#141336' }}>Lowest rating</option>
+          </select>
+        </div>
       </div>
 
-      <div className="flex gap-1.5 overflow-x-auto">
-        {(['all', 'pending', 'approved', 'hidden'] as const).map(s => (
-          <button key={s} onClick={() => setStatusFilter(s)}
-            className="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all duration-200 active:scale-[0.97]"
-            style={{
-              background: statusFilter === s ? 'linear-gradient(135deg,#FFB800,#FF7A00)' : 'rgba(255,255,255,0.03)',
-              color: statusFilter === s ? INK : 'rgba(255,255,255,0.5)',
-              border: `1px solid ${statusFilter === s ? 'rgba(255,138,0,0.5)' : 'rgba(255,255,255,0.07)'}`,
-            }}>
-            {s} ({s === 'all' ? reviews.length : counts[s]})
-          </button>
-        ))}
-      </div>
-
-      {filtered.length === 0 ? (
-        <Card className="p-8"><EmptyHint icon={Star} text="No reviews here yet." /></Card>
+      {sorted.length === 0 ? (
+        <Card className="p-8">
+          <EmptyHint icon={EMPTY[statusFilter].icon} text={EMPTY[statusFilter].text} />
+        </Card>
       ) : (
         <div className="space-y-3">
-          {filtered.map(r => {
+          {pageRows.map(r => {
             const u = userName(r.user_id)
+            const district = u?.district || r.user_district
+            const level = u?.education_level || r.user_education_level
             return (
               <Card key={r.review_id} className="p-4 hover:border-white/[0.12]" glow="rgba(255,184,0,0.06)">
-                <div className="flex flex-wrap items-center gap-3">
-                  <Avatar name={u?.name || 'S'} />
+                <div className="flex flex-wrap items-start gap-3">
+                  <Avatar name={u?.name || r.user_name || 'S'} />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-text-white text-sm font-bold">{u?.name || 'User'}</p>
+                      <p className="text-text-white text-sm font-bold">{u?.name || r.user_name || 'User'}</p>
                       <StarRow rating={r.rating} />
                       <span className="text-text-disabled text-[11px] flex items-center gap-1"><CalendarDays size={11} /> {formatDate(r.created_at)}</span>
                     </div>
                     <p className="text-text-disabled text-[11px] truncate">
-                      {u?.email || ''} {u?.district ? `· ${u.district}` : ''} {u?.education_level ? `· ${u.education_level}` : ''}
+                      {u?.email || ''}{district ? ` · ${district}` : ''}{level ? ` · ${level}` : ''}
                     </p>
                     {r.title && <p className="text-text-white text-sm font-semibold mt-2">“{r.title}”</p>}
-                    {r.comment && <p className="text-text-white/80 text-[13px] mt-1 leading-relaxed">{r.comment}</p>}
+                    {r.comment ? (
+                      <p className="text-text-white/80 text-[13px] mt-1 leading-relaxed break-words">{r.comment}</p>
+                    ) : (
+                      <p className="text-text-disabled text-[12px] mt-1.5 italic">No comment left — rating only.</p>
+                    )}
                   </div>
-                  <div className="flex items-center gap-2 shrink-0">
+                  <div className="ml-auto flex flex-wrap items-center gap-1.5 shrink-0">
                     {r.status === 'pending' && (
                       <span className="px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider"
                         style={{ background: 'rgba(255,184,0,0.12)', color: '#FFB800', border: '1px solid rgba(255,184,0,0.25)' }}>
                         Pending
                       </span>
                     )}
+                    {r.status !== 'approved' && (
+                      <button onClick={() => act(r.review_id, 'approved')} disabled={busy !== null}
+                        className="h-8 px-2.5 rounded-lg text-[11px] font-bold flex items-center gap-1.5 transition-all hover:opacity-90 disabled:opacity-50 active:scale-[0.97]"
+                        style={{ background: 'rgba(0,230,118,0.1)', color: '#34D399', border: '1px solid rgba(52,211,153,0.3)' }}>
+                        {busy === r.review_id ? <Loader2 size={12} className="animate-spin" /> : <CheckCircle2 size={12} />} Approve
+                      </button>
+                    )}
+                    {r.status !== 'hidden' && (
+                      <button onClick={() => act(r.review_id, 'hidden')} disabled={busy !== null}
+                        className="h-8 px-2.5 rounded-lg text-[11px] font-bold flex items-center gap-1.5 transition-all hover:opacity-90 disabled:opacity-50 active:scale-[0.97]"
+                        style={{ background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        <EyeOff size={12} /> Hide
+                      </button>
+                    )}
                   </div>
-                </div>
-                <div className="flex gap-2 mt-3 pt-3 border-t border-white/[0.06]">
-                  {r.status !== 'approved' && (
-                    <button onClick={() => act(r.review_id, 'approved')} disabled={busy !== null}
-                      className="flex-1 h-9 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all hover:opacity-90 disabled:opacity-50 active:scale-[0.98]"
-                      style={{ background: 'rgba(0,230,118,0.1)', color: '#34D399', border: '1px solid rgba(52,211,153,0.3)' }}>
-                      {busy === r.review_id ? <Loader2 size={13} className="animate-spin" /> : <CheckCircle2 size={13} />} Approve
-                    </button>
-                  )}
-                  {r.status !== 'hidden' && (
-                    <button onClick={() => act(r.review_id, 'hidden')} disabled={busy !== null}
-                      className="flex-1 h-9 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all hover:opacity-90 disabled:opacity-50 active:scale-[0.98]"
-                      style={{ background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)' }}>
-                      <EyeOff size={13} /> Hide
-                    </button>
-                  )}
                 </div>
               </Card>
             )
           })}
+        </div>
+      )}
+
+      {sorted.length > PAGE && (
+        <div className="flex items-center justify-between gap-3 pt-3 border-t border-white/[0.06]">
+          <p className="text-text-disabled text-[11px]">
+            Showing {safePage * PAGE + 1}–{Math.min(sorted.length, (safePage + 1) * PAGE)} of {sorted.length}
+          </p>
+          <div className="flex items-center gap-1.5">
+            <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={safePage === 0} aria-label="Previous page"
+              className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors disabled:opacity-30 hover:bg-white/[0.06]"
+              style={{ border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)' }}>
+              <ChevronLeft size={15} />
+            </button>
+            <span className="text-text-disabled text-[11px] tabular-nums px-1.5">{safePage + 1} / {totalPages}</span>
+            <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={safePage === totalPages - 1} aria-label="Next page"
+              className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors disabled:opacity-30 hover:bg-white/[0.06]"
+              style={{ border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)' }}>
+              <ChevronRight size={15} />
+            </button>
+          </div>
         </div>
       )}
     </div>
@@ -1021,61 +1130,69 @@ function ModerationTab(props: { messages: RoomMessage[]; userName: (id: string) 
     setBusy(null)
   }
 
+  if (messages.length === 0) {
+    return (
+      <Card className="p-8" glow="rgba(52,211,153,0.12)">
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0"
+            style={{ background: 'rgba(0,230,118,0.1)', border: '1px solid rgba(52,211,153,0.3)' }}>
+            <ShieldCheck size={26} style={{ color: '#34D399' }} />
+          </div>
+          <div>
+            <p className="text-text-white font-black">All clear!</p>
+            <p className="text-text-disabled text-sm mt-0.5">No flagged messages right now — the community is behaving well.</p>
+          </div>
+        </div>
+      </Card>
+    )
+  }
+
   return (
     <div className="space-y-3">
-      <Card className="p-5 flex items-center gap-3" glow="rgba(239,68,68,0.12)">
+      <Card className="p-4 flex items-center gap-3" glow="rgba(239,68,68,0.15)">
         <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
           style={{ background: 'linear-gradient(135deg,#F87171,#DC2626)', color: INK, boxShadow: '0 10px 20px -8px #EF4444' }}>
           <ShieldAlert size={18} strokeWidth={2.4} />
         </div>
-        <div>
-          <p className="text-text-white text-sm font-black flex items-center gap-2">Flagged Room Messages</p>
+        <div className="min-w-0 flex-1">
+          <p className="text-text-white text-sm font-black flex items-center gap-2">
+            Flagged Room Messages
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-black leading-none"
+              style={{ background: 'rgba(239,68,68,0.2)', color: '#F87171' }}>
+              {messages.length} live
+            </span>
+          </p>
           <p className="text-text-disabled text-xs mt-0.5">Messages reported as inappropriate in study rooms. Review and delete if necessary.</p>
         </div>
       </Card>
 
-      {messages.length === 0 ? (
-        <Card className="p-8">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0"
-              style={{ background: 'rgba(0,230,118,0.1)', border: '1px solid rgba(52,211,153,0.3)' }}>
-              <ShieldCheck size={26} style={{ color: '#34D399' }} />
-            </div>
-            <div>
-              <p className="text-text-white font-black">All clear!</p>
-              <p className="text-text-disabled text-sm mt-0.5">No flagged messages right now — the community is behaving well.</p>
-            </div>
-          </div>
-        </Card>
-      ) : (
-        messages.map(m => {
-          const u = userName(m.user_id)
-          return (
-            <Card key={m.message_id} className="p-4 hover:border-red-500/20" glow="rgba(239,68,68,0.08)">
-              <div className="flex items-start gap-3">
-                <Avatar name={m.user_name || u?.name || 'U'} size={36} />
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <p className="text-text-white text-sm font-bold">{m.user_name || u?.name || 'User'}</p>
-                    <span className="text-text-disabled text-[11px] flex items-center gap-1"><CalendarDays size={11} /> {formatDate(m.created_at)}</span>
-                    <span className="px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wider"
-                      style={{ background: 'rgba(239,68,68,0.12)', color: '#EF4444', border: '1px solid rgba(239,68,68,0.3)' }}>
-                      Flagged
-                    </span>
-                  </div>
-                  <p className="text-text-white/80 text-sm mt-1.5 leading-relaxed break-words">{m.content}</p>
+      {messages.map(m => {
+        const u = userName(m.user_id)
+        return (
+          <Card key={m.message_id} className="p-4 hover:border-red-500/20" glow="rgba(239,68,68,0.08)">
+            <div className="flex items-start gap-3">
+              <Avatar name={m.user_name || u?.name || 'U'} size={36} />
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="text-text-white text-sm font-bold">{m.user_name || u?.name || 'User'}</p>
+                  <span className="text-text-disabled text-[11px] flex items-center gap-1"><CalendarDays size={11} /> {formatDate(m.created_at)}</span>
+                  <span className="px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wider"
+                    style={{ background: 'rgba(239,68,68,0.12)', color: '#EF4444', border: '1px solid rgba(239,68,68,0.3)' }}>
+                    Flagged
+                  </span>
                 </div>
-                <button onClick={() => remove(m.message_id)} disabled={busy !== null}
-                  className="h-9 px-3 rounded-lg text-xs font-bold flex items-center gap-1.5 shrink-0 transition-all hover:opacity-90 disabled:opacity-50 active:scale-[0.97]"
-                  style={{ background: 'rgba(239,68,68,0.12)', color: '#EF4444', border: '1px solid rgba(239,68,68,0.35)' }}>
-                  {busy === m.message_id ? <Loader2 size={13} className="animate-spin" /> : <Trash2 size={13} />}
-                  Delete
-                </button>
+                <p className="text-text-white/80 text-sm mt-1.5 leading-relaxed break-words">{m.content}</p>
               </div>
-            </Card>
-          )
-        })
-      )}
+              <button onClick={() => remove(m.message_id)} disabled={busy !== null}
+                className="h-9 px-3 rounded-lg text-xs font-bold flex items-center gap-1.5 shrink-0 transition-all hover:opacity-90 disabled:opacity-50 active:scale-[0.97]"
+                style={{ background: 'rgba(239,68,68,0.12)', color: '#EF4444', border: '1px solid rgba(239,68,68,0.35)' }}>
+                {busy === m.message_id ? <Loader2 size={13} className="animate-spin" /> : <Trash2 size={13} />}
+                Delete
+              </button>
+            </div>
+          </Card>
+        )
+      })}
     </div>
   )
 }
@@ -1087,6 +1204,76 @@ function AdminsTab(props: {
   onPromote: () => Promise<void>; onDemote: (id: string) => Promise<void>
 }) {
   const { admins, users, currentUserId, email, setEmail, loading, msg, onPromote, onDemote } = props
+
+  const [confirm, setConfirm] = useState<{ kind: 'promote' | 'demote'; userId?: string; name?: string } | null>(null)
+
+  const [query, setQuery] = useState('')
+  const [districtFilter, setDistrictFilter] = useState('all')
+  const [levelFilter, setLevelFilter] = useState('all')
+  const [roleFilter, setRoleFilter] = useState('all')
+  const [incompleteOnly, setIncompleteOnly] = useState(false)
+  const [sortKey, setSortKey] = useState<'name' | 'district' | 'level' | 'lastActive' | 'role'>('name')
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
+  const [page, setPage] = useState(0)
+
+  const PAGE = 12
+
+  useEffect(() => { setPage(0) }, [query, districtFilter, levelFilter, roleFilter, incompleteOnly])
+
+  const districts = Array.from(new Set(users.map(u => u.district).filter((d): d is string => !!d))).sort((a, b) => a.localeCompare(b))
+  const levels = Array.from(new Set(users.map(u => u.education_level).filter((l): l is string => !!l))).sort((a, b) => a.localeCompare(b))
+
+  const q = query.trim().toLowerCase()
+  const rows = users.filter(u => {
+    if (q && !(u.name || '').toLowerCase().includes(q) && !(u.email || '').toLowerCase().includes(q)) return false
+    if (districtFilter !== 'all' && u.district !== districtFilter) return false
+    if (levelFilter !== 'all' && u.education_level !== levelFilter) return false
+    if (roleFilter !== 'all' && u.role !== roleFilter) return false
+    if (incompleteOnly && (u.district && u.education_level)) return false
+    return true
+  })
+
+  const sorted = [...rows].sort((a, b) => {
+    let r: number
+    if (sortKey === 'lastActive') {
+      const at = a.last_active ? new Date(a.last_active).getTime() : 0
+      const bt = b.last_active ? new Date(b.last_active).getTime() : 0
+      r = at - bt
+    } else if (sortKey === 'name') {
+      r = (a.name || '').toLowerCase().localeCompare((b.name || '').toLowerCase())
+    } else if (sortKey === 'district') {
+      r = (a.district || '\uffff').localeCompare(b.district || '\uffff')
+    } else if (sortKey === 'level') {
+      r = (a.education_level || '\uffff').localeCompare(b.education_level || '\uffff')
+    } else {
+      r = (a.role || '').localeCompare(b.role || '')
+    }
+    return sortDir === 'asc' ? r : -r
+  })
+
+  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE))
+  const safePage = Math.min(page, totalPages - 1)
+  const pageRows = sorted.slice(safePage * PAGE, safePage * PAGE + PAGE)
+
+  function toggleSort(key: typeof sortKey) {
+    if (sortKey === key) setSortDir(d => (d === 'asc' ? 'desc' : 'asc'))
+    else { setSortKey(key); setSortDir('asc') }
+  }
+
+  const arrow = (k: typeof sortKey) => {
+    if (sortKey !== k) return null
+    return sortDir === 'asc' ? <ArrowUp size={11} /> : <ArrowDown size={11} />
+  }
+
+  const controlStyle = { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)', color: '#fff' }
+
+  function runConfirm() {
+    if (!confirm) return
+    const c = confirm
+    setConfirm(null)
+    if (c.kind === 'promote') onPromote()
+    else if (c.userId) onDemote(c.userId)
+  }
 
   return (
     <div className="space-y-5">
@@ -1105,11 +1292,11 @@ function AdminsTab(props: {
           <div className="relative flex-1">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'rgba(255,255,255,0.3)' }} />
             <input value={email} onChange={e => setEmail(e.target.value)} placeholder="user@example.com"
-              onKeyDown={e => { if (e.key === 'Enter') onPromote() }}
+              onKeyDown={e => { if (e.key === 'Enter' && email.trim()) setConfirm({ kind: 'promote' }) }}
               className="w-full pl-9 pr-3 py-2.5 rounded-lg text-sm outline-none transition-colors"
               style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)', color: '#fff', caretColor: '#FFB800' }} />
           </div>
-          <button onClick={onPromote} disabled={loading || !email.trim()}
+          <button onClick={() => setConfirm({ kind: 'promote' })} disabled={loading || !email.trim()}
             className="h-11 px-6 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.97] hover:opacity-90 disabled:opacity-50"
             style={{ background: 'linear-gradient(135deg,#FFB800,#FF7A00)', color: INK, boxShadow: '0 12px 26px -10px rgba(255,184,0,0.7)' }}>
             {loading ? <Loader2 size={15} className="animate-spin" /> : <Crown size={15} strokeWidth={2.4} />}
@@ -1156,7 +1343,7 @@ function AdminsTab(props: {
                     </div>
                     <span className="text-text-disabled text-[11px] hidden sm:flex items-center gap-1"><CalendarDays size={11} /> Since {formatDate(a.created_at)}</span>
                     {canDemote && (
-                      <button onClick={() => onDemote(a.user_id)}
+                      <button onClick={() => setConfirm({ kind: 'demote', userId: a.user_id, name: a.name || a.email })}
                         className="h-8 px-3 rounded-lg text-[11px] font-bold transition-all hover:opacity-90 active:scale-[0.97]"
                         style={{ background: 'rgba(239,68,68,0.12)', color: '#EF4444', border: '1px solid rgba(239,68,68,0.3)' }}>
                         Remove
@@ -1175,22 +1362,93 @@ function AdminsTab(props: {
           <SectionTitle icon={<Users size={13} />} color="#00E5FF" from="#00E5FF" to="#0884FF">
             All Users ({users.length})
           </SectionTitle>
-          {users.length === 0 ? <EmptyHint icon={Users} /> : (
-            <div className="overflow-x-auto rounded-xl" style={{ border: '1px solid rgba(255,255,255,0.05)' }}>
+
+          <div className="flex flex-col lg:flex-row gap-2 mb-4">
+            <div className="relative flex-1 min-w-[200px]">
+              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'rgba(255,255,255,0.3)' }} />
+              <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search name or email…"
+                className="w-full pl-9 pr-9 py-2 rounded-xl text-sm outline-none transition-colors"
+                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)', color: '#fff', caretColor: '#FFB800' }} />
+              {query && (
+                <button onClick={() => setQuery('')} aria-label="Clear search"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md text-text-disabled hover:text-text-white">
+                  ✕
+                </button>
+              )}
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <select value={districtFilter} onChange={e => setDistrictFilter(e.target.value)}
+                className="h-10 px-3 rounded-xl text-sm outline-none cursor-pointer"
+                style={controlStyle}>
+                <option value="all" style={{ background: '#141336' }}>All districts</option>
+                {districts.map(d => <option key={d} value={d} style={{ background: '#141336' }}>{d}</option>)}
+              </select>
+              <select value={levelFilter} onChange={e => setLevelFilter(e.target.value)}
+                className="h-10 px-3 rounded-xl text-sm outline-none cursor-pointer"
+                style={controlStyle}>
+                <option value="all" style={{ background: '#141336' }}>All levels</option>
+                {levels.map(l => <option key={l} value={l} style={{ background: '#141336' }}>{l}</option>)}
+              </select>
+              <select value={roleFilter} onChange={e => setRoleFilter(e.target.value)}
+                className="h-10 px-3 rounded-xl text-sm outline-none cursor-pointer"
+                style={controlStyle}>
+                <option value="all" style={{ background: '#141336' }}>All roles</option>
+                <option value="student" style={{ background: '#141336' }}>Students</option>
+                <option value="admin" style={{ background: '#141336' }}>Admins</option>
+              </select>
+              <button onClick={() => setIncompleteOnly(v => !v)}
+                className={`h-10 px-3 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all active:scale-[0.97] ${incompleteOnly ? '' : 'opacity-70'}`}
+                style={{
+                  background: incompleteOnly ? 'rgba(255,184,0,0.14)' : 'rgba(255,255,255,0.04)',
+                  color: incompleteOnly ? '#FFB800' : 'rgba(255,255,255,0.55)',
+                  border: `1px solid ${incompleteOnly ? 'rgba(255,184,0,0.35)' : 'rgba(255,255,255,0.09)'}`,
+                }}>
+                <AlertTriangle size={13} /> Incomplete
+              </button>
+              <span className="px-2.5 py-1 rounded-lg text-[11px] font-bold tabular-nums"
+                style={{ background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.45)' }}>
+                {sorted.length} result{sorted.length === 1 ? '' : 's'}
+              </span>
+            </div>
+          </div>
+
+          {sorted.length === 0 ? <EmptyHint icon={Users} text="No users match these filters." /> : (
+            <div className="max-h-[560px] overflow-auto rounded-xl" style={{ border: '1px solid rgba(255,255,255,0.05)' }}>
               <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-left text-text-disabled text-[11px] uppercase tracking-[0.12em] border-b"
-                    style={{ background: 'rgba(255,255,255,0.025)', borderColor: 'rgba(255,255,255,0.06)' }}>
-                    <th className="py-3 pr-3 font-bold">User</th>
-                    <th className="py-3 pr-3 font-bold hidden md:table-cell">District</th>
-                    <th className="py-3 pr-3 font-bold hidden sm:table-cell">Level</th>
-                    <th className="py-3 pr-3 font-bold">Last Active</th>
-                    <th className="py-3 font-bold">Role</th>
+                <thead className="sticky top-0 z-10">
+                  <tr className="text-left text-text-disabled text-[11px] uppercase tracking-[0.12em]"
+                    style={{ background: 'rgba(13,13,36,1)', boxShadow: '0 1px 0 rgba(255,255,255,0.08)' }}>
+                    <th className="py-3 pr-3 font-bold">
+                      <button onClick={() => toggleSort('name')} className="flex items-center gap-1 hover:text-text-white transition-colors">
+                        User {arrow('name')}
+                      </button>
+                    </th>
+                    <th className="py-3 pr-3 font-bold hidden md:table-cell">
+                      <button onClick={() => toggleSort('district')} className="flex items-center gap-1 hover:text-text-white transition-colors">
+                        District {arrow('district')}
+                      </button>
+                    </th>
+                    <th className="py-3 pr-3 font-bold hidden sm:table-cell">
+                      <button onClick={() => toggleSort('level')} className="flex items-center gap-1 hover:text-text-white transition-colors">
+                        Level {arrow('level')}
+                      </button>
+                    </th>
+                    <th className="py-3 pr-3 font-bold">
+                      <button onClick={() => toggleSort('lastActive')} className="flex items-center gap-1 hover:text-text-white transition-colors">
+                        Last Active {arrow('lastActive')}
+                      </button>
+                    </th>
+                    <th className="py-3 font-bold">
+                      <button onClick={() => toggleSort('role')} className="flex items-center gap-1 hover:text-text-white transition-colors">
+                        Role {arrow('role')}
+                      </button>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {users.slice(0, 50).map(u => {
+                  {pageRows.map(u => {
                     const active = u.last_active && (nowMs() - new Date(u.last_active).getTime()) < 86400000
+                    const incomplete = !u.district || !u.education_level
                     return (
                       <tr key={u.user_id} className="border-b border-white/[0.03] hover:bg-white/[0.025] transition-colors">
                         <td className="py-2.5 pr-3">
@@ -1199,6 +1457,12 @@ function AdminsTab(props: {
                             <div className="min-w-0">
                               <p className="text-text-white font-semibold truncate max-w-[160px]">{u.name || 'Student'}</p>
                               <p className="text-text-disabled text-[11px] truncate max-w-[160px]">{u.email}</p>
+                              {incomplete && (
+                                <span className="inline-flex items-center gap-1 mt-0.5 px-1.5 py-px rounded-full text-[9px] font-black uppercase tracking-wide"
+                                  style={{ background: 'rgba(255,184,0,0.12)', color: '#FFB800', border: '1px solid rgba(255,184,0,0.25)' }}>
+                                  <AlertTriangle size={8} /> Needs profile
+                                </span>
+                              )}
                             </div>
                           </div>
                         </td>
@@ -1230,8 +1494,66 @@ function AdminsTab(props: {
               </table>
             </div>
           )}
+
+          {sorted.length > PAGE && (
+            <div className="flex items-center justify-between gap-3 pt-3 mt-3 border-t border-white/[0.06]">
+              <p className="text-text-disabled text-[11px]">
+                Showing {safePage * PAGE + 1}–{Math.min(sorted.length, (safePage + 1) * PAGE)} of {sorted.length}
+              </p>
+              <div className="flex items-center gap-1.5">
+                <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={safePage === 0} aria-label="Previous page"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors disabled:opacity-30 hover:bg-white/[0.06]"
+                  style={{ border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)' }}>
+                  <ChevronLeft size={15} />
+                </button>
+                <span className="text-text-disabled text-[11px] tabular-nums px-1.5">{safePage + 1} / {totalPages}</span>
+                <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={safePage === totalPages - 1} aria-label="Next page"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors disabled:opacity-30 hover:bg-white/[0.06]"
+                  style={{ border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)' }}>
+                  <ChevronRight size={15} />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </Card>
+
+      {confirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: 'rgba(6,6,23,0.7)', backdropFilter: 'blur(6px)' }}
+          onClick={() => setConfirm(null)}>
+          <div className="w-full max-w-md rounded-2xl p-6 relative"
+            style={{ background: 'linear-gradient(160deg,#12112C,#0A0A1E)', border: '1px solid rgba(255,184,0,0.2)', boxShadow: '0 30px 80px -30px rgba(0,0,0,0.9)' }}
+            onClick={e => e.stopPropagation()}>
+            <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4"
+              style={{ background: confirm.kind === 'promote' ? 'rgba(255,184,0,0.12)' : 'rgba(239,68,68,0.12)', border: `1px solid ${confirm.kind === 'promote' ? 'rgba(255,184,0,0.3)' : 'rgba(239,68,68,0.3)'}` }}>
+              {confirm.kind === 'promote'
+                ? <Crown size={22} style={{ color: '#FFB800' }} />
+                : <ShieldAlert size={22} style={{ color: '#EF4444' }} />}
+            </div>
+            <p className="text-text-white text-lg font-black">
+              {confirm.kind === 'promote' ? `Grant admin access to ${email.trim()}?` : `Remove ${confirm.name || 'this admin'}?`}
+            </p>
+            <p className="text-text-disabled text-sm mt-2 leading-relaxed">
+              {confirm.kind === 'promote'
+                ? `${email.trim()} will immediately gain full dashboard access — including user data review, moderation tools, and the ability to promote others. Only grant this to team members you fully trust.`
+                : `This user will immediately lose elevated dashboard access and revert to a standard student account. You can restore them later from the promote panel.`}
+            </p>
+            <div className="flex gap-2.5 mt-6">
+              <button onClick={() => setConfirm(null)}
+                className="flex-1 h-11 rounded-xl text-sm font-bold transition-colors hover:opacity-90 active:scale-[0.98]"
+                style={{ border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.6)', background: 'rgba(255,255,255,0.04)' }}>
+                Cancel
+              </button>
+              <button onClick={runConfirm}
+                className="flex-1 h-11 rounded-xl text-sm font-black transition-all active:scale-[0.98]"
+                style={{ background: confirm.kind === 'promote' ? 'linear-gradient(135deg,#FFB800,#FF7A00)' : 'linear-gradient(135deg,#F87171,#DC2626)', color: '#0A0A1F' }}>
+                {confirm.kind === 'promote' ? 'Yes, Grant Access' : 'Yes, Remove Access'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

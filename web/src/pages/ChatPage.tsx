@@ -29,6 +29,11 @@ function AIAvatar() {
 
 const TOPIC_CHIPS = ['Understand a concept', 'Work through problems', 'Prepare for exams']
 
+const K_SESSION = 'tutorug:currentSessionId'
+const K_SIDEBAR = 'tutorug:sidebarOpen'
+const K_SUBJECTS = 'tutorug:subjectsOpen'
+const K_RATE = 'tutorug:speechRate'
+
 function formatMessageTime(iso: string): string {
   const d = new Date(iso)
   if (isNaN(d.getTime())) return ''
@@ -44,25 +49,26 @@ export default function ChatPage() {
   const { openSettings } = useSettings()
   const { openTimetable } = useTimetable()
   const navigate = useNavigate()
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(() => sessionStorage.getItem(K_SIDEBAR) !== 'collapsed')
   const [mobileOpen, setMobileOpen] = useState(false)
   const [sessions, setSessions] = useState<ChatSession[]>([])
   const [historyLoading, setHistoryLoading] = useState(true)
-  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null)
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(() => sessionStorage.getItem(K_SESSION))
   const [currentSubject, setCurrentSubject] = useState('')
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [streamingText, setStreamingText] = useState('')
   const [listening, setListening] = useState(false)
-  const [subjectsOpen, setSubjectsOpen] = useState(false)
+  const [subjectsOpen, setSubjectsOpen] = useState(() => sessionStorage.getItem(K_SUBJECTS) === 'open')
   const [historyOpen, setHistoryOpen] = useState(false)
   const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null)
   const [showQuickReplies, setShowQuickReplies] = useState(false)
-  const [speechRate, setSpeechRate] = useState(1.0)
+  const [speechRate, setSpeechRate] = useState(() => parseFloat(sessionStorage.getItem(K_RATE) || '1.0'))
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null)
   const abortRef = useRef<AbortController | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
+  const didRestoreRef = useRef(false)
   const subjects = profile ? getSidebarSubjects(profile) : []
 
   const subjectCounts = useMemo(() => {
@@ -86,6 +92,16 @@ export default function ChatPage() {
   useEffect(() => { if (profile) loadHistory() }, [profile])
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages, streamingText])
   useEffect(() => { return () => abortRef.current?.abort() }, [])
+  useEffect(() => {
+    if (currentSessionId) sessionStorage.setItem(K_SESSION, currentSessionId)
+    else sessionStorage.removeItem(K_SESSION)
+  }, [currentSessionId])
+  useEffect(() => { sessionStorage.setItem(K_SIDEBAR, sidebarOpen ? 'open' : 'collapsed') }, [sidebarOpen])
+  useEffect(() => { sessionStorage.setItem(K_SUBJECTS, subjectsOpen ? 'open' : 'collapsed') }, [subjectsOpen])
+  useEffect(() => {
+    const n = parseFloat(speechRate.toFixed(2))
+    sessionStorage.setItem(K_RATE, String(n))
+  }, [speechRate])
 
   async function loadHistory() {
     if (!profile) return
@@ -112,6 +128,17 @@ export default function ChatPage() {
     }
     setSessions(list)
     setHistoryLoading(false)
+
+    const restoreId = sessionStorage.getItem(K_SESSION)
+    if (restoreId && !didRestoreRef.current) {
+      const target = list.find(s => s.session_id === restoreId)
+      if (target) {
+        didRestoreRef.current = true
+        await selectSession(target)
+      } else {
+        sessionStorage.removeItem(K_SESSION)
+      }
+    }
   }
 
   async function createSession(subject: string): Promise<string> {
@@ -503,25 +530,37 @@ No other text, no long intro, no extra questions. Never refer to any level other
       <div className="flex-1 flex flex-col min-w-0">
 
         {/* ── TOP BAR ── */}
-        <div className="bg-gradient-to-r from-surface to-surface-var px-1 py-2 flex items-center gap-1 shrink-0 z-10">
+        <div className="bg-gradient-to-r from-surface to-surface-var px-2 py-1.5 flex items-center gap-2 shrink-0 z-10">
           {isMobile() && (
             <button onClick={() => setMobileOpen(true)}
-              className="w-12 h-12 flex items-center justify-center shrink-0">
+              className="w-12 h-12 flex items-center justify-center shrink-0 -ml-1">
               <Menu size={24} className="text-text-white" />
             </button>
           )}
-          {currentSubject && currentSubject !== 'General' && (() => {
+          {currentSubject && currentSubject !== 'General' ? (() => {
             const meta = subjectMeta(currentSubject)
             const Icon = meta.icon
             return (
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full shrink-0"
-                style={{ background: 'rgba(255,184,0,0.1)', border: '1px solid rgba(255,184,0,0.3)' }}>
-                <Icon size={15} style={{ color: meta.color }} />
-                <span className="text-xs font-bold truncate max-w-[160px]" style={{ color: '#FFB800' }}>{currentSubject}</span>
-                <span className="text-[10px] tracking-wide uppercase hidden sm:inline" style={{ color: '#9A9AC4' }}>mode</span>
+              <div className="min-w-0 flex items-center gap-2.5">
+                <span className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+                  style={{ background: `${meta.color}1F` }}>
+                  <Icon size={16} style={{ color: meta.color }} />
+                </span>
+                <div className="min-w-0 leading-tight">
+                  <p className="text-sm font-bold truncate max-w-[200px]" style={{ color: '#FFB800' }}>{currentSubject}</p>
+                  <p className="text-[10px] tracking-widest uppercase hidden sm:block" style={{ color: '#9A9AC4' }}>Mode</p>
+                </div>
               </div>
             )
-          })()}
+          })() : (
+            <p className="text-sm font-bold text-text-white">Chat</p>
+          )}
+          {contextLabel && (
+            <span className="ml-auto hidden md:inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold"
+              style={{ background: 'rgba(255,255,255,0.06)', color: '#A3A3C8' }}>
+              {contextLabel}
+            </span>
+          )}
         </div>
 
         {/* ── EMPTY STATE or MESSAGES ── */}

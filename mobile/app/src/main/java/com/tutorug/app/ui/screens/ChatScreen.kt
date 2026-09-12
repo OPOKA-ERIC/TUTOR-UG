@@ -1,5 +1,6 @@
 package com.tutorug.app.ui.screens
 
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.*
@@ -8,7 +9,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -38,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.tutorug.app.data.model.ChatMessage
 import com.tutorug.app.data.model.ChatSession
+import com.tutorug.app.data.model.DocumentSection
 import com.tutorug.app.data.model.UserProfile
 import com.tutorug.app.ui.theme.*
 import com.tutorug.app.util.Constants
@@ -71,7 +73,8 @@ fun ChatScreen(
     onSpeakMessage: (String, String) -> Unit = { _, _ -> },
     onStopSpeaking: () -> Unit = {},
     onSpeedUp: () -> Unit = {},
-    onSlowDown: () -> Unit = {}
+    onSlowDown: () -> Unit = {},
+    onSectionJump: (Int) -> Unit = {}
 ) {
     var messageText by remember { mutableStateOf("") }
     var drawerOpen by remember { mutableStateOf(false) }
@@ -192,6 +195,8 @@ fun ChatScreen(
             }
 
             // ── MESSAGES ─────────────────────────────────────────────
+            val messageGroups = remember(messages) { groupConsecutiveMessages(messages) }
+
             LazyColumn(
                 modifier = Modifier.weight(1f).fillMaxWidth().padding(horizontal = 16.dp),
                 state = listState
@@ -233,18 +238,24 @@ fun ChatScreen(
                     }
                 }
 
-                items(messages) { message ->
-                    ChatBubble(
-                        message = message,
-                        primary = primary,
-                        onPrimary = onPrimary,
-                        surface = surface,
-                        surfaceVar = surfaceVar,
-                        error = error,
-                        onSurfaceVar = onSurfaceVar,
-                        speakingMsgId = speakingMessageId,
-                        onSpeakMessageCallback = onSpeakMessage
-                    )
+                itemsIndexed(messageGroups) { _, group ->
+                    group.forEachIndexed { idx, message ->
+                        ChatBubble(
+                            message = message,
+                            isContinuation = idx > 0,
+                            showHeader = idx == 0,
+                            primary = primary,
+                            onPrimary = onPrimary,
+                            surface = surface,
+                            surfaceVar = surfaceVar,
+                            error = error,
+                            onSurfaceVar = onSurfaceVar,
+                            speakingMsgId = speakingMessageId,
+                            onSpeakMessageCallback = onSpeakMessage,
+                            onSectionTap = onSectionJump
+                        )
+                        if (idx < group.lastIndex) Spacer(modifier = Modifier.height(4.dp))
+                    }
                     Spacer(modifier = Modifier.height(10.dp))
                 }
 
@@ -790,6 +801,9 @@ private fun DrawerProfileRow(label: String, value: String, mutedColor: Color) {
 @Composable
 fun ChatBubble(
     message: ChatMessage,
+    isContinuation: Boolean = false,
+    showHeader: Boolean = true,
+    onSectionTap: (Int) -> Unit = {},
     primary: Color = Amber500,
     onPrimary: Color = Ink900,
     surface: Color = SurfaceCard,
@@ -800,14 +814,15 @@ fun ChatBubble(
     onSpeakMessageCallback: ((String, String) -> Unit)? = null
 ) {
     val isUser = message.role == "user"
+    val isAttachment = isUser && (message.attachmentUri.isNotBlank() || message.content.trim().startsWith("📎"))
 
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start,
         verticalAlignment = Alignment.Bottom
     ) {
-        if (!isUser) {
-            // AI avatar
+        if (!isUser && !isContinuation) {
+            // AI avatar — only on the first bubble of a group
             Box(
                 modifier = Modifier
                     .size(32.dp)
@@ -819,66 +834,84 @@ fun ChatBubble(
             Spacer(modifier = Modifier.width(8.dp))
         }
 
-        if (isUser) {
-            // User bubble
+        if (isUser && isAttachment) {
+            AttachmentBubble(message, surface, surfaceVar, primary, onSurfaceVar)
+        } else if (isUser) {
+            // User bubble — tail faces the avatar on the first bubble only
+            val shape = if (isContinuation)
+                RoundedCornerShape(18.dp)
+            else
+                RoundedCornerShape(18.dp, 4.dp, 18.dp, 18.dp)
             Box(
                 modifier = Modifier
-                    .widthIn(max = 280.dp)
+                    .widthIn(max = 300.dp)
                     .background(
                         Brush.linearGradient(listOf(Amber500.copy(alpha = 0.9f), Amber600)),
-                        RoundedCornerShape(18.dp, 4.dp, 18.dp, 18.dp)
+                        shape
                     )
-                    .padding(horizontal = 14.dp, vertical = 10.dp)
+                    .padding(horizontal = 14.dp, vertical = 12.dp)
             ) {
                 Text(message.content, fontSize = 14.sp, color = Color(0xFF1A1A1A), lineHeight = 20.sp)
             }
         } else {
             // AI bubble — includes speak button on long press / tap on Volume icon
             Column(modifier = Modifier.widthIn(max = 300.dp)) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(bottom = 4.dp, start = 2.dp)
-                ) {
-                    Text("TutorUG AI", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = primary)
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Surface(shape = RoundedCornerShape(4.dp), color = primary.copy(alpha = 0.15f)) {
-                        Text("✦", fontSize = 9.sp, color = primary,
-                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp))
-                    }
-                    Spacer(modifier = Modifier.weight(1f))
-                    // 🔊 Speak button per message
-                    if (onSpeakMessageCallback != null) {
-                        val isSpeakingThis = speakingMsgId == message.messageId
-                        IconButton(
-                            onClick = { onSpeakMessageCallback(message.messageId, message.content) },
-                            modifier = Modifier.size(24.dp)
-                        ) {
-                            Icon(
-                                if (isSpeakingThis) Icons.Default.StopCircle else Icons.Default.VolumeUp,
-                                null,
-                                tint = if (isSpeakingThis) error else onSurfaceVar,
-                                modifier = Modifier.size(15.dp)
-                            )
+                if (showHeader) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(bottom = 4.dp, start = 2.dp)
+                    ) {
+                        Text("TutorUG AI", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = primary)
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Surface(shape = RoundedCornerShape(4.dp), color = primary.copy(alpha = 0.15f)) {
+                            Text("✦", fontSize = 9.sp, color = primary,
+                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp))
+                        }
+                        Spacer(modifier = Modifier.weight(1f))
+                        // 🔊 Speak button per message
+                        if (onSpeakMessageCallback != null) {
+                            val isSpeakingThis = speakingMsgId == message.messageId
+                            IconButton(
+                                onClick = { onSpeakMessageCallback(message.messageId, message.content) },
+                                modifier = Modifier.size(24.dp)
+                            ) {
+                                Icon(
+                                    if (isSpeakingThis) Icons.Default.StopCircle else Icons.Default.VolumeUp,
+                                    null,
+                                    tint = if (isSpeakingThis) error else onSurfaceVar,
+                                    modifier = Modifier.size(15.dp)
+                                )
+                            }
                         }
                     }
+                } else {
+                    Spacer(modifier = Modifier.height(2.dp))
                 }
                 Box(
                     modifier = Modifier
                         .border(1.dp,
                             Brush.linearGradient(listOf(primary.copy(alpha = 0.5f), Violet400.copy(alpha = 0.3f))),
-                            RoundedCornerShape(4.dp, 18.dp, 18.dp, 18.dp))
+                            RoundedCornerShape(
+                                if (isContinuation) 18.dp else 4.dp,
+                                18.dp, 18.dp, 18.dp))
                         .background(Brush.linearGradient(listOf(surface, surfaceVar)),
-                            RoundedCornerShape(4.dp, 18.dp, 18.dp, 18.dp))
+                            RoundedCornerShape(
+                                if (isContinuation) 18.dp else 4.dp,
+                                18.dp, 18.dp, 18.dp))
                         .padding(horizontal = 14.dp, vertical = 12.dp)
                 ) {
-                    FormattedAIText(message.content, primary)
+                    if (message.sections.isNotEmpty()) {
+                        SummaryWithSections(message.content, message.sections, primary, onSectionTap)
+                    } else {
+                        FormattedAIText(message.content, primary)
+                    }
                 }
             }
         }
 
-        if (isUser) {
+        if (isUser && !isContinuation) {
             Spacer(modifier = Modifier.width(8.dp))
-            // User avatar initial
+            // User avatar initial — only on the first bubble of a group
             Box(
                 modifier = Modifier
                     .size(32.dp)
@@ -889,6 +922,174 @@ fun ChatBubble(
             }
         }
     }
+}
+
+/** Renders a user-supplied file: image thumbnail preview (or file chip) + truncated name. */
+@Composable
+private fun AttachmentBubble(
+    message: ChatMessage,
+    surface: Color,
+    surfaceVar: Color,
+    primary: Color,
+    onSurfaceVar: Color
+) {
+    val name = message.content.removePrefix("📎").trim()
+    val ext = name.substringAfterLast('.', "").lowercase()
+    val isImage = ext in listOf("jpg", "jpeg", "png", "gif", "webp", "bmp", "heic", "heif")
+    val hasUri = message.attachmentUri.isNotBlank()
+
+    Column(modifier = Modifier.widthIn(max = 220.dp)) {
+        Box(
+            modifier = Modifier
+                .background(Brush.linearGradient(listOf(surface, surfaceVar)),
+                    RoundedCornerShape(18.dp, 4.dp, 18.dp, 18.dp))
+                .border(1.dp, primary.copy(alpha = 0.4f),
+                    RoundedCornerShape(18.dp, 4.dp, 18.dp, 18.dp))
+                .padding(9.dp)
+        ) {
+            if (isImage && hasUri) {
+                AsyncImage(
+                    model = Uri.parse(message.attachmentUri),
+                    contentDescription = name,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .width(180.dp)
+                        .height(116.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                )
+            } else {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(34.dp)
+                            .background(primary.copy(alpha = 0.12f), RoundedCornerShape(8.dp)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(Icons.Default.AttachFile, null, tint = primary, modifier = Modifier.size(17.dp))
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        name,
+                        fontSize = 12.sp,
+                        color = AppColors.textPrimary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.widthIn(max = 150.dp)
+                    )
+                }
+            }
+            if (isImage) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(top = 6.dp, end = 2.dp)
+                ) {
+                    Text(
+                        name,
+                        fontSize = 10.sp,
+                        color = onSurfaceVar,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f, fill = false).widthIn(max = 180.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+/** Renders the document summary: intro text, tappable numbered section cards, then closing text. */
+@Composable
+private fun SummaryWithSections(
+    content: String,
+    sections: List<DocumentSection>,
+    primary: Color,
+    onSectionTap: (Int) -> Unit
+) {
+    val lines = content.split("\n")
+    val numbered = { line: String ->
+        line.trim().firstOrNull()?.isDigit() == true && line.contains(". ")
+    }
+    val firstNum = lines.indexOfFirst { numbered(it) }
+    val lastNum = lines.indexOfLast { numbered(it) }
+
+    Column {
+        if (firstNum > 0) {
+            FormattedAIText(lines.take(firstNum).joinToString("\n"), primary)
+        }
+        sections.forEachIndexed { i, sec ->
+            SectionCard(index = i, section = sec, primary = primary, onClick = { onSectionTap(i) })
+        }
+        if (lastNum in 0 until lines.lastIndex) {
+            Spacer(modifier = Modifier.height(2.dp))
+            FormattedAIText(lines.drop(lastNum + 1).joinToString("\n"), primary)
+        }
+    }
+}
+
+@Composable
+private fun SectionCard(index: Int, section: DocumentSection, primary: Color, onClick: () -> Unit) {
+    val done = section.quizPassed
+    val statusColor = if (done) Lime400 else primary
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 3.dp)
+            .background(primary.copy(alpha = 0.07f), RoundedCornerShape(12.dp))
+            .border(1.dp, primary.copy(alpha = 0.25f), RoundedCornerShape(12.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(22.dp)
+                .background(primary.copy(alpha = 0.15f), CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("${index + 1}", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = primary)
+        }
+        Spacer(modifier = Modifier.width(10.dp))
+        Text(
+            section.title,
+            fontSize = 13.sp,
+            color = AppColors.textPrimary,
+            fontWeight = FontWeight.Medium,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Surface(shape = RoundedCornerShape(20.dp), color = statusColor.copy(alpha = 0.14f)) {
+            Text(
+                if (done) "✓ Complete" else "○ Not started",
+                fontSize = 9.sp,
+                color = statusColor,
+                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+            )
+        }
+    }
+}
+
+/** Groups consecutive messages from the same sender sent close together (within ~90s). */
+internal fun groupConsecutiveMessages(list: List<ChatMessage>): List<List<ChatMessage>> {
+    if (list.isEmpty()) return emptyList()
+    val groups = mutableListOf<List<ChatMessage>>()
+    groups += listOf(list[0])
+    for (i in 1 until list.size) {
+        val prev = list[i - 1]
+        val cur = list[i]
+        val gap = try {
+            val a = java.time.OffsetDateTime.parse(prev.createdAt)
+            val b = java.time.OffsetDateTime.parse(cur.createdAt)
+            Math.abs(java.time.Duration.between(a, b).toSeconds())
+        } catch (e: Exception) { Long.MAX_VALUE }
+        if (prev.role == cur.role && gap <= 90) {
+            groups[groups.lastIndex] = groups.last() + cur
+        } else {
+            groups += listOf(cur)
+        }
+    }
+    return groups
 }
 
 @Composable

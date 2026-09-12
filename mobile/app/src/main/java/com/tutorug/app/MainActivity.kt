@@ -283,6 +283,18 @@ fun TutorUGNavigation(settingsViewModel: SettingsViewModel, intent: android.cont
                             navController.navigate("learn")
                         }
                     },
+                    onSectionJump = { index ->
+                        val sections = chatViewModel.learningSections.value
+                        if (sections.isNotEmpty()) {
+                            chatViewModel.startLearning(
+                                sections = sections,
+                                documentId = chatViewModel.learningDocumentId.value,
+                                userProfile = profile,
+                                resumeFromIndex = index.coerceIn(0, sections.lastIndex)
+                            )
+                            navController.navigate("learn")
+                        }
+                    },
                     onSubjectSelect = { subject ->
                         chatViewModel.startNewChatWithIntro(subject, profile)
                     },

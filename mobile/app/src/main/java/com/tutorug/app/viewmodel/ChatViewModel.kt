@@ -396,7 +396,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
     ) {
         viewModelScope.launch {
             // Post a user-side message so the chat shows what was uploaded
-            val userMsg = ChatMessage(role = "user", content = "📎 $fileName")
+            val userMsg = ChatMessage(role = "user", content = "📎 $fileName", attachmentUri = fileUri.toString())
             _messages.value = _messages.value + userMsg
             _chatState.value = ChatState.Loading
 
@@ -478,7 +478,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                 sections.forEachIndexed { i, s -> appendLine("${i + 1}. ${s.title}") }
                 appendLine("\nLet's start with Section 1. I'll guide you through each one and quiz you at the end of each section.")
             }
-            val summaryMsg = ChatMessage(role = "assistant", content = summary)
+            val summaryMsg = ChatMessage(role = "assistant", content = summary, sections = sections)
             _messages.value = _messages.value + summaryMsg
             _currentSession.value?.let { session ->
                 chatRepository.saveMessagePublic(session.sessionId, userProfile.userId, "assistant", summary)

@@ -142,7 +142,8 @@ fun LearningScreen(
                 }
 
                 items(messages) { message ->
-                    ChatBubble(message, primary, onPrimary, surface, surfaceVar)
+                    ChatBubble(message = message, primary = primary, onPrimary = onPrimary,
+                        surface = surface, surfaceVar = surfaceVar)
                     Spacer(modifier = Modifier.height(10.dp))
                 }
 

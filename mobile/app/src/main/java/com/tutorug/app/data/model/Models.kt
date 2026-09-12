@@ -49,7 +49,13 @@ data class ChatMessage(
     @SerializedName("role")         val role: String = "user",
     @SerializedName("content")      val content: String = "",
     @SerializedName("token_count")  val tokenCount: Int = 0,
-    @SerializedName("created_at")   val createdAt: String = ""
+    @SerializedName("created_at")   val createdAt: String = "",
+
+    // Transient rendering hints — never persisted to the DB.
+    // Set in-memory only so ChatBubble can show an attachment thumbnail or
+    // a structured learning-section list for the document flow.
+    val attachmentUri: String = "",
+    val sections: List<DocumentSection> = emptyList()
 )
 
 // ── documents ─────────────────────────────────────────────────────────────────
