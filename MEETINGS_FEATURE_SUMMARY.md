@@ -1,7 +1,73 @@
 # TutorUG Meetings Feature — Changes Summary & Continuation Prompt
 
-**Date:** September 9 + September 11, 2026
-**Session Focus:** Meetings feature overhaul + meeting join experience (now working end-to-end)
+**Date:** September 9 + 11 + 12, 2026
+**Session Focus:** Meetings overhaul + join experience + RLS create/read bugs (now all fixed)
+
+---
+
+## SEPT 12 SESSION — Create Meeting Broken: ROOT CAUSE Found & Fixed ✅
+
+### Symptom (from user)
+- Old "already deleted" meetings kept showing on everyone's page.
+- After running the wipe SQL, **Create stopped working**: tap Save → nothing happens, the screen just keeps refreshing. No error on screen (mobile used to silently ignore the response).
+
+### Investigation trail (all against the LIVE Supabase DB, via throwaway Node scripts)
+1. First insert failure: **FK 23503** `meetings_host_id_fkey` — because `meetings.host_id → users.user_id`, and the user's email had no row in `public.users`. DB was healthy; the *account* was the problem.
+2. Full create path verified working end-to-end with a throwaway account: `users` row insert ✅ → `meetings` insert ✅ → edge function `create-meeting` **200 with clean Jitsi URL** ✅ → cleanup delete ✅. Backend + edge functions were healthy.
+3. **ROOT CAUSE finally found:** **Infinite recursion (Postgres error 42P17)** in meetings RLS.
+   - Old `meetings_read` policy checked `meeting_invites` via a raw subquery.
+   - `meeting_invites` table has its own policy (`invites_host_manage`) that queries `meetings` **again** → cycle.
+   - Result: PostgREST rejected **EVERY** `SELECT` on `meetings` with `SELECT could not be executed ... infinite recursion detected in policy for relation "meetings"`.
+   - Writes still worked (separate policy), which is exactly why *"create saves but the list never updates"*.
+4. **Second (mobile-only) bug:** PostgREST `in.(...)` filters used **quoted values** — `status=in.("scheduled","live")`, `status=in.("pending","accepted")`, quoted id lists. PostgREST takes the quotes literally → **always empty results**. Unquoted them → `in.(scheduled,live)` etc.
+
+### The fix (user ran this SQL in the Supabase SQL Editor — **LIVE on DB now**)
+- New helper function runs as the table owner (`SECURITY DEFINER`), so it bypasses `meeting_invites` RLS while doing the invite lookup → **breaks the recursion**:
+```sql
+create or replace function public.is_user_invited(p_meeting_id text)
+returns boolean language sql stable security definer set search_path = public as $$
+  select exists (
+    select 1 from public.meeting_invites mi
+    where mi.meeting_id = p_meeting_id
+      and ( mi.user_id = auth.uid()::text
+            or mi.email = (select email from public.users where user_id = auth.uid()::text) )
+  );
+$$;
+grant execute on function public.is_user_invited(text) to anon, authenticated, service_role;
+
+drop policy if exists "meetings_read" on meetings;
+create policy "meetings_read" on meetings for select
+  using ( auth.uid()::text = host_id or public.is_user_invited(meeting_id) );
+```
+- Same fix written into `supabase/features_migration.sql` **and** `supabase/clear_meetings.sql`.
+
+### Other code changes (committed as `d7f6279`, pushed)
+- **`MeetingRepository.kt`**: `createMeeting` now **throws** with the HTTP code + response body instead of silently swallowing → failures surface as toast messages. In-list filters unquoted. `loadInvitedMeetings` matches by **user_id OR email** (invites to a not-yet-registered address show up once that email signs in). `sendInvites` calls the edge function directly.
+- **`FeatInvited badge` on cards** (mobile + web) and invite polling every 15 s so new invites "pop in" without reopening the screen.
+- **`clear_meetings.sql`** rewritten as a fully self-contained reset script: drops ALL meetings policies via `DO ... pg_policies`, deletes every meeting (cascades to participants + invites), recreates exactly 2 policies (`meetings_host_write`, `meetings_read` via helper) + `participants_host_delete`.
+- **Added `participants_host_delete` policy** so meeting-delete cascades don't fail on `meeting_participants` under RLS.
+- `supabase/functions/invite-to-meeting/` edge function is now tracked in git.
+- Temp diagnostic scripts (`web/tutorug-repro.cjs`, `web/tutorug-query-test.cjs`, etc.) created this session were **deleted, not committed**.
+
+### Repo sync with the team
+- Pulled 3 teammate commits — **zero conflicts**: `52f4efa` (unified auth screens w/ Baloo2 gold/kitenge design), `3e50a6c` (chat sidebar + history modal redesign), `ec14e87` (chat & admin features). Local was behind `origin/main`; fast-forwarded cleanly, then pushed `d7f6279` on top.
+
+### Verified after the fix
+- Anonymous `SELECT` from `meetings` now returns `[]` instead of the 42P17 error → recursion **gone**.
+- Rebuilt `app-debug.apk` (56.9 MB) via `gradlew :app:assembleDebug` — **shared with user + colleagues for field testing**.
+
+### Build command that works
+```powershell
+$env:JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"
+.\gradlew.bat :app:assembleDebug --console=plain
+```
+APK → `mobile\app\build\outputs\apk\debug\app-debug.apk`
+
+### Open items / next steps
+1. **User to test on the new APK**: create a meeting → should appear in the list instantly; invite a colleague → invite pops in within ~15 s; delete → gone everywhere.
+2. **Colleagues' reports** to collect once they're on the new APK.
+3. If create still errors for some account, check that a `public.users` row exists for that email (`INSERT ... ON CONFLICT DO NOTHING`) — FK 23503, not RLS.
+4. Clean up: the RLS recursion fix should NOT be re-introduced by re-running old SQL that embeds the inline `meetings_read`; always use `public.is_user_invited(...)`.
 
 ---
 
@@ -116,7 +182,7 @@ Run the updated `supabase/features_migration.sql` in your Supabase SQL Editor. I
 
 ---
 
-## CONTINUATION PROMPT FOR TOMORROW
+## CONTINUATION PROMPT FOR NEXT SESSION
 
 Copy and paste this prompt into a new opencode session:
 
@@ -124,21 +190,19 @@ Copy and paste this prompt into a new opencode session:
 
 I'm working on the TutorUG_App project at D:\MY LIFE\SOFTWARE PROJECTS\TutorUG_App. This is an AI-powered education platform for Ugandan students built with Kotlin/Jetpack Compose (Android), React/TypeScript (web), Express.js (backend), Supabase (DB/auth), and Anthropic Claude (AI).
 
-In the previous session, I overhauled the Meetings feature with these changes:
+State as of the **Sept 12 session** (all committed + pushed to origin/main, commit `d7f6279`):
 
-1. **Delete meetings** — Host can delete meetings (trash icon on cards). Cascades to participants and invites.
-2. **Invite-only meetings** — New `meeting_invites` table. Host invites by email. Email notifications sent via Resend. Invited meetings show in a separate section for non-hosts.
-3. **Calendar date picker** (mobile) — Replaced raw text input with native Android DatePickerDialog + TimePickerDialog.
-4. **Direct meeting join** — Daily.co tokens now include `user_name`. Jitsi URL has `prejoinPageEnabled=false`. No more re-login prompts.
-5. **Join approval system** — `meeting_participants` has a `status` column (pending/approved/refused). Non-hosts request to join, host approves/refuses with buttons. Realtime notifications.
-6. **DB migration** — `features_migration.sql` updated with `meeting_invites` table, `status` on participants, `host_name` on meetings, new RLS policies.
-7. **Build fix** — Downgraded Gradle 9.0.0 → 8.7, generated missing wrapper files.
+1. **ROOT CAUSE FOUND for "Create meeting does nothing": infinite recursion (42P17)** — the old `meetings_read` policy subqueried `meeting_invites`, whose own policy queried `meetings` back. Every SELECT on `meetings` failed; writes still worked. FIXED on the live DB and in `features_migration.sql` + `clear_meetings.sql` via a `SECURITY DEFINER` helper `public.is_user_invited(p_meeting_id text)` that bypasses `meeting_invites` RLS. The `meetings_read` policy is now: `auth.uid()::text = host_id or public.is_user_invited(meeting_id)`.
+2. **Mobile PostgREST in-list filters unquoted** — `in.("scheduled","live")` → `in.(scheduled,live)` (PostgREST treats quotes literally).
+3. **`MeetingRepository.createMeeting` now throws** on non-2xx responses so failures surface as toasts (was silently swallowed). Let me diagnose from the toast message if a user reports a failure.
+4. **`clear_meetings.sql`** is a self-contained reset script (drops all meetings policies, deletes all rows, recreates exactly 2 policies + helper). `participants_host_delete` policy added so delete cascades work under RLS.
+5. **Repo sync**: pulled 3 teammate commits (auth redesign + chat sidebar/history + chat/admin features) with zero conflicts; I pushed `d7f6279` (meeting fixes). Temp `.cjs` diagnostic scripts were deleted, not committed.
+6. **Verified live**: anonymous `SELECT` from `meetings` returns `[]` (no more 42P17). Fresh `app-debug.apk` (56.9 MB) built and shared for field testing.
+7. If some account still can't create: check a `public.users` row exists for the email (FK 23503 on `host_id`), not an RLS issue.
 
-Files modified include: `MeetingsPage.tsx`, `MeetingsScreen.kt`, `MeetingViewModel.kt`, `MeetingRepository.kt`, `Models.kt`, `create-meeting/index.ts`, `create-meeting.js`, `server.js`, `email.js`, `invite-to-meeting.js`, `respond-invite.js`, `features_migration.sql`, `types/index.ts`.
-
-The user needs to:
-- Run the updated `supabase/features_migration.sql` in Supabase SQL Editor
-- Rebuild the Android app in Android Studio (Gradle sync should now work with 8.7)
-- Test the meetings feature: create a meeting, invite by email, join as participant (should show "pending"), approve as host, join the video call
+Next steps to pick up:
+- Collect results of the field test of `app-debug.apk` (create → appears in list, invites pop-in in ~15 s, delete cascades).
+- Fix any create errors reported via the new toast messages.
+- Do NOT re-introduce the inline recursive `meetings_read`; always use `public.is_user_invited(...)`.
 
 Please continue helping me with this project. What would you like to work on next?
