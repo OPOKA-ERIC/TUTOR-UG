@@ -38,7 +38,7 @@ fun StudyRoomsScreen(
     val messages by viewModel.messages.collectAsState()
     val loading by viewModel.loading.collectAsState()
     val sending by viewModel.sending.collectAsState()
-    val blocked by viewModel.messageBlocked.collectAsState()
+    val blockedReason by viewModel.blockedReason.collectAsState()
 
     val primary = AppColors.primary
     val surface = AppColors.surface
@@ -163,17 +163,22 @@ fun StudyRoomsScreen(
                     }
                 }
 
-                if (blocked) {
+                blockedReason?.let { reason ->
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp)
                             .background(error.copy(0.12f), RoundedCornerShape(10.dp))
                             .border(1.dp, error.copy(0.3f), RoundedCornerShape(10.dp))
                             .padding(horizontal = 12.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.Top
                     ) {
                         Icon(Icons.Default.Shield, null, tint = error, modifier = Modifier.size(15.dp))
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Message blocked — academic topics only.", color = error, fontSize = 12.sp)
+                        Column {
+                            Text("Message not sent", color = error, fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold)
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(reason, color = onSurfaceVar, fontSize = 12.sp)
+                        }
                     }
                 }
 
@@ -207,7 +212,8 @@ fun StudyRoomsScreen(
                                 onClick = {
                                     if (input.isNotBlank() && !sending) {
                                         viewModel.sendMessage(room.roomId, userProfile.userId, userProfile.name,
-                                            userProfile.avatarUrl, input.trim(), room.subject)
+                                            userProfile.avatarUrl, input.trim(), room.subject,
+                                            room.educationLevel)
                                         input = ""
                                     }
                                 },

@@ -39,6 +39,17 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
     private val _streamingText = MutableStateFlow("")
     val streamingText: StateFlow<String> = _streamingText
 
+    // Off = the tutor searches only when a question needs current facts.
+    // On  = force a web search on the next message.
+    private val _forceSearch = MutableStateFlow(false)
+    val forceSearch: StateFlow<Boolean> = _forceSearch
+
+    // True while the AI is querying the internet, so the UI can show it.
+    private val _isSearching = MutableStateFlow(false)
+    val isSearching: StateFlow<Boolean> = _isSearching
+
+    fun toggleForceSearch() { _forceSearch.value = !_forceSearch.value }
+
     // Learning mode — document sections
     private val _learningSections = MutableStateFlow<List<com.tutorug.app.data.model.DocumentSection>>(emptyList())
     val learningSections: StateFlow<List<com.tutorug.app.data.model.DocumentSection>> = _learningSections
@@ -106,10 +117,11 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
         startNewChat(userProfile.userId, subject, userProfile.educationLevel)
         // Fire a hidden system prompt — only the AI reply appears in the chat
         val introPrompt = buildString {
-            append("The student has just opened the $subject subject. ")
-            append("Greet them warmly, briefly introduce what you can help them with in $subject ")
-            append("at ${userProfile.educationLevel} level, and ask what specific topic they want to study today. ")
-            append("Keep it short, friendly and encouraging. Use their name if available.")
+            append("The student has just opened a new $subject chat. ")
+            append("Write a ONE-SENTENCE welcome that greets them by name (if known) and asks what they want to learn. ")
+            append("Hard rules: maximum 25 words, no lists, no headings, no markdown, no emoji, ")
+            append("no explanation of your own capabilities, and do not describe how you can help. ")
+            append("Ask a single question and stop.")
         }
         viewModelScope.launch {
             _chatState.value = ChatState.Loading
@@ -134,11 +146,13 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                 userProfile = userProfile,
                 conversationHistory = emptyList(),
                 districtContext = buildDistrictContext(userProfile),
+                forceSearch = false,
+                persistUserMessage = false,
                 onToken = { token ->
                     _streamingText.value += token
                     _chatState.value = ChatState.Streaming
                 }
-            ).onSuccess { fullResponse ->
+            ).onSuccess { (fullResponse, _) ->
                 _streamingText.value = ""
                 // Only add the AI reply — the intro prompt stays hidden
                 _messages.value = listOf(ChatMessage(role = "assistant", content = fullResponse))
@@ -160,11 +174,11 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
             viewModelScope.launch {
                 _chatState.value = ChatState.Loading
                 val pending = _pendingSubject.value
-                val subject = pending?.second ?: when {
-                    userProfile.educationLevel == "University" -> userProfile.course.ifBlank { "General" }
-                    userProfile.educationLevel == "Professional" -> userProfile.profession.ifBlank { "General" }
-                    else -> "General"
-                }
+                // University/Professional students have no subject list, so their course or
+                // profession (e.g. "Doctor") was being stored as the subject — that made every
+                // one of their chats share the same meaningless title. Keep the subject neutral
+                // and let the first user message name the chat instead.
+                val subject = pending?.second ?: "General"
                 val sessionId = chatRepository.createChatSession(userProfile.userId, subject, userProfile.educationLevel)
                 _currentSession.value = ChatSession(
                     sessionId = sessionId,
@@ -174,7 +188,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                 )
                 _pendingSubject.value = null
                 // Add new session to history immediately
-                val newSession = _currentSession.value!!
+                val newSession = _currentSession.value!!.copy(firstUserMessage = message)
                 if (_chatHistory.value.none { it.sessionId == newSession.sessionId }) {
                     _chatHistory.value = listOf(newSession) + _chatHistory.value
                 }
@@ -190,6 +204,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
         _messages.value = _messages.value + userMsg
         _chatState.value = ChatState.Loading
         _streamingText.value = ""
+        _isSearching.value = false
 
         val history = _messages.value.dropLast(1)
 
@@ -205,13 +220,16 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
             conversationHistory = history,
             districtContext = buildDistrictContext(userProfile),
             learningSection = currentSection,
+            forceSearch = _forceSearch.value,
             onToken = { token ->
                 _streamingText.value += token
                 _chatState.value = ChatState.Streaming
-            }
-        ).onSuccess { fullResponse ->
+            },
+            onSearching = { _isSearching.value = it }
+        ).onSuccess { (fullResponse, sources) ->
             _streamingText.value = ""
-            val aiMsg = ChatMessage(role = "assistant", content = fullResponse)
+            _isSearching.value = false
+            val aiMsg = ChatMessage(role = "assistant", content = fullResponse, sources = sources)
             _messages.value = _messages.value + aiMsg
             _chatState.value = ChatState.Ready
             if (autoReadEnabled) voiceManager.speak(fullResponse)
@@ -224,6 +242,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
         }.onFailure { e ->
             android.util.Log.e("TutorUG_Chat", "sendMessage error: ${e.message}")
             _streamingText.value = ""
+            _isSearching.value = false
             _messages.value = _messages.value.dropLast(1)
             _chatState.value = ChatState.Error(e.message ?: "Failed to send message")
         }

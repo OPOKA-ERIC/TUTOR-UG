@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.tutorug.app.data.model.ChatMessage
 import com.tutorug.app.data.model.ChatSession
+import com.tutorug.app.data.model.ChatSource
 import com.tutorug.app.data.model.UserProfile
 import com.tutorug.app.data.remote.SupabaseClient
 import kotlinx.coroutines.Dispatchers
@@ -60,8 +61,12 @@ class ChatRepository {
         conversationHistory: List<ChatMessage>,
         districtContext: String,
         learningSection: com.tutorug.app.data.model.DocumentSection? = null,
-        onToken: (String) -> Unit
-    ): Result<String> = withContext(Dispatchers.IO) {
+        forceSearch: Boolean = false,
+        /** False for hidden system prompts (the chat intro) that must not be stored. */
+        persistUserMessage: Boolean = true,
+        onToken: (String) -> Unit,
+        onSearching: (Boolean) -> Unit = {}
+    ): Result<Pair<String, List<ChatSource>>> = withContext(Dispatchers.IO) {
         try {
             // In learning mode, prepend section content as the first assistant message
             // so the AI always has the document context regardless of conversation length
@@ -97,7 +102,9 @@ class ChatRepository {
                     mapOf("role" to it.role, "content" to it.content)
                 },
                 "learningMode"   to (learningSection != null),
-                "sectionTitle"   to (learningSection?.title ?: "")
+                "sectionTitle"   to (learningSection?.title ?: ""),
+                "webSearch"      to true,
+                "forceSearch"    to forceSearch
             ))
 
             val fnRequest = Request.Builder()
@@ -109,6 +116,7 @@ class ChatRepository {
 
             val source = fnResponse.body?.source() ?: throw Exception("Empty response")
             var fullResponse = ""
+            var sources: List<ChatSource> = emptyList()
 
             // Read SSE stream line by line
             while (!source.exhausted()) {
@@ -119,25 +127,44 @@ class ChatRepository {
 
                 val map = gson.fromJson<Map<String, Any>>(data, object : TypeToken<Map<String, Any>>() {}.type)
                 when {
+                    map["searching"] == true -> onSearching(true)
                     map["token"] != null -> {
+                        onSearching(false)
                         val token = map["token"] as String
                         fullResponse += token
                         onToken(token)
                     }
                     map["done"] == true -> {
+                        onSearching(false)
                         fullResponse = map["response"] as? String ?: fullResponse
+                        @Suppress("UNCHECKED_CAST")
+                        val raw = map["sources"] as? List<Map<String, Any>>
+                        sources = raw.orEmpty().mapNotNull { entry ->
+                            val url = entry["url"] as? String ?: return@mapNotNull null
+                            if (!url.startsWith("http")) return@mapNotNull null
+                            ChatSource(
+                                url = url,
+                                title = entry["title"] as? String ?: url,
+                                citedText = entry["citedText"] as? String ?: ""
+                            )
+                        }
                     }
                     map["error"] != null -> throw Exception(map["error"] as String)
                 }
             }
 
-            // Persist both messages
-            saveMessage(sessionId, userProfile.userId, "user", userMessage)
-            saveMessage(sessionId, userProfile.userId, "assistant", fullResponse)
+            onSearching(false)
+
+            // Persist both messages. The hidden intro prompt is system text, not
+            // something the student typed — storing it made it the session's
+            // "first user message", which is what history titles are built from,
+            // and fed our own instructions back to the model on later turns.
+            if (persistUserMessage) saveMessage(sessionId, userProfile.userId, "user", userMessage)
+            saveMessage(sessionId, userProfile.userId, "assistant", fullResponse, sources)
             updateSessionStats(sessionId)
             updateUserMessageCount(userProfile.userId)
 
-            Result.success(fullResponse)
+            Result.success(fullResponse to sources)
         } catch (e: Exception) {
             android.util.Log.e("TutorUG_Chat", "sendMessage error: ${e.message}")
             Result.failure(e)
@@ -184,28 +211,42 @@ class ChatRepository {
             }
         }
 
-    private suspend fun saveMessage(sessionId: String, userId: String, role: String, content: String) =
-        withContext(Dispatchers.IO) {
-            try {
-                val body = gson.toJson(mapOf(
-                    "message_id" to UUID.randomUUID().toString(),
-                    "session_id" to sessionId,
-                    "user_id"    to userId,
-                    "role"       to role,
-                    "content"    to content,
-                    "created_at" to Instant.now().toString()
-                ))
-                val request = Request.Builder()
-                    .url("$base/rest/v1/chat_messages")
-                    .addHeader("Prefer", "return=minimal")
-                    .post(body.toRequestBody(json))
-                    .build()
-                val resp = http.newCall(request).execute()
-                android.util.Log.d("TutorUG_Chat", "saveMessage[$role] status=${resp.code}")
-            } catch (e: Exception) {
-                android.util.Log.w("TutorUG_Chat", "saveMessage error: ${e.message}")
+    private suspend fun saveMessage(
+        sessionId: String,
+        userId: String,
+        role: String,
+        content: String,
+        sources: List<ChatSource> = emptyList()
+    ) = withContext(Dispatchers.IO) {
+        try {
+            val fields = mutableMapOf<String, Any?>(
+                "message_id" to UUID.randomUUID().toString(),
+                "session_id" to sessionId,
+                "user_id"    to userId,
+                "role"       to role,
+                "content"    to content,
+                "created_at" to Instant.now().toString()
+            )
+            if (sources.isNotEmpty()) fields["sources"] = sources
+
+            fun post(payload: String) = http.newCall(Request.Builder()
+                .url("$base/rest/v1/chat_messages")
+                .addHeader("Prefer", "return=minimal")
+                .post(payload.toRequestBody(json))
+                .build()).execute()
+
+            val resp = post(gson.toJson(fields))
+            // chat_messages.sources only exists after supabase/web_search_migration.sql.
+            // Retry without it rather than losing the message if that hasn't run yet.
+            if (!resp.isSuccessful && sources.isNotEmpty()) {
+                fields.remove("sources")
+                post(gson.toJson(fields))
             }
+            android.util.Log.d("TutorUG_Chat", "saveMessage[$role] status=${resp.code}")
+        } catch (e: Exception) {
+            android.util.Log.w("TutorUG_Chat", "saveMessage error: ${e.message}")
         }
+    }
 
     // Patch last_message_at and increment message_count directly — no RPC needed
     private suspend fun updateSessionStats(sessionId: String) = withContext(Dispatchers.IO) {
@@ -306,13 +347,40 @@ class ChatRepository {
                 }
                 val sessions = gson.fromJson<List<ChatSession>>(body, object : TypeToken<List<ChatSession>>() {}.type)
                     ?: return@withContext emptyList()
-                sessions.map { session ->
-                    val msgs = getSessionMessages(session.sessionId, limit = 2)
-                    session.copy(messages = msgs)
-                }
+                sessions.map { it.withFirstUserMessage() }
             } catch (e: Exception) {
                 android.util.Log.e("TutorUG_Chat", "fetchSessions error: ${e.message}")
                 if (!learningOnly) fetchAllSessions(userId) else emptyList()
+            }
+        }
+
+    /**
+     * Loads the opening user message for [this] session. The stored `title` column only
+     * ever holds the subject name ("General", "English Language", …), so this is what makes
+     * a history row readable. Fetches one column of a few rows instead of whole messages.
+     */
+    private suspend fun ChatSession.withFirstUserMessage(): ChatSession =
+        copy(firstUserMessage = fetchFirstUserMessage(sessionId))
+
+    private suspend fun fetchFirstUserMessage(sessionId: String): String =
+        withContext(Dispatchers.IO) {
+            try {
+                val request = Request.Builder()
+                    .url("$base/rest/v1/chat_messages?session_id=eq.$sessionId&role=eq.user&select=content&order=created_at.asc&limit=3")
+                    .get().build()
+                val response = http.newCall(request).execute()
+                val body = response.body?.string() ?: return@withContext ""
+                if (!response.isSuccessful) return@withContext ""
+                val contents = gson.fromJson<List<Map<String, Any>>>(body, object : TypeToken<List<Map<String, Any>>>() {}.type)
+                    ?.mapNotNull { it["content"] as? String }
+                    .orEmpty()
+                // Sessions created before the intro prompt stopped being stored still
+                // have it as their first user message — skip it so those chats keep a
+                // sensible title instead of echoing our own instructions.
+                contents.firstOrNull { it.trim().startsWith("The student has just opened") }?.let { return@withContext "" }
+                contents.firstOrNull { it.isNotBlank() } ?: ""
+            } catch (e: Exception) {
+                ""
             }
         }
 
@@ -328,10 +396,7 @@ class ChatRepository {
                 if (!response.isSuccessful) return@withContext emptyList()
                 val sessions = gson.fromJson<List<ChatSession>>(body, object : TypeToken<List<ChatSession>>() {}.type)
                     ?: return@withContext emptyList()
-                sessions.map { session ->
-                    val msgs = getSessionMessages(session.sessionId, limit = 2)
-                    session.copy(messages = msgs)
-                }
+                sessions.map { it.withFirstUserMessage() }
             } catch (e: Exception) { emptyList() }
         }
 

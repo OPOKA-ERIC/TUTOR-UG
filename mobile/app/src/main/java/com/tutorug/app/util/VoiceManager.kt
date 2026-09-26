@@ -301,12 +301,17 @@ class VoiceManager(private val context: Context) {
         )
     }
 
-    /** Chat narration. Single voice, no callback. */
+    /**
+     * Speaks plain prose. [text] is passed through [SpeechSanitizer] first, so
+     * every caller is covered by one guard against the engine reading
+     * "asterisk asterisk" or naming an emoji aloud.
+     */
     fun speak(text: String) {
-        if (!isTTSReady) return
+        val spoken = SpeechSanitizer.clean(text)
+        if (!isTTSReady || spoken.isBlank()) return
         applyRole(VoiceRole.NEUTRAL)
         activeOnDone = null
-        tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, nextId("chat"))
+        tts?.speak(spoken, TextToSpeech.QUEUE_FLUSH, null, nextId("chat"))
         isSpeaking = true
         isPaused = false
     }
@@ -316,7 +321,8 @@ class VoiceManager(private val context: Context) {
      * [onDone] when the segment finishes so the caller can advance the queue.
      */
     fun speakAs(text: String, role: VoiceRole, onDone: () -> Unit) {
-        if (!isTTSReady || text.isBlank()) {
+        val spoken = SpeechSanitizer.clean(text)
+        if (!isTTSReady || spoken.isBlank()) {
             onDone()
             return
         }
@@ -324,7 +330,7 @@ class VoiceManager(private val context: Context) {
         activeOnDone = onDone
         val id = nextId("pod")
         val params = android.os.Bundle()
-        tts?.speak(text, TextToSpeech.QUEUE_FLUSH, params, id)
+        tts?.speak(spoken, TextToSpeech.QUEUE_FLUSH, params, id)
         isSpeaking = true
         isPaused = false
     }

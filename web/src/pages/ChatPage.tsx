@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   Menu, Send, Mic, Plus, Loader2, Volume2, Paperclip,
   Square, ChevronUp, ChevronDown, Video, Users,
-  PanelLeftOpen, Calendar, Settings, MessageSquare
+  PanelLeftOpen, Calendar, Settings, MessageSquare, Globe
 } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -15,7 +15,7 @@ import { apiUrl, apiHeaders } from '@/lib/api'
 import { getSidebarSubjects } from '@/lib/constants'
 import ChatSidebar, { subjectMeta } from '@/components/ChatSidebar'
 import ChatHistoryModal from '@/components/ChatHistoryModal'
-import type { ChatSession, ChatMessage } from '@/types'
+import type { ChatSession, ChatMessage, ChatSource } from '@/types'
 
 // AI avatar — Amber→Violet gradient circle
 function AIAvatar() {
@@ -27,12 +27,38 @@ function AIAvatar() {
   )
 }
 
+// Sources the tutor cited. Shown under the answer because Anthropic requires
+// citations to be displayed alongside the answer they support.
+function SourcesList({ sources }: { sources: ChatSource[] }) {
+  if (!sources.length) return null
+  return (
+    <div className="mt-2 pt-2 border-t border-white/10">
+      <p className="text-[10px] uppercase tracking-widest font-bold mb-1.5" style={{ color: '#9A9AC4' }}>
+        Sources
+      </p>
+      <ol className="flex flex-col gap-1">
+        {sources.map((s, i) => (
+          <li key={s.url}>
+            <a href={s.url} target="_blank" rel="noopener noreferrer"
+              className="flex items-start gap-1.5 text-xs hover:underline"
+              style={{ color: '#FFB800' }}>
+              <span className="shrink-0 font-bold" style={{ color: '#9A9AC4' }}>{i + 1}.</span>
+              <span className="min-w-0 break-words">{s.title}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </div>
+  )
+}
+
 const TOPIC_CHIPS = ['Understand a concept', 'Work through problems', 'Prepare for exams']
 
 const K_SESSION = 'tutorug:currentSessionId'
 const K_SIDEBAR = 'tutorug:sidebarOpen'
 const K_SUBJECTS = 'tutorug:subjectsOpen'
 const K_RATE = 'tutorug:speechRate'
+const K_FORCE_SEARCH = 'tutorug:forceSearch'
 
 function formatMessageTime(iso: string): string {
   const d = new Date(iso)
@@ -65,6 +91,10 @@ export default function ChatPage() {
   const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null)
   const [showQuickReplies, setShowQuickReplies] = useState(false)
   const [speechRate, setSpeechRate] = useState(() => parseFloat(sessionStorage.getItem(K_RATE) || '1.0'))
+  // Off = the tutor searches only when a question needs current facts.
+  // On  = force a web search on the next message.
+  const [forceSearch, setForceSearch] = useState(() => sessionStorage.getItem(K_FORCE_SEARCH) === 'on')
+  const [searching, setSearching] = useState(false)
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null)
   const abortRef = useRef<AbortController | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
@@ -102,6 +132,7 @@ export default function ChatPage() {
     const n = parseFloat(speechRate.toFixed(2))
     sessionStorage.setItem(K_RATE, String(n))
   }, [speechRate])
+  useEffect(() => { sessionStorage.setItem(K_FORCE_SEARCH, forceSearch ? 'on' : 'off') }, [forceSearch])
 
   async function loadHistory() {
     if (!profile) return
@@ -260,8 +291,10 @@ No other text, no long intro, no extra questions. Never refer to any level other
 
     setLoading(true)
     setStreamingText('')
+    setSearching(false)
 
     let full = ''
+    let sources: ChatSource[] = []
 
     try {
       const res = await fetch(apiUrl('send-chat-message'), {
@@ -274,6 +307,7 @@ No other text, no long intro, no extra questions. Never refer to any level other
           districtContext: `Student: ${profile.name}, District: ${profile.district}, Level: ${profile.education_level}`,
           conversationHistory: history.map(m => ({ role: m.role, content: m.content })),
           learningMode: false, sectionTitle: '',
+          webSearch: true, forceSearch,
         }),
       })
 
@@ -305,8 +339,14 @@ No other text, no long intro, no extra questions. Never refer to any level other
           if (!line.startsWith('data: ')) continue
           try {
             const data = JSON.parse(line.slice(6))
-            if (data.token) { full += data.token; setStreamingText(t => t + data.token) }
-            if (data.done) full = data.response || full
+            if (data.searching) setSearching(true)
+            if (data.token) { setSearching(false); full += data.token; setStreamingText(t => t + data.token) }
+            if (data.done) {
+              full = data.response || full
+              if (Array.isArray(data.sources)) {
+                sources = data.sources.filter((s: ChatSource) => typeof s?.url === 'string' && s.url.startsWith('http'))
+              }
+            }
           } catch {}
         }
       }
@@ -326,18 +366,26 @@ No other text, no long intro, no extra questions. Never refer to any level other
     }
 
     setStreamingText('')
+    setSearching(false)
     const aiMsg: ChatMessage = {
       message_id: crypto.randomUUID(), session_id: sessionId,
       user_id: profile.user_id, role: 'assistant', content: full,
       token_count: 0, created_at: new Date().toISOString(),
+      ...(sources.length ? { sources } : {}),
     }
-    if (!hideUserMsg) {
-      await supabase.from('chat_messages').insert([
+    const rows: Record<string, unknown>[] = hideUserMsg
+      ? [{ ...aiMsg }]
+      : [
         { message_id: crypto.randomUUID(), session_id: sessionId, user_id: profile.user_id, role: 'user', content: message, token_count: 0, created_at: new Date().toISOString() },
         { ...aiMsg },
-      ])
-    } else {
-      await supabase.from('chat_messages').insert([{ ...aiMsg }])
+      ]
+
+    // chat_messages.sources only exists after supabase/web_search_migration.sql.
+    // Retry without it rather than losing the message if that hasn't run yet.
+    const { error: insertError } = await supabase.from('chat_messages').insert(rows)
+    if (insertError) {
+      const stripped = rows.map(({ sources: _drop, ...rest }) => rest)
+      await supabase.from('chat_messages').insert(stripped)
     }
     setMessages(m => hideUserMsg ? [...m, aiMsg] : [...m.slice(0, -1), m[m.length - 1], aiMsg])
     setLoading(false)
@@ -420,6 +468,19 @@ No other text, no long intro, no extra questions. Never refer to any level other
               e.target.value = ''
             }} />
         </label>
+        <button
+          onClick={() => setForceSearch(v => !v)}
+          aria-pressed={forceSearch}
+          title={forceSearch
+            ? 'Web search forced on for your next message. Tap to let the tutor decide.'
+            : 'The tutor searches the web automatically when a question needs current facts. Tap to force a search now.'}
+          className="shrink-0 h-11 sm:h-12 px-3 rounded-full flex items-center gap-1.5 text-xs font-bold transition-colors"
+          style={forceSearch
+            ? { background: 'linear-gradient(135deg,#0EA5E9,#0369A1)', color: '#fff' }
+            : { background: 'rgba(255,255,255,0.06)', color: '#A3A3C8' }}>
+          <Globe size={16} />
+          <span className="hidden sm:inline">{forceSearch ? 'Searching' : 'Auto'}</span>
+        </button>
         <textarea
           value={input} onChange={e => setInput(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage() } }}
@@ -624,9 +685,12 @@ No other text, no long intro, no extra questions. Never refer to any level other
                         ? { background: 'linear-gradient(135deg, #F59E0B80, #D97706)' }
                         : { background: 'linear-gradient(135deg, #12122A, #1A1A3A)', border: '1px solid rgba(255,184,0,0.3)' }}>
                       {msg.role === 'assistant' ? (
-                        <div className="prose prose-invert prose-sm max-w-none text-text-white">
-                          <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
-                        </div>
+                        <>
+                          <div className="prose prose-invert prose-sm max-w-none text-text-white">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
+                          </div>
+                          {!!msg.sources?.length && <SourcesList sources={msg.sources} />}
+                        </>
                       ) : (
                         <p className="text-sm" style={{ color: '#1A1A1A' }}>{msg.content}</p>
                       )}
@@ -670,7 +734,13 @@ No other text, no long intro, no extra questions. Never refer to any level other
                   </div>
                 </div>
               )}
-              {loading && !streamingText && (
+              {searching && (
+                <div className="flex items-center gap-1.5 pl-1">
+                  <Globe size={12} style={{ color: '#0EA5E9' }} className="animate-pulse" />
+                  <span className="text-xs" style={{ color: '#0EA5E9' }}>Searching the web…</span>
+                </div>
+              )}
+              {loading && !streamingText && !searching && (
                 <div className="flex items-end gap-2">
                   <AIAvatar />
                   <div className="px-4 py-3 rounded-tl-sm rounded-tr-2xl rounded-br-2xl rounded-bl-2xl flex items-center gap-1"

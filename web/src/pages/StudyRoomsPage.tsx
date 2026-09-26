@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Send, Users, BookOpen, Loader2, ShieldAlert } from 'lucide-react'
+import { ArrowLeft, Send, Users, BookOpen, Loader2, ShieldAlert, X } from 'lucide-react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { apiUrl } from '@/lib/api'
@@ -15,7 +15,7 @@ export default function StudyRoomsPage() {
   const [messages, setMessages] = useState<RoomMessage[]>([])
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
-  const [blocked, setBlocked] = useState(false)
+  const [blockedReason, setBlockedReason] = useState<string | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => { loadRooms() }, [])
@@ -54,7 +54,7 @@ export default function StudyRoomsPage() {
     const text = input.trim()
     setInput('')
     setSending(true)
-    setBlocked(false)
+    setBlockedReason(null)
 
     // Moderate first
     const session = await supabase.auth.getSession()
@@ -62,14 +62,13 @@ export default function StudyRoomsPage() {
     const modRes = await fetch(apiUrl('moderate-message'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ message: text, subject: activeRoom.subject, userName: profile.name }),
+      body: JSON.stringify({ message: text, subject: activeRoom.subject, userName: profile.name, educationLevel: profile.education_level }),
     })
-    const { allowed } = await modRes.json()
+    const { allowed, reason } = await modRes.json()
 
     if (!allowed) {
-      setBlocked(true)
+      setBlockedReason(reason || 'This message is not related to the room topic.')
       setSending(false)
-      setTimeout(() => setBlocked(false), 4000)
       return
     }
 
@@ -140,11 +139,15 @@ export default function StudyRoomsPage() {
           <div ref={bottomRef} />
         </div>
 
-        {blocked && (
-          <div className="mx-4 mb-2 px-3 py-2 rounded-xl flex items-center gap-2 text-xs font-medium"
+        {blockedReason && (
+          <div className="mx-4 mb-2 px-3 py-2 rounded-xl flex items-start gap-2 text-xs font-medium"
             style={{ background: 'rgba(239,68,68,0.15)', color: '#EF4444', border: '1px solid rgba(239,68,68,0.3)' }}>
-            <ShieldAlert size={14} />
-            Message blocked — only academic topics are allowed in study rooms.
+            <ShieldAlert size={14} className="mt-0.5 shrink-0" />
+            <span>{blockedReason}</span>
+            <button onClick={() => setBlockedReason(null)} className="ml-auto shrink-0 opacity-70 hover:opacity-100"
+              aria-label="Dismiss">
+              <X size={14} />
+            </button>
           </div>
         )}
 

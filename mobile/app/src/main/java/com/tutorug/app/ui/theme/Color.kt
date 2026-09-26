@@ -39,6 +39,11 @@ val Cyan400 = Color(0xFF18FFFF)
 val Cyan500 = Color(0xFF00E5FF)
 val Cyan600 = Color(0xFF00B8D4)
 
+// ── WEB — Sky Blue ───────────────────────────────────────────────────────────
+// Marks answers grounded in an internet search, on web and Android
+val Sky400 = Color(0xFF0EA5E9)
+val Sky700 = Color(0xFF0369A1)
+
 // ── TEXT ─────────────────────────────────────────────────────────────────────
 val TextWhite    = Color(0xFFFFFFFF)
 val TextLight    = Color(0xFFE8E8FF)

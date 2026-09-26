@@ -39,7 +39,20 @@ data class ChatSession(
     @SerializedName("document_id")      val documentId: String? = null,
     @SerializedName("section_index")    val sectionIndex: Int = 0,
     // In-memory only — not stored in this table (fetched from chat_messages)
-    @Transient val messages: List<ChatMessage> = emptyList()
+    @Transient val messages: List<ChatMessage> = emptyList(),
+    // In-memory only — the opening user message, used to generate a readable
+    // history title. The stored `title` column is just the subject name, which
+    // is useless on its own ("General", "English Language", "Doctor"…).
+    @Transient val firstUserMessage: String = ""
+)
+
+// ── web search sources ────────────────────────────────────────────────────────
+// Sources the tutor cited. Persisted in chat_messages.sources and shown under
+// the answer, because Anthropic requires citations to be displayed.
+data class ChatSource(
+    @SerializedName("url")        val url: String = "",
+    @SerializedName("title")      val title: String = "",
+    @SerializedName("citedText")  val citedText: String = ""
 )
 
 // ── chat_messages ─────────────────────────────────────────────────────────────
@@ -51,6 +64,9 @@ data class ChatMessage(
     @SerializedName("content")      val content: String = "",
     @SerializedName("token_count")  val tokenCount: Int = 0,
     @SerializedName("created_at")   val createdAt: String = "",
+
+    // Empty unless this answer was grounded in a web search.
+    val sources: List<ChatSource> = emptyList(),
 
     // Transient rendering hints — never persisted to the DB.
     // Set in-memory only so ChatBubble can show an attachment thumbnail or
@@ -257,3 +273,24 @@ data class PodcastSession(
     @SerializedName("duration_secs")  val durationSecs: Int = 0,
     @SerializedName("created_at")     val createdAt: String = ""
 )
+
+// ── reviews (user feedback) ──────────────────────────────────────────────────
+data class Review(
+    @SerializedName("review_id")   val reviewId: String = "",
+    @SerializedName("user_id")     val userId: String = "",
+    // Optional: a student reporting a broken login should not have to pick a
+    // star rating. Null means they skipped it.
+    @SerializedName("rating")      val rating: Int? = null,
+    @SerializedName("title")       val title: String = "",
+    @SerializedName("comment")     val comment: String = "",
+    // Set by the triage pass, never by the student. Null means untriaged.
+    @SerializedName("category")    val category: String? = null,
+    @SerializedName("urgency")     val urgency: String? = null,
+    @SerializedName("summary")     val summary: String? = null,
+    @SerializedName("status")      val status: String = "pending",
+    @SerializedName("app_version") val appVersion: String = "",
+    @SerializedName("screen")      val screen: String = "",
+    @SerializedName("created_at")  val createdAt: String = ""
+) {
+    val isTriaged: Boolean get() = !category.isNullOrBlank()
+}
