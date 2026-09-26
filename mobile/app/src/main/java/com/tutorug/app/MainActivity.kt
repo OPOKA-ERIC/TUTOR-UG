@@ -112,11 +112,16 @@ fun TutorUGNavigation(settingsViewModel: SettingsViewModel, intent: android.cont
     // Sync persisted speech rate and gender to VoiceManager on startup
     val speechRate by settingsViewModel.speechRate.collectAsState()
     val voiceGender by settingsViewModel.voiceGender.collectAsState()
+    val studentGender by settingsViewModel.studentGender.collectAsState()
     LaunchedEffect(speechRate) {
         chatViewModel.voiceManager.setSpeechRate(speechRate)
     }
     LaunchedEffect(voiceGender) {
         chatViewModel.voiceManager.setVoiceMale(voiceGender == VoiceGender.MALE)
+    }
+    // Podcast student voice follows the learner's gender, not the voice setting.
+    LaunchedEffect(studentGender) {
+        chatViewModel.voiceManager.setStudentIsMale(studentGender == "male")
     }
 
     // Track the last loaded userId so we only reset on actual user change
@@ -130,6 +135,9 @@ fun TutorUGNavigation(settingsViewModel: SettingsViewModel, intent: android.cont
                 lastLoadedUserId = profile.userId
                 chatViewModel.clearAllData()
                 settingsViewModel.loadFromDb(profile.userId)
+                // Pull the saved gender off the profile so a new device shows the
+                // right value in Settings. No DB write, so this cannot loop.
+                settingsViewModel.hydrateStudentGender(profile.gender)
                 chatViewModel.loadChatHistory(profile.userId)
             }
         } else if (authState is AuthState.Idle) {
@@ -361,6 +369,7 @@ fun TutorUGNavigation(settingsViewModel: SettingsViewModel, intent: android.cont
                 val allEducationLevels  = authViewModel.educationLevels.collectAsState().value
                 val speechRateS         by settingsViewModel.speechRate.collectAsState()
                 val voiceGenderS        by settingsViewModel.voiceGender.collectAsState()
+val studentGenderS      by settingsViewModel.studentGender.collectAsState()
 
                 // Location permission launcher
                 val locationLauncher = rememberLauncherForActivityResult(
@@ -463,6 +472,13 @@ fun TutorUGNavigation(settingsViewModel: SettingsViewModel, intent: android.cont
                         val gender = if (male) VoiceGender.MALE else VoiceGender.FEMALE
                         settingsViewModel.setVoiceGender(gender)
                         chatViewModel.voiceManager.setVoiceMale(male)
+                    },
+                    studentGender        = studentGenderS,
+                    onStudentGenderChange = { value ->
+                        settingsViewModel.setStudentGender(value)
+                        // Only the student character follows this; the chatbot keeps
+                        // the Voice Gender chosen above.
+                        chatViewModel.voiceManager.setStudentIsMale(value != "male")
                     },
                     quizSoundEnabled     = quizSoundEnabledS,
                     onQuizSoundToggle    = { settingsViewModel.setQuizSoundEnabled(it) },

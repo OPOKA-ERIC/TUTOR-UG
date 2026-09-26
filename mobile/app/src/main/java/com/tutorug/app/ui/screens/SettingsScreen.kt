@@ -64,6 +64,8 @@ fun SettingsScreen(
     onSpeechRateChange: (Float) -> Unit = {},
     voiceGenderMale: Boolean = false,
     onVoiceGenderChange: (Boolean) -> Unit = {},
+    studentGender: String? = null,
+    onStudentGenderChange: (String?) -> Unit = {},
     quizSoundEnabled: Boolean = true,
     onQuizSoundToggle: (Boolean) -> Unit = {},
     // Notifications
@@ -548,6 +550,57 @@ fun SettingsScreen(
                                             RoundedCornerShape(16.dp)
                                         )
                                         .noRippleClickable { onVoiceGenderChange(isMale) }
+                                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                                ) {
+                                    Text(
+                                        label,
+                                        fontSize = 12.sp,
+                                        color = if (selected) TextWhite else AppColors.textMuted,
+                                        fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    SettingsDivider()
+                    // Learner gender. Drives the student character in the learning
+                    // podcast so a boy is not read by a female voice.
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier.size(38.dp).background(Violet400.copy(alpha = 0.12f), RoundedCornerShape(10.dp)),
+                            contentAlignment = Alignment.Center
+                        ) { Icon(Icons.Default.Person, null, tint = Violet400, modifier = Modifier.size(20.dp)) }
+                        Spacer(modifier = Modifier.width(14.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text("Your Gender", fontSize = 15.sp, color = AppColors.textPrimary, fontWeight = FontWeight.Medium)
+                            Text(
+                                when (studentGender) {
+                                    "male" -> "Male \u00b7 podcast student voice"
+                                    "female" -> "Female \u00b7 podcast student voice"
+                                    "other" -> "Other \u00b7 default voice"
+                                    else -> "Not set \u00b7 tap to choose"
+                                },
+                                fontSize = 12.sp, color = AppColors.textMuted
+                            )
+                        }
+                        Row(
+                            modifier = Modifier
+                                .background(AppColors.surfaceInput, RoundedCornerShape(20.dp))
+                                .padding(4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            listOf("female" to "Female", "male" to "Male").forEach { (value, label) ->
+                                val selected = studentGender == value
+                                Box(
+                                    modifier = Modifier
+                                        .background(
+                                            if (selected) Violet400 else Color.Transparent,
+                                            RoundedCornerShape(16.dp)
+                                        )
+                                        .noRippleClickable { onStudentGenderChange(value) }
                                         .padding(horizontal = 12.dp, vertical = 6.dp)
                                 ) {
                                     Text(

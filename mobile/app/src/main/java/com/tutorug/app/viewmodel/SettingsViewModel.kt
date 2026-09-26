@@ -60,6 +60,11 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     private val _voiceGender           = MutableStateFlow(
         VoiceGender.valueOf(prefs.getString("voice_gender", VoiceGender.FEMALE.name)!!)
     )
+    // Learner's own gender. Drives the STUDENT turn in the learning podcast so a
+    // boy is not narrated by a female voice. Null until the learner picks.
+    private val _studentGender         = MutableStateFlow(
+        prefs.getString("student_gender", "")?.takeIf { it.isNotBlank() }
+    )
 
     val voiceEnabled:          StateFlow<Boolean>         = _voiceEnabled
     val autoReadEnabled:       StateFlow<Boolean>         = _autoReadEnabled
@@ -73,6 +78,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     val avatarUploadState:     StateFlow<AvatarUploadState> = _avatarUploadState
     val speechRate:            StateFlow<Float>           = _speechRate
     val voiceGender:           StateFlow<VoiceGender>     = _voiceGender
+    val studentGender:         StateFlow<String?>         = _studentGender
 
     // ── Avatar ───────────────────────────────────────────────────────────────
 
@@ -205,6 +211,57 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     fun setVoiceGender(v: VoiceGender) {
         _voiceGender.value = v
         prefs.edit().putString("voice_gender", v.name).apply()
+    }
+
+    /**
+     * Stores the learner's gender locally and mirrors it onto the profile row so
+     * the podcast voice follows them onto a new device. The DB write is a PATCH
+     * that swallows its own errors, so a missing gender column degrades to the
+     * local value instead of crashing Settings.
+     */
+    fun setStudentGender(value: String?) {
+        val clean = value?.takeIf { it.isNotBlank() }
+        _studentGender.value = clean
+        if (clean == null) {
+            prefs.edit().remove("student_gender").apply()
+        } else {
+            prefs.edit().putString("student_gender", clean).apply()
+        }
+        getCurrentUserId()?.let { uid ->
+            viewModelScope.launch { patchProfileGender(uid, clean) }
+        }
+    }
+
+    /**
+     * Mirrors the gender onto the profile row. If the column has not been added
+     * yet the PATCH fails and we simply keep the local value.
+     */
+    private suspend fun patchProfileGender(userId: String, gender: String?) {
+        withContext(Dispatchers.IO) {
+            try {
+                val body = gson.toJson(mapOf("gender" to gender))
+                http.newCall(
+                    Request.Builder()
+                        .url("$base/rest/v1/users?user_id=eq.$userId")
+                        .addHeader("Prefer", "return=minimal")
+                        .patch(body.toRequestBody(jsonMedia))
+                        .build()
+                ).execute()
+            } catch (_: Exception) {}
+        }
+    }
+
+    /**
+     * Seeds the local value from the profile on sign-in. Never writes back, so
+     * it cannot fight the Settings picker or loop on profile reloads.
+     */
+    fun hydrateStudentGender(value: String?) {
+        val clean = value?.trim()?.lowercase()?.takeIf {
+            it == "male" || it == "female" || it == "other"
+        }
+        if (clean == null || _studentGender.value != null) return
+        _studentGender.value = clean
+        prefs.edit().putString("student_gender", clean).apply()
     }
 
     // ── DB sync ───────────────────────────────────────────────────────────────

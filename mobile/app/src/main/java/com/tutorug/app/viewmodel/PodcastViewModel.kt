@@ -30,6 +30,11 @@ class PodcastViewModel : ViewModel() {
     private val _currentTopic = MutableStateFlow("")
     val currentTopic = _currentTopic.asStateFlow()
 
+    // True when the last episode was grounded in the student's own uploaded
+    // notes. The UI must not claim grounding when no notes were found.
+    private val _grounded = MutableStateFlow(false)
+    val grounded = _grounded.asStateFlow()
+
     // Tracks conversation for follow-up context
     private val conversationHistory = mutableListOf<Map<String, String>>()
 
@@ -47,6 +52,7 @@ class PodcastViewModel : ViewModel() {
                 val segments = repo.generatePodcast(topic, userProfile, emptyList())
                 _script.value = segments
                 _currentTopic.value = topic
+                _grounded.value = repo.lastHadSources
                 conversationHistory.clear()
                 conversationHistory.add(mapOf(
                     "role" to "assistant",
