@@ -1,5 +1,25 @@
 # TutorUG — Complete Build Summary
 
+> **⚠️ HISTORICAL SNAPSHOT — pre-Supabase era. Partly out of date.**
+> This was written when the backend was Firebase. It is kept for the design
+> system, curriculum coverage and cost notes, but the following is wrong:
+>
+> - **Backend is Supabase**, not Firebase. There is no `firebase.json`, no
+>   `firestore.rules`, no `google-services.json`, and `functions/` (Firebase
+>   callables) is now dead code.
+> - **Collections are Postgres tables**, not Firirestore. The schemas below
+>   map to tables in `supabase/setup.sql`.
+> - **The app has grown well past this list.** Since this was written the
+>   project added: OTP password reset, 5 themes, study rooms, AI podcasts,
+>   video meetings with invites and join approval, timetable alarms, study
+>   insights, a web admin console, and a full React/TypeScript web app.
+> - `res/raw/districts.json` now has **136** districts, not 23.
+> - Gradle is on **8.7** (this doc mentions 9.0.0).
+>
+> For current setup and architecture see the root `README.md` and
+> `mobile/SETUP.md`. For the meetings engineering log see
+> `MEETINGS_FEATURE_SUMMARY.md`.
+
 ## ✅ ALL FILES CREATED (50+ files)
 
 ### 📱 Android App Structure
