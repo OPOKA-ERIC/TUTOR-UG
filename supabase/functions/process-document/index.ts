@@ -68,7 +68,9 @@ FORMATTING RULES for the content field:
 - Use *italic* for subtopic names mentioned inline within paragraphs
 - Use numbered lists (1. 2. 3.) for steps or sequences
 - Use bullet dashes (- ) for non-sequential lists
-- Separate paragraphs with a blank line`,
+- Separate paragraphs with a blank line
+- Never use emojis or emoticons anywhere, including inside examples
+- Vary the phrasing naturally and stay specific to the document that was actually uploaded. Do not fall back on generic filler or boilerplate advice that would apply to any subject`;,
       messages: [{
         role: "user",
         content: hasRealContent

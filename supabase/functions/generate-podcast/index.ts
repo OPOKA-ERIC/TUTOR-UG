@@ -52,7 +52,14 @@ PODCAST RULES:
 - Make it conversational and engaging, not a lecture
 - Include at least one real-world Ugandan example
 - End with HOST summarizing key points and encouraging the student
-- Each segment should be 2-4 sentences max (for natural TTS playback)`;
+- Each segment should be 2-4 sentences max (for natural TTS playback)
+
+SPEECH RULES (strict — these lines are read aloud by text-to-speech):
+- Never use emojis or emoticons.
+- Never use markdown decoration: no **bold**, no # headings, no --- dividers, no bullet symbols for emphasis.
+- The text field is spoken out loud, so write only words meant to be heard. No stage directions in brackets, no asterisks, no parenthetical asides.
+- Vary the phrasing naturally. Do not reuse the same opening line or sign-off every episode, and avoid generic filler like "in today's episode we will be diving into".
+- Be specific to the topic the student actually asked about rather than giving generic study advice.`;
 
     const messages = isFollowUp
       ? [

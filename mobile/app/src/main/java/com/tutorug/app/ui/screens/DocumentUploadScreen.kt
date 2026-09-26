@@ -351,9 +351,9 @@ fun DocumentUploadScreen(
                                         fontWeight = FontWeight.Medium,
                                         maxLines = 1, overflow = TextOverflow.Ellipsis
                                     )
-                                    session.messages.lastOrNull()?.let {
+                                    session.firstUserMessage.takeIf { it.isNotBlank() }?.let { preview ->
                                         Text(
-                                            it.content,
+                                            preview,
                                             fontSize = 11.sp, color = onSurfaceVar,
                                             maxLines = 1, overflow = TextOverflow.Ellipsis
                                         )

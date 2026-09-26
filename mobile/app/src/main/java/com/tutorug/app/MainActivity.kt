@@ -20,6 +20,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.tutorug.app.data.model.UserProfile
 import com.tutorug.app.ui.screens.*
 import com.tutorug.app.ui.theme.TutorUGTheme
 import com.tutorug.app.viewmodel.*
@@ -245,6 +246,8 @@ fun TutorUGNavigation(settingsViewModel: SettingsViewModel, intent: android.cont
                 val chatHistory by chatViewModel.chatHistory.collectAsState()
                 val learningHistory by chatViewModel.learningHistory.collectAsState()
                 val streamingText by chatViewModel.streamingText.collectAsState()
+                val isSearching by chatViewModel.isSearching.collectAsState()
+                val forceSearch by chatViewModel.forceSearch.collectAsState()
 
                 val speakingMessageId by chatViewModel.speakingMessageId.collectAsState()
 
@@ -266,11 +269,18 @@ fun TutorUGNavigation(settingsViewModel: SettingsViewModel, intent: android.cont
                 ChatScreen(
                     userProfile = profile,
                     messages = messages,
-                    chatHistory = chatHistory + learningHistory,
+                    // chatHistory and learningHistory are fetched with different document_id
+                    // filters, so they should not overlap — but they are two independent
+                    // queries, and a session appearing in both used to render twice.
+                    chatHistory = (chatHistory + learningHistory).distinctBy { it.sessionId },
+                    currentSessionId = currentSession?.sessionId,
                     currentSubject = currentSession?.subject ?: "",
                     isLoading = chatState is ChatState.Loading,
                     isStreaming = chatState is ChatState.Streaming,
                     streamingText = streamingText,
+                    isSearching = isSearching,
+                    forceSearch = forceSearch,
+                    onToggleForceSearch = { chatViewModel.toggleForceSearch() },
                     speakingMessageId = speakingMessageId,
                     currentSpeechRate = settingsViewModel.speechRate.collectAsState().value,
                     errorMessage = if (chatState is ChatState.Error) (chatState as ChatState.Error).message else null,
@@ -316,13 +326,12 @@ fun TutorUGNavigation(settingsViewModel: SettingsViewModel, intent: android.cont
                     onSpeedUp = { chatViewModel.speedUp() },
                     onSlowDown = { chatViewModel.slowDown() },
                     onNewChat = {
+                        // "General" rather than the course/profession — a subject label of
+                        // "Doctor" gave every Professional student's chats the same title.
+                        // The history title is generated from the first real message instead.
                         chatViewModel.startNewChat(
                             profile.userId,
-                            when {
-                                profile.educationLevel == "University"   -> profile.course.ifBlank { "General" }
-                                profile.educationLevel == "Professional" -> profile.profession.ifBlank { "General" }
-                                else -> "General"
-                            },
+                            currentSession?.subject?.takeIf { it.isNotBlank() } ?: "General",
                             profile.educationLevel
                         )
                     },
@@ -342,6 +351,14 @@ fun TutorUGNavigation(settingsViewModel: SettingsViewModel, intent: android.cont
                     navController.navigate("login") { popUpTo(0) { inclusive = true } }
                 }
             }
+        }
+
+        composable("feedback") {
+            val profile = (authState as? AuthState.Authenticated)?.profile
+            FeedbackScreen(
+                userProfile = profile ?: UserProfile(),
+                onBackClick = { navController.popBackStack() }
+            )
         }
 
         composable("settings") {
@@ -415,6 +432,7 @@ fun TutorUGNavigation(settingsViewModel: SettingsViewModel, intent: android.cont
                     onTimetableClick = { navController.navigate("timetable") },
                     onPrivacyPolicyClick = { navController.navigate("privacy") },
                     onTermsClick         = { navController.navigate("terms") },
+                    onFeedbackClick      = { navController.navigate("feedback") },
                     onChangePasswordClick = { navController.navigate("changepassword") },
                     onShareClick         = {
                         val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {

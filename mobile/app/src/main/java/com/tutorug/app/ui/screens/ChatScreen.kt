@@ -1,5 +1,6 @@
 package com.tutorug.app.ui.screens
 
+import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -9,6 +10,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -39,10 +41,14 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.tutorug.app.data.model.ChatMessage
 import com.tutorug.app.data.model.ChatSession
+import com.tutorug.app.data.model.ChatSource
 import com.tutorug.app.data.model.DocumentSection
 import com.tutorug.app.data.model.UserProfile
 import com.tutorug.app.ui.theme.*
 import com.tutorug.app.util.Constants
+
+/** How many recent chats the drawer shows before deferring to the full-screen list. */
+private const val DRAWER_HISTORY_PREVIEW = 6
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,10 +56,14 @@ fun ChatScreen(
     userProfile: UserProfile = UserProfile(),
     messages: List<ChatMessage> = emptyList(),
     chatHistory: List<ChatSession> = emptyList(),
+    currentSessionId: String? = null,
     currentSubject: String = "",
     isLoading: Boolean = false,
     isStreaming: Boolean = false,
     streamingText: String = "",
+    isSearching: Boolean = false,
+    forceSearch: Boolean = false,
+    onToggleForceSearch: () -> Unit = {},
     errorMessage: String? = null,
     speakingMessageId: String = "",
     currentSpeechRate: Float = 1.0f,
@@ -78,6 +88,9 @@ fun ChatScreen(
 ) {
     var messageText by remember { mutableStateOf("") }
     var drawerOpen by remember { mutableStateOf(false) }
+    // Long subject lists start collapsed so they cannot bury Navigation / Chat History
+    var subjectsExpanded by remember { mutableStateOf(false) }
+    var fullHistoryOpen by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
     val context = androidx.compose.ui.platform.LocalContext.current
 
@@ -100,6 +113,10 @@ fun ChatScreen(
             userProfile.educationLevel == "Professional"
     val sidebarSubjects = Constants.getSidebarItems(userProfile)
     val showChatHistory = isUniversityOrProfessional
+
+    // Short lists (Primary P1–P7) open straight away; long ones (O-Level, A-Level
+    // combinations) start collapsed so they cannot bury the rest of the drawer.
+    LaunchedEffect(Unit) { subjectsExpanded = sidebarSubjects.size in 1..6 }
 
     val contextLabel = when {
         userProfile.educationLevel == "University"   -> userProfile.course.ifBlank { "University" }
@@ -259,6 +276,20 @@ fun ChatScreen(
                     Spacer(modifier = Modifier.height(10.dp))
                 }
 
+                if (isSearching) {
+                    item {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(top = 8.dp, start = 40.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(Icons.Default.Language, contentDescription = null,
+                                tint = Sky400, modifier = Modifier.size(13.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text("Searching the web…", fontSize = 12.sp, color = Sky400)
+                        }
+                    }
+                }
+
                 if (isLoading) {
                     item {
                         Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalArrangement = Arrangement.Start) {
@@ -338,6 +369,43 @@ fun ChatScreen(
                 }
             }
 
+            // ── QUICK REPLIES ───────────────────────────────────────
+            // Only while the student has not typed anything yet, so the opening
+            // screen offers one-tap starting points instead of a blank composer.
+            if (!isLoading && !isStreaming && messages.none { it.role.equals("user", true) }) {
+                val topic = currentSubject.ifBlank { "this topic" }
+                val quickReplies = listOf(
+                    "Explain $topic simply",
+                    "Quiz me on $topic",
+                    "Where do I start?"
+                )
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(quickReplies.size) { index ->
+                        val label = quickReplies[index]
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(20.dp))
+                                .background(primary.copy(alpha = 0.12f))
+                                .border(1.dp, primary.copy(alpha = 0.35f), RoundedCornerShape(20.dp))
+                                .clickable { onSendMessage(label) }
+                                .padding(horizontal = 14.dp, vertical = 8.dp)
+                        ) {
+                            Text(
+                                label,
+                                fontSize = 12.sp,
+                                color = primary,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
             // ── VOICE PLAYBACK BAR — shown when AI is speaking ────────
             if (speakingMessageId.isNotEmpty()) {
                 Surface(
@@ -380,10 +448,21 @@ fun ChatScreen(
                             Icon(Icons.Default.FastForward, null,
                                 tint = onSurfaceVar, modifier = Modifier.size(18.dp))
                         }
-                        // Stop
-                        IconButton(onClick = onStopSpeaking, modifier = Modifier.size(32.dp)) {
-                            Icon(Icons.Default.StopCircle, null,
-                                tint = error, modifier = Modifier.size(20.dp))
+                        // Stop read-aloud. This was an unlabelled coral StopCircle that
+                        // looked like a "stop generating" control — it is now text-labelled
+                        // and lives in the playback bar, not in the message bubble.
+                        Row(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .clickable(onClick = onStopSpeaking)
+                                .padding(horizontal = 6.dp, vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(Icons.Default.StopCircle,
+                                contentDescription = null,
+                                tint = error, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Stop", fontSize = 12.sp, color = error, fontWeight = FontWeight.SemiBold)
                         }
                     }
                 }
@@ -431,12 +510,54 @@ fun ChatScreen(
                                 .background(Brush.linearGradient(listOf(Amber400, Amber600)), CircleShape)
                         ) { Icon(Icons.Default.Mic, contentDescription = "Voice", tint = onPrimary, modifier = Modifier.size(20.dp)) }
                         Spacer(modifier = Modifier.width(8.dp))
+                        // Attach is a plain action, not a mode. It previously wore a
+                        // primary-coloured halo that (on coral-accented themes) read as a
+                        // red "recording" indicator and clashed with the filled mic
+                        // button, so it is now neutral and clearly inactive.
                         IconButton(
                             onClick = { fileLauncher.launch("*/*") },
                             modifier = Modifier
                                 .size(40.dp)
-                                .background(primary.copy(alpha = 0.12f), CircleShape)
-                        ) { Icon(Icons.Default.AttachFile, contentDescription = "Upload", tint = primary, modifier = Modifier.size(20.dp)) }
+                                .background(Color.White.copy(alpha = 0.06f), CircleShape)
+                        ) {
+                            Icon(
+                                Icons.Default.AttachFile,
+                                contentDescription = "Attach a document",
+                                tint = AppColors.textMuted,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(6.dp))
+                        // Off = the tutor searches only when a question needs current
+                        // facts. On = force a web search on the next message.
+                        Box(
+                            modifier = Modifier
+                                .height(32.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(
+                                    if (forceSearch) Brush.linearGradient(listOf(Sky400, Sky700))
+                                    else Brush.linearGradient(listOf(Color.White.copy(alpha = 0.06f), Color.White.copy(alpha = 0.06f)))
+                                )
+                                .clickable { onToggleForceSearch() }
+                                .padding(horizontal = 10.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    Icons.Default.Language,
+                                    contentDescription = if (forceSearch) "Web search on" else "Web search automatic",
+                                    tint = if (forceSearch) Color.White else AppColors.textDisabled,
+                                    modifier = Modifier.size(15.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    if (forceSearch) "Searching" else "Auto",
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (forceSearch) Color.White else AppColors.textDisabled
+                                )
+                            }
+                        }
                         Spacer(modifier = Modifier.width(10.dp))
                         BasicTextField(
                             value = messageText,
@@ -472,10 +593,16 @@ fun ChatScreen(
 
         // ── DRAWER ───────────────────────────────────────────────────
         if (drawerOpen) {
-            Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.65f)).clickable { drawerOpen = false })
+            // Heavier scrim: at 0.65 the chat behind was still legible and read as
+            // if it were showing through the drawer. The drawer itself is already an
+            // opaque `surface` colour — this only darkens the area beside it.
+            Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.8f)).clickable { drawerOpen = false })
             Surface(
                 modifier = Modifier.fillMaxHeight().width(290.dp).statusBarsPadding().navigationBarsPadding(),
-                color = surface
+                color = surface,
+                // Hard edge so the two layers never look like one translucent sheet
+                tonalElevation = 0.dp,
+                shadowElevation = 12.dp
             ) {
                 Column(modifier = Modifier.fillMaxSize()) {
                     // Profile card
@@ -532,36 +659,41 @@ fun ChatScreen(
                         }
                     }
 
-                    // Scrollable main content
-                    Column(modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 12.dp)) {
-                        Button(
-                            onClick = { onNewChat(); drawerOpen = false },
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                            contentPadding = PaddingValues(0.dp)
+                    // ── STICKY NEW CHAT ────────────────────────────────────
+                    // Pinned outside the scroll area so it is reachable at any
+                    // scroll position instead of scrolling away.
+                    Button(
+                        onClick = { onNewChat(); drawerOpen = false },
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier.fillMaxWidth().height(44.dp)
+                                .background(Brush.linearGradient(listOf(Amber400, Amber600)), RoundedCornerShape(12.dp)),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Box(
-                                modifier = Modifier.fillMaxWidth().height(44.dp)
-                                    .background(Brush.linearGradient(listOf(Amber400, Amber600)), RoundedCornerShape(12.dp)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(Icons.Default.Add, null, tint = onPrimary, modifier = Modifier.size(18.dp))
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Text("New Chat", fontWeight = FontWeight.Bold, color = onPrimary)
-                                }
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Default.Add, null, tint = onPrimary, modifier = Modifier.size(18.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text("New Chat", fontWeight = FontWeight.Bold, color = onPrimary)
                             }
                         }
-                        Spacer(modifier = Modifier.height(12.dp))
+                    }
 
-                        val isOLevel = userProfile.educationLevel in listOf("S1", "S2", "S3", "S4")
-
+                    // Scrollable main content
+                    Column(modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)) {
                         // ── SUBJECTS (all levels except University/Professional) ──
-                        if (!showChatHistory) {
-                            Text("SUBJECTS", fontSize = 11.sp, color = onSurfaceVar, fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(bottom = 6.dp))
-
-                            if (isOLevel) {
+                        // Collapsed by default when the list is long, so it can no
+                        // longer push Navigation and Chat History off screen.
+                        if (!showChatHistory && sidebarSubjects.isNotEmpty()) {
+                            DrawerSectionHeader(
+                                label = "SUBJECTS",
+                                badge = sidebarSubjects.size.toString(),
+                                expanded = subjectsExpanded,
+                                onToggle = { subjectsExpanded = !subjectsExpanded }
+                            )
+                            if (subjectsExpanded) {
                                 Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -569,40 +701,25 @@ fun ChatScreen(
                                         .padding(4.dp)
                                 ) {
                                     sidebarSubjects.forEach { subject ->
-                                            val isActive = subject == currentSubject
-                                            Surface(
-                                                modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)
-                                                    .clickable { onSubjectSelect(subject); drawerOpen = false },
-                                                color = if (isActive) primary.copy(alpha = 0.15f) else Color.Transparent,
-                                                shape = RoundedCornerShape(8.dp)
-                                            ) {
-                                                Text(subject,
-                                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 7.dp),
-                                                    color = if (isActive) primary else AppColors.textMuted,
-                                                    fontSize = 12.sp,
-                                                    fontWeight = if (isActive) FontWeight.SemiBold else FontWeight.Normal)
-                                            }
-                                    }
-                                }
-                            } else {
-                                Column {
-                                    sidebarSubjects.forEach { subject ->
                                         val isActive = subject == currentSubject
                                         Surface(
-                                            modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp)
+                                            modifier = Modifier.fillMaxWidth().padding(vertical = 1.dp)
                                                 .clickable { onSubjectSelect(subject); drawerOpen = false },
-                                            color = if (isActive) primary.copy(alpha = 0.12f) else surfaceVar,
-                                            shape = RoundedCornerShape(10.dp)
+                                            color = if (isActive) primary.copy(alpha = 0.15f) else Color.Transparent,
+                                            shape = RoundedCornerShape(8.dp)
                                         ) {
-                                            Text(subject, modifier = Modifier.padding(12.dp),
+                                            Text(subject,
+                                                modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 8.dp),
                                                 color = if (isActive) primary else AppColors.textMuted,
-                                                fontSize = 13.sp,
-                                                fontWeight = if (isActive) FontWeight.SemiBold else FontWeight.Normal)
+                                                fontSize = 12.sp,
+                                                fontWeight = if (isActive) FontWeight.SemiBold else FontWeight.Normal,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis)
                                         }
                                     }
                                 }
                             }
-                            Spacer(modifier = Modifier.height(16.dp))
+                            Spacer(modifier = Modifier.height(14.dp))
                         }
 
                         // ── NAVIGATION ─────────────────────────────────────────
@@ -649,11 +766,30 @@ fun ChatScreen(
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        // ── CHAT HISTORY (last) ────────────────────────────────
+                        // ── CHAT HISTORY ─────────────────────────────────────
+                        // Only a handful of recent chats live here; the rest are
+                        // behind the full-screen, searchable history.
                         HorizontalDivider(color = AppColors.divider)
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text("CHAT HISTORY", fontSize = 11.sp, color = onSurfaceVar, fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(bottom = 6.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("CHAT HISTORY", fontSize = 11.sp, color = onSurfaceVar,
+                                fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+                            if (chatHistory.isNotEmpty()) {
+                                Text(
+                                    "View all",
+                                    fontSize = 11.sp,
+                                    color = primary,
+                                    fontWeight = FontWeight.SemiBold,
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .clickable { fullHistoryOpen = true; drawerOpen = false }
+                                        .padding(horizontal = 6.dp, vertical = 3.dp)
+                                )
+                            }
+                        }
 
                         if (chatHistory.isEmpty()) {
                             Text(
@@ -663,78 +799,49 @@ fun ChatScreen(
                                 modifier = Modifier.padding(vertical = 6.dp)
                             )
                         } else {
-                            chatHistory.forEach { session ->
-                                    val title = session.subject.ifBlank {
-                                        when {
-                                            userProfile.educationLevel == "University" -> userProfile.course.ifBlank { "Chat" }
-                                            userProfile.educationLevel == "Professional" -> userProfile.profession.ifBlank { "Chat" }
-                                            else -> "Chat"
-                                        }
-                                    }
-                                    var showDeleteConfirm by remember { mutableStateOf(false) }
-
-                                    if (showDeleteConfirm) {
-                                        AlertDialog(
-                                            onDismissRequest = { showDeleteConfirm = false },
-                                            containerColor = surfaceVar,
-                                            shape = RoundedCornerShape(16.dp),
-                                            title = { Text("Delete Chat?", color = AppColors.textPrimary, fontWeight = FontWeight.Bold, fontSize = 16.sp) },
-                                            text = { Text("This will permanently delete this chat and all its messages.", color = onSurfaceVar, fontSize = 13.sp) },
-                                            confirmButton = {
-                                                Button(
-                                                    onClick = {
-                                                        onDeleteSession(session.sessionId)
-                                                        showDeleteConfirm = false
-                                                        drawerOpen = false
-                                                    },
-                                                    colors = ButtonDefaults.buttonColors(containerColor = error),
-                                                    shape = RoundedCornerShape(8.dp)
-                                                ) { Text("Delete", fontWeight = FontWeight.Bold) }
-                                            },
-                                            dismissButton = {
-                                                TextButton(onClick = { showDeleteConfirm = false }) {
-                                                    Text("Cancel", color = onSurfaceVar)
-                                                }
-                                            }
-                                        )
-                                    }
-
-                                    Surface(
-                                        modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)
-                                            .clickable { onSessionSelect(session.sessionId); drawerOpen = false },
-                                        color = surfaceVar, shape = RoundedCornerShape(10.dp)
+                            chatHistory.take(DRAWER_HISTORY_PREVIEW).forEach { session ->
+                                Surface(
+                                    modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)
+                                        .clickable { onSessionSelect(session.sessionId); drawerOpen = false },
+                                    color = surfaceVar, shape = RoundedCornerShape(10.dp)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(8.dp),
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Row(
-                                            modifier = Modifier.padding(8.dp),
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Column(modifier = Modifier.weight(1f)) {
-                                                Text(title, fontSize = 12.sp, color = primary,
-                                                    fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                                                session.messages.lastOrNull()?.let {
-                                                    Text(it.content, fontSize = 10.sp, color = onSurfaceVar,
-                                                        maxLines = 1, overflow = TextOverflow.Ellipsis)
-                                                }
+                                        Column(modifier = Modifier.weight(1f)) {
+                                            Text(sessionTitle(session), fontSize = 12.sp, color = primary,
+                                                fontWeight = FontWeight.Medium, maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis)
+                                            sessionSubtitle(session).takeIf { it.isNotEmpty() }?.let {
+                                                Text(it, fontSize = 10.sp, color = onSurfaceVar,
+                                                    maxLines = 1, overflow = TextOverflow.Ellipsis)
                                             }
-                                            if (session.messageCount > 0) {
-                                                Surface(shape = RoundedCornerShape(20.dp), color = primary.copy(alpha = 0.15f)) {
-                                                    Text("${session.messageCount}", fontSize = 9.sp, color = primary,
-                                                        modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp))
-                                                }
-                                                Spacer(modifier = Modifier.width(2.dp))
-                                            }
-                                            IconButton(
-                                                onClick = { showDeleteConfirm = true },
-                                                modifier = Modifier.size(28.dp)
-                                            ) {
-                                                Icon(Icons.Default.Delete, null,
-                                                    tint = error.copy(alpha = 0.7f),
-                                                    modifier = Modifier.size(14.dp))
+                                        }
+                                        if (session.messageCount > 0) {
+                                            Surface(shape = RoundedCornerShape(20.dp), color = primary.copy(alpha = 0.15f)) {
+                                                Text("${session.messageCount}", fontSize = 9.sp, color = primary,
+                                                    modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp))
                                             }
                                         }
                                     }
+                                }
+                            }
+                            if (chatHistory.size > DRAWER_HISTORY_PREVIEW) {
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    "+ ${chatHistory.size - DRAWER_HISTORY_PREVIEW} more",
+                                    fontSize = 11.sp,
+                                    color = onSurfaceVar,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .clickable { fullHistoryOpen = true; drawerOpen = false }
+                                        .padding(vertical = 7.dp)
+                                )
                             }
                         }
+                        Spacer(modifier = Modifier.height(12.dp))
                     }
 
                     // Logout at bottom
@@ -749,6 +856,29 @@ fun ChatScreen(
                     }
                 }
             }
+        }
+    }
+
+    // ── FULL-SCREEN CHAT HISTORY ────────────────────────────────────
+    if (fullHistoryOpen) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(AppColors.background)
+                .statusBarsPadding()
+                .navigationBarsPadding()
+        ) {
+            ChatHistoryScreen(
+                sessions = chatHistory,
+                currentSessionId = currentSessionId,
+                onSelect = {
+                    onSessionSelect(it.sessionId)
+                    fullHistoryOpen = false
+                    drawerOpen = false
+                },
+                onDelete = onDeleteSession,
+                onClose = { fullHistoryOpen = false }
+            )
         }
     }
 
@@ -786,6 +916,48 @@ fun ChatScreen(
             containerColor = surface,
             titleContentColor = TextWhite,
             textContentColor = onSurfaceVar
+        )
+    }
+}
+
+/** Collapsible drawer section header with a count badge and a rotating chevron. */
+@Composable
+private fun DrawerSectionHeader(
+    label: String,
+    badge: String,
+    expanded: Boolean,
+    onToggle: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .clickable(onClick = onToggle)
+            .padding(vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            label,
+            fontSize = 11.sp,
+            color = AppColors.textMuted,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.weight(1f)
+        )
+        Surface(shape = RoundedCornerShape(20.dp), color = AppColors.primary.copy(alpha = 0.15f)) {
+            Text(
+                badge,
+                fontSize = 9.sp,
+                color = AppColors.primary,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+            )
+        }
+        Spacer(modifier = Modifier.width(6.dp))
+        Icon(
+            imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+            contentDescription = if (expanded) "Collapse $label" else "Expand $label",
+            tint = AppColors.textMuted,
+            modifier = Modifier.size(18.dp)
         )
     }
 }
@@ -877,7 +1049,9 @@ fun ChatBubble(
                             ) {
                                 Icon(
                                     if (isSpeakingThis) Icons.Default.StopCircle else Icons.Default.VolumeUp,
-                                    null,
+                                    // Distinguishes this from the send/stop control: this
+                                    // one starts or halts read-aloud for this single message.
+                                    contentDescription = if (isSpeakingThis) "Stop reading aloud" else "Read aloud",
                                     tint = if (isSpeakingThis) error else onSurfaceVar,
                                     modifier = Modifier.size(15.dp)
                                 )
@@ -906,6 +1080,9 @@ fun ChatBubble(
                         FormattedAIText(message.content, primary)
                     }
                 }
+                if (message.sources.isNotEmpty()) {
+                    SourcesList(message.sources, primary, onSurfaceVar)
+                }
             }
         }
 
@@ -919,6 +1096,47 @@ fun ChatBubble(
                 contentAlignment = Alignment.Center
             ) {
                 Text("Me", fontSize = 9.sp, fontWeight = FontWeight.Black, color = Color(0xFF1A1A1A))
+            }
+        }
+    }
+}
+
+// Sources the tutor cited. Shown under the answer because Anthropic requires
+// citations to be displayed alongside the answer they support.
+@Composable
+fun SourcesList(
+    sources: List<ChatSource>,
+    primary: Color = Amber500,
+    onSurfaceVar: Color = Color(0xFF606080)
+) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    Column(
+        modifier = Modifier
+            .padding(top = 6.dp, start = 2.dp)
+            .fillMaxWidth()
+    ) {
+        HorizontalDivider(color = Color.White.copy(alpha = 0.10f), modifier = Modifier.padding(bottom = 6.dp))
+        Text("Sources", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = onSurfaceVar,
+            letterSpacing = 1.5.sp)
+        Spacer(modifier = Modifier.height(4.dp))
+        sources.forEachIndexed { index, source ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        runCatching {
+                            context.startActivity(
+                                Intent(Intent.ACTION_VIEW, Uri.parse(source.url))
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            )
+                        }
+                    }
+                    .padding(vertical = 3.dp),
+                verticalAlignment = Alignment.Top
+            ) {
+                Text("${index + 1}.", fontSize = 11.sp, fontWeight = FontWeight.Bold,
+                    color = onSurfaceVar, modifier = Modifier.width(16.dp))
+                Text(source.title, fontSize = 11.sp, color = primary, lineHeight = 15.sp)
             }
         }
     }

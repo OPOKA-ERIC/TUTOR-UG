@@ -33,21 +33,36 @@ class StudyRoomRepository {
         gson.fromJson(body, object : TypeToken<List<RoomMessage>>() {}.type) ?: emptyList()
     }
 
+    /**
+     * Asks the gatekeeper whether [content] belongs in the room, and only inserts it
+     * if approved. The returned reason is for the sender's own screen only — it is
+     * never written to room_messages, so the group cannot see it.
+     */
+    data class ModerationResult(val allowed: Boolean, val reason: String = "")
+
     suspend fun moderateAndSend(
         roomId: String, userId: String, userName: String, userAvatar: String,
-        content: String, subject: String
-    ): Boolean = withContext(Dispatchers.IO) {
+        content: String, subject: String, educationLevel: String = ""
+    ): ModerationResult = withContext(Dispatchers.IO) {
         // Moderate
         val modPayload = JSONObject().apply {
-            put("message", content); put("subject", subject); put("userName", userName)
+            put("message", content); put("subject", subject)
+            put("educationLevel", educationLevel); put("userName", userName)
         }
         val modReq = Request.Builder()
             .url("$base/functions/v1/moderate-message")
             .post(modPayload.toString().toRequestBody("application/json".toMediaType()))
             .build()
-        val modBody = http.newCall(modReq).execute().body?.string() ?: "{\"allowed\":true}"
-        val allowed = JSONObject(modBody).optBoolean("allowed", true)
-        if (!allowed) return@withContext false
+        val modBody = runCatching { http.newCall(modReq).execute().body?.string() }
+            .getOrNull() ?: return@withContext ModerationResult(allowed = true)
+        val modJson = runCatching { JSONObject(modBody) }.getOrNull()
+            ?: return@withContext ModerationResult(allowed = true)
+        if (!modJson.optBoolean("allowed", true)) {
+            return@withContext ModerationResult(
+                allowed = false,
+                reason = modJson.optString("reason", "").take(200)
+            )
+        }
 
         // Insert message
         val row = JSONObject().apply {
@@ -60,6 +75,6 @@ class StudyRoomRepository {
             .post(row.toString().toRequestBody("application/json".toMediaType()))
             .build()
         http.newCall(insertReq).execute()
-        true
+        ModerationResult(allowed = true)
     }
 }

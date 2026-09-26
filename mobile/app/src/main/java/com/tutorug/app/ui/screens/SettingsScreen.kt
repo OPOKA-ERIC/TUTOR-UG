@@ -43,6 +43,7 @@ fun SettingsScreen(
     onPrivacyPolicyClick: () -> Unit = {},
     onTermsClick: () -> Unit = {},
     onShareClick: () -> Unit = {},
+    onFeedbackClick: () -> Unit = {},
     onChangePasswordClick: () -> Unit = {},
     avatarUploadState: AvatarUploadState = AvatarUploadState.Idle,
     // Location
@@ -614,7 +615,7 @@ fun SettingsScreen(
                     SettingsDivider()
                     SettingsNavItem(Icons.Default.Description, Violet400, "Terms of Service", "Usage terms and conditions", onTermsClick)
                     SettingsDivider()
-                    SettingsNavItem(Icons.Default.Star, Amber500, "Rate TutorUG", "Help us improve with your feedback", {})
+                    SettingsNavItem(Icons.Default.Star, Amber500, "Rate TutorUG", "Help us improve with your feedback", onFeedbackClick)
                     SettingsDivider()
                     SettingsNavItem(Icons.Default.Share, Cyan500, "Share with Friends", "Invite fellow students to TutorUG", onShareClick)
                 }

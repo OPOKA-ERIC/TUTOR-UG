@@ -48,6 +48,12 @@ export interface ChatSession {
   messages?: ChatMessage[]
 }
 
+export interface ChatSource {
+  url: string
+  title: string
+  citedText: string
+}
+
 export interface ChatMessage {
   message_id: string
   session_id: string
@@ -56,6 +62,8 @@ export interface ChatMessage {
   content: string
   token_count: number
   created_at: string
+  /** Web sources the tutor cited, when the answer was grounded in a search. */
+  sources?: ChatSource[]
 }
 
 export interface UploadedDocument {
