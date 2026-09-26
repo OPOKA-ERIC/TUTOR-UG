@@ -8,7 +8,7 @@ export default async function handler(req, res) {
     const apiKey = process.env.ANTHROPIC_KEY
     if (!apiKey) return res.status(500).json({ error: 'ANTHROPIC_KEY not set' })
 
-    const { topic, userProfile, districtContext, conversationHistory } = req.body
+    const { topic, userProfile, districtContext, conversationHistory, sourceMaterial } = req.body
 
     if (!isNonEmptyString(topic, 2000)) return fail(res, 'Topic is required.')
     if (!isPlainObject(userProfile) || !isNonEmptyString(userProfile.name, 120)) {
@@ -17,9 +17,13 @@ export default async function handler(req, res) {
     if (conversationHistory !== undefined && !isArrayOrEmpty(conversationHistory, 200)) {
       return fail(res, 'Conversation history is invalid.')
     }
+    if (sourceMaterial !== undefined && !isNonEmptyString(sourceMaterial, 12000)) {
+      return fail(res, 'Source material is invalid.')
+    }
 
     const anthropic = new Anthropic({ apiKey })
     const isFollowUp = conversationHistory && conversationHistory.length > 0
+    const hasSources = !!sourceMaterial && sourceMaterial.trim().length > 0
 
     const systemPrompt = `You are producing a TutorUG Learning Podcast for ${userProfile.name}, a ${userProfile.educationLevel} student from ${userProfile.district} district in Uganda.
 
@@ -32,6 +36,41 @@ LOCALIZATION RULES:
 - Reference real places in ${userProfile.district}
 - Follow UNEB ${userProfile.educationLevel} curriculum
 
+WRITING RULES — this is audio, not an essay:
+- Write for the EAR. Short sentences. One idea per turn.
+- NEVER write stage directions, sound effects, or text like "[laughs]" or "pause".
+- NEVER write equations, bullet points, or markdown. Spell things out: "x squared plus b x plus c equals zero."
+- Write numbers the way they are spoken: "eighteen thousand shillings", not "UGX 18,000".
+- No emoji, no asterisks, no quotation marks around speech.
+- Each turn must be 1-3 sentences so the voice never sounds like it is lecturing.
+
+DISCUSSION RULES — make it sound like two people who know each other:
+- The HOST asks a real question; the STUDENT answers partly, then asks back.
+- The HOST builds on what the STUDENT just said. Do not restart the topic each turn.
+- Let them make one genuine connection to something the student already struggled with.
+- Allow one moment of light humour or a relatable Ugandan aside.
+- Avoid robotic openers. Do not start every HOST turn with "Great question" or "Excellent question".
+
+ACCURACY RULES:
+- Only state facts you are confident about. This is a school exam-prep tool.
+- If you are unsure of a detail, have the HOST say it needs checking rather than inventing it.
+- Never invent a past-paper question, mark scheme, or exam date.${hasSources ? `
+
+GROUNDING — your non-negotiable source:
+The student has uploaded their own material. Base the episode on it.
+- Ground every claim in the SOURCE MATERIAL below.
+- Refer to their actual notes by name where it helps ("your Biology notes on photosynthesis").
+- Do not introduce outside topics that are not supported by their material.
+- If the SOURCE MATERIAL does not cover part of the requested topic, say so in the HOST turn and tell the student what to revise.
+
+SOURCE MATERIAL:
+"""
+${sourceMaterial}
+"""` : `
+
+GROUNDING:
+No uploaded material was supplied, so anchor the episode in the UNEB ${userProfile.educationLevel} syllabus and standard exam technique for this topic.`}
+
 OUTPUT FORMAT — return ONLY a valid JSON array, no other text:
 [
   { "speaker": "HOST", "text": "..." },
@@ -40,12 +79,9 @@ OUTPUT FORMAT — return ONLY a valid JSON array, no other text:
 ]
 
 PODCAST RULES:
-- 8-12 exchanges (HOST and STUDENT alternating)
-- Start with HOST giving a warm Ugandan greeting and introducing the topic
-- Make it conversational and engaging, not a lecture
-- Include at least one real-world Ugandan example
-- End with HOST summarizing key points and encouraging the student
-- Each segment should be 2-4 sentences max (for natural TTS playback)`
+- 10-14 turns, strictly alternating HOST and STUDENT, always starting with HOST
+- Start with HOST welcoming the student by name and naming the exact topic
+- End with HOST giving a concrete next action, not a generic encouragement`
 
     const messages = isFollowUp
       ? [
@@ -74,7 +110,18 @@ PODCAST RULES:
       return fail(res, 'Invalid podcast script from AI.', 500)
     }
 
-    res.json({ script })
+    const clean = script
+      .map((seg) => ({
+        speaker: String(seg?.speaker || 'HOST').toUpperCase() === 'STUDENT' ? 'STUDENT' : 'HOST',
+        text: String(seg?.text || '').trim(),
+      }))
+      .filter((seg) => seg.text.length > 0)
+
+    if (clean.length === 0) {
+      return fail(res, 'Podcast script was empty.', 500)
+    }
+
+    res.json({ script: clean })
   } catch (error) {
     res.status(500).json({ error: error.message })
   }

@@ -106,6 +106,19 @@ FORMATTING RULES for the content field:
       created_at: new Date().toISOString(),
     }));
 
+    // Clear any previous run for this document first. document_sections has a
+    // unique constraint on (document_id, section_index), so re-processing a
+    // document that already has sections failed with Postgres 23502
+    // (unique_violation) and the document was stuck in "processing" forever.
+    const clearResp = await fetch(
+      `${supabaseUrl}/rest/v1/document_sections?document_id=eq.${encodeURIComponent(documentId)}`,
+      { method: "DELETE", headers: { ...headers, "Prefer": "return=minimal" } },
+    );
+    if (!clearResp.ok) {
+      const err = await clearResp.text();
+      throw new Error(`Failed to clear previous sections: ${err}`);
+    }
+
     const insertResp = await fetch(`${supabaseUrl}/rest/v1/document_sections`, {
       method: "POST",
       headers: { ...headers, "Prefer": "return=minimal" },
