@@ -118,12 +118,17 @@ class PodcastRepository {
     }
 
     suspend fun saveSession(session: PodcastSession) = withContext(Dispatchers.IO) {
-        val scriptJson = gson.toJson(session.script)
+        // podcast_sessions.script is a jsonb column holding an ARRAY. Passing the
+        // gson output as a String made org.json emit a quoted JSON string, so the
+        // column stored a string scalar instead of an array. Every reader then
+        // received a string, and the web client crashed on script.map(...).
+        // Wrapping it in a JSONArray embeds a real nested array in the payload.
+        val scriptArray = JSONArray(gson.toJson(session.script))
         val row = JSONObject().apply {
             put("podcast_id", session.podcastId); put("user_id", session.userId)
             put("topic", session.topic); put("subject", session.subject)
             put("education_level", session.educationLevel)
-            put("script", scriptJson); put("duration_secs", session.durationSecs)
+            put("script", scriptArray); put("duration_secs", session.durationSecs)
             put("created_at", session.createdAt)
         }
         val req = Request.Builder()
