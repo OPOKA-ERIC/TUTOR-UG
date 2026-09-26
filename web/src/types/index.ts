@@ -9,6 +9,7 @@ export interface UserProfile {
   combination: string
   course: string
   profession: string
+  gender?: string | null
   avatar_url: string
   role: string
   created_at: string
@@ -246,7 +247,12 @@ export interface PodcastSession {
   topic: string
   subject: string
   education_level: string
-  script: PodcastSegment[]
+  /**
+   * Widened on purpose: podcast_sessions.script is a text column, so rows can
+   * come back as a JSON string or null. Always pass it through
+   * normalizeScript() from lib/podcast before using it.
+   */
+  script: PodcastSegment[] | string | null
   duration_secs: number
   created_at: string
 }

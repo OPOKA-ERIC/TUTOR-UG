@@ -15,7 +15,15 @@ import { supabase } from '@/lib/supabase'
 import { SUPABASE_URL } from '@/lib/supabase'
 import { apiUrl, apiHeaders } from '@/lib/api'
 import { EDUCATION_LEVELS } from '@/lib/constants'
+import {
+  getHostVoiceMale, setHostVoiceMale,
+  getStudentGender, setStudentGender, hydrateStudentGender,
+  getSpeechRate, setSpeechRate,
+} from '@/lib/voicePrefs'
 import type { UserSettings } from '@/types'
+
+const VIOLET = '#7C4DFF'
+const AMBER = '#F59E0B'
 
 const THEMES = ['DEEP_SPACE', 'MIDNIGHT', 'FOREST', 'OCEAN', 'SUNSET']
 const DIFFICULTIES = ['adaptive', 'easy', 'medium', 'hard']
@@ -178,6 +186,17 @@ export default function SettingsModal({ onClose }: { onClose?: () => void }) {
   const [privacyBusy, setPrivacyBusy] = useState<'idle' | 'exporting' | 'deleting'>('idle')
   const [privacyMsg, setPrivacyMsg] = useState<{ ok: boolean; text: string } | null>(null)
   const [activeSection, setActiveSection] = useState('profile')
+
+  // Device-local voice identity, mirroring the mobile app's local prefs.
+  const [hostMale, setHostMale] = useState<boolean>(getHostVoiceMale())
+  const [studentG, setStudentG] = useState<string>(getStudentGender())
+  const [rate, setRate] = useState<number>(getSpeechRate())
+
+  // A new device has no local value, so seed the picker from the profile.
+  useEffect(() => {
+    hydrateStudentGender(profile?.gender)
+    if (profile?.gender) setStudentG(getStudentGender())
+  }, [profile?.gender])
   const { openTimetable } = useTimetable()
 
   const [reviewRating, setReviewRating] = useState(0)
@@ -763,6 +782,63 @@ export default function SettingsModal({ onClose }: { onClose?: () => void }) {
                   <ToggleRow icon={Bell} color="#7C4DFF" title="Quiz SFX" subtitle="Sound effects" value={!!settings.quiz_sound_enabled} onChange={v => saveSetting('quiz_sound_enabled', v)} />
                 </div>
               </Card>
+              <Card>
+                <div className="p-4 space-y-3">
+                  <p className="text-text-disabled text-xs font-bold uppercase tracking-widest">Voice Identity</p>
+
+                  {/* Chatbot / HOST voice. Kept separate from the learner so the
+                      student character can differ from the assistant. */}
+                  <div>
+                    <p className="text-text-white text-sm font-semibold">Assistant Voice</p>
+                    <p className="text-text-disabled text-[11px] mb-2">The voice used for TutorUG HOST and chat replies</p>
+                    <div className="flex gap-2">
+                      {[{ v: false, l: 'Female' }, { v: true, l: 'Male' }].map(({ v, l }) => (
+                        <button key={l} onClick={() => { setHostMale(v); setHostVoiceMale(v) }}
+                          className="px-4 py-1.5 rounded-xl text-xs font-bold"
+                          style={{
+                            background: hostMale === v ? VIOLET : 'rgba(255,255,255,0.05)',
+                            color: hostMale === v ? '#fff' : 'rgba(255,255,255,0.6)',
+                          }}>
+                          {l}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Divider />
+
+                  {/* Learner gender drives the STUDENT character in the podcast. */}
+                  <div>
+                    <p className="text-text-white text-sm font-semibold">Your Gender</p>
+                    <p className="text-text-disabled text-[11px] mb-2">So the podcast student is read by a matching voice</p>
+                    <div className="flex gap-2">
+                      {['female', 'male'].map((g) => (
+                        <button key={g} onClick={() => { setStudentG(g); setStudentGender(g) }}
+                          className="px-4 py-1.5 rounded-xl text-xs font-bold capitalize"
+                          style={{
+                            background: studentG === g ? AMBER : 'rgba(255,255,255,0.05)',
+                            color: studentG === g ? '#0A0A1F' : 'rgba(255,255,255,0.6)',
+                          }}>
+                          {g}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Divider />
+
+                  {/* Speech rate, matching the mobile slider. */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-text-white text-sm font-semibold">Speech Rate</p>
+                      <p className="text-text-disabled text-xs font-bold">{rate.toFixed(2)}x</p>
+                    </div>
+                    <input type="range" min={0.5} max={2} step={0.05} value={rate}
+                      onChange={(e) => { const v = parseFloat(e.target.value); setRate(v); setSpeechRate(v) }}
+                      className="w-full accent-purple-500" />
+                  </div>
+                </div>
+              </Card>
             </div>
           )}
 
@@ -1014,6 +1090,26 @@ export default function SettingsModal({ onClose }: { onClose?: () => void }) {
                   </button>
                 </div>
               </Card>
+              <div className="grid grid-cols-2 gap-3">
+                <button onClick={() => navigate('/privacy')}
+                  className="p-4 rounded-xl flex items-center gap-3 text-left transition-all hover:brightness-110"
+                  style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                  <Shield size={18} style={{ color: '#7C4DFF' }} />
+                  <div>
+                    <p className="text-xs font-bold" style={{ color: '#F0F0FF' }}>Privacy Policy</p>
+                    <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.45)' }}>How we handle your data</p>
+                  </div>
+                </button>
+                <button onClick={() => navigate('/terms')}
+                  className="p-4 rounded-xl flex items-center gap-3 text-left transition-all hover:brightness-110"
+                  style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                  <FileCheck size={18} style={{ color: '#F59E0B' }} />
+                  <div>
+                    <p className="text-xs font-bold" style={{ color: '#F0F0FF' }}>Terms of Service</p>
+                    <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.45)' }}>Rules for using TutorUG</p>
+                  </div>
+                </button>
+              </div>
               <button onClick={() => setShowLogout(true)}
                 className="w-full p-4 rounded-xl flex items-center gap-3 transition-all hover:brightness-110"
                 style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.15)' }}>

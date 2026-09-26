@@ -17,6 +17,8 @@ import MeetingsPage from '@/pages/MeetingsPage'
 import StudyRoomsPage from '@/pages/StudyRoomsPage'
 import PodcastPage from '@/pages/PodcastPage'
 import AdminPage from '@/pages/AdminPage'
+import PrivacyPolicyPage from '@/pages/PrivacyPolicyPage'
+import TermsOfServicePage from '@/pages/TermsOfServicePage'
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { profile, loading } = useAuth()
@@ -55,6 +57,8 @@ export default function App() {
       <Route path="/rooms" element={<PrivateRoute><StudyRoomsPage /></PrivateRoute>} />
       <Route path="/podcast" element={<PrivateRoute><PodcastPage /></PrivateRoute>} />
       <Route path="/admin" element={<PrivateRoute><AdminPage /></PrivateRoute>} />
+  <Route path="/privacy" element={<PrivacyPolicyPage />} />
+  <Route path="/terms" element={<TermsOfServicePage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
       {open && <SettingsModal onClose={closeSettings} />}
